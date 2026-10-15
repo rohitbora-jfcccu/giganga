@@ -12,13 +12,14 @@ interface FeaturedWorkProps {
 
 export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) => {
   const { playHover, playClick } = useSound();
-  const [activeCategory, setActiveCategory] = useState<'all' | 'ecommerce' | 'enterprise'>('all');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'ecommerce' | 'enterprise' | 'under-development'>('all');
 
   const allProjects = PORTFOLIO_DATA.projects;
 
   const filteredProjects = allProjects.filter((p) => {
     if (activeCategory === 'ecommerce') return p.id === 'atelier-noir';
     if (activeCategory === 'enterprise') return p.id === 'logixcore-erp';
+    if (activeCategory === 'under-development') return Boolean(p.isUnderDevelopment);
     return true;
   });
 
@@ -97,6 +98,20 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
               }`}
             >
               Enterprise ERP
+            </button>
+            <button
+              onClick={() => {
+                playClick();
+                setActiveCategory('under-development');
+              }}
+              onPointerEnter={() => playHover()}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                activeCategory === 'under-development'
+                  ? 'bg-[var(--bg-elevated)] text-[var(--accent-champagne)] shadow-xs font-bold'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              Under Development (2)
             </button>
           </div>
         </div>

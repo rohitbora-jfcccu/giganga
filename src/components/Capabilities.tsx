@@ -20,7 +20,7 @@ export const Capabilities: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header with Staggered Framer Motion Entrance */}
         <MotionSectionHeader
-          kicker="03. Engineering Disciplines"
+          kicker="04. Engineering Disciplines"
           title="Capabilities & Core Offerings"
           description="Architectural craftsmanship applied across production web applications, bespoke digital storefronts, and operational enterprise platforms."
           layout="stacked"

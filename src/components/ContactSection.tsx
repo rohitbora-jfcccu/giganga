@@ -98,7 +98,7 @@ export const ContactSection: React.FC = () => {
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-4">
               <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold block">
-                06. Direct Engagement
+                07. Direct Engagement
               </span>
               <ScrollHeadlineReveal
                 as="h2"
@@ -288,6 +288,6 @@ export const ContactSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 };

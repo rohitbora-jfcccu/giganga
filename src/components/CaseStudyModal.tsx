@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { X, Github, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { ProjectCaseStudy } from '../data/portfolio-data';
+import { CustomOSVisualization } from './CustomOSVisualization';
+import { JarvisAICoreVisualization } from './JarvisAICoreVisualization';
 
 interface CaseStudyModalProps {
   project: ProjectCaseStudy | null;
@@ -63,7 +65,13 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
             <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
             <span>{project.timeline}</span>
             <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-            <span className="text-[var(--text-primary)]">{project.status}</span>
+            {project.isUnderDevelopment ? (
+              <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-champagne)]/20 border border-[var(--accent-champagne)] text-[var(--accent-champagne)] font-bold">
+                UNDER DEVELOPMENT
+              </span>
+            ) : (
+              <span className="text-[var(--text-primary)]">{project.status}</span>
+            )}
           </div>
 
           <button
@@ -99,14 +107,39 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
               {project.tagline}
             </p>
 
-            <div className="w-full aspect-video rounded-xl overflow-hidden border border-[var(--border-card)] bg-[#111] relative">
-              <img
-                src={project.heroImage}
-                alt={`${project.title} architecture showcase`}
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+            {/* Interactive 3D Workstation Experience for Custom OS & JARVIS */}
+            {project.id === 'custom-os' ? (
+              <div className="w-full shadow-2xl">
+                <CustomOSVisualization mode="expanded" />
+              </div>
+            ) : project.id === 'my-own-jarvis' ? (
+              <div className="w-full shadow-2xl">
+                <JarvisAICoreVisualization mode="expanded" />
+              </div>
+            ) : (
+              <div className="w-full aspect-video rounded-xl overflow-hidden border border-[var(--border-card)] bg-[#111] relative">
+                <img
+                  src={project.heroImage}
+                  alt={`${project.title} architecture showcase`}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            )}
+
+            {project.isUnderDevelopment && (
+              <div className="p-4 rounded-xl bg-[var(--accent-champagne)]/10 border border-[var(--accent-champagne)]/40 flex items-start gap-3 text-xs">
+                <span className="w-2 h-2 rounded-full bg-[var(--accent-champagne)] animate-pulse shrink-0 mt-1" />
+                <div>
+                  <span className="font-bold text-[var(--accent-champagne)] font-mono-code uppercase tracking-wider block">
+                    Active Architectural Research &amp; Engineering
+                  </span>
+                  <p className="text-[var(--text-secondary)] mt-0.5 leading-relaxed">
+                    This project is currently under active development. Core architectural blueprints, interface prototypes, and research specifications are in progress.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 1. Overview & 2. Problem */}

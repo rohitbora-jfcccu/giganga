@@ -6,6 +6,7 @@ import { CinematicVeil } from './components/CinematicVeil';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { FeaturedWork } from './components/FeaturedWork';
+import { AboutSection } from './components/AboutSection';
 import { PersonalJourney } from './components/PersonalJourney';
 import { Capabilities } from './components/Capabilities';
 import { WorkingProcess } from './components/WorkingProcess';
@@ -15,7 +16,6 @@ import { Footer } from './components/Footer';
 import { CaseStudyModal } from './components/CaseStudyModal';
 import { ResumeModal } from './components/ResumeModal';
 import { ScrollProgress } from './components/ScrollProgress';
-import { OpeningSequence } from './components/OpeningSequence';
 import { PORTFOLIO_DATA, ProjectCaseStudy } from './data/portfolio-data';
 
 function PortfolioContent({
@@ -33,15 +33,6 @@ function PortfolioContent({
   const { playModalTransition } = useSound();
   const { transitionTo } = useTransition();
 
-  const [showOpeningSequence, setShowOpeningSequence] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-    try {
-      return sessionStorage.getItem('bora_intro_shown') !== 'true';
-    } catch {
-      return true;
-    }
-  });
 
   // Handle direct initial URL hash loading (e.g. /#contact, /#project-atelier-noir)
   useEffect(() => {
@@ -55,7 +46,7 @@ function PortfolioContent({
       const pId = initialHash.replace('#project-', '');
       const found = PORTFOLIO_DATA.projects.find((p) => p.id === pId);
       if (found) setSelectedProject(found);
-    } else if (['#work', '#journey', '#capabilities', '#process', '#contact'].includes(initialHash)) {
+    } else if (['#work', '#about', '#journey', '#capabilities', '#process', '#skills', '#education', '#contact'].includes(initialHash)) {
       const targetEl = document.querySelector(initialHash);
       if (targetEl) {
         window.setTimeout(() => {
@@ -68,7 +59,14 @@ function PortfolioContent({
   const handleOpenProject = (p: ProjectCaseStudy) => {
     transitionTo(`#project-${p.id}`, {
       sceneTitle: `CASE STUDY // ${p.title.toUpperCase()}`,
-      sceneNumber: p.id === 'atelier-noir' ? '01A' : '01B',
+      sceneNumber:
+        p.id === 'atelier-noir'
+          ? '01A'
+          : p.id === 'logixcore-erp'
+          ? '01B'
+          : p.id === 'custom-os'
+          ? '01C'
+          : '01D',
       customAction: () => {
         playModalTransition(true);
         setSelectedProject(p);
@@ -114,10 +112,6 @@ function PortfolioContent({
       {/* Cinematic Film Shutter Veil (Active during scene navigation) */}
       <CinematicVeil />
 
-      {/* Cinematic 4-Stage Opening Sequence */}
-      {showOpeningSequence && (
-        <OpeningSequence onComplete={() => setShowOpeningSequence(false)} />
-      )}
 
       {/* Viewport Scroll Depth Progress Bar */}
       <ScrollProgress />
@@ -139,6 +133,12 @@ function PortfolioContent({
 
         {/* Selected Works (Atelier Noir & LogixCore ERP) */}
         <FeaturedWork onSelectProject={handleOpenProject} />
+
+        {/* Personal Profile, Philosophy & Academic Invariants */}
+        <AboutSection
+          onContactClick={() => transitionTo('#contact')}
+          onResumeClick={handleOpenResume}
+        />
 
         {/* Personal Educational & Technical Journey */}
         <PersonalJourney />

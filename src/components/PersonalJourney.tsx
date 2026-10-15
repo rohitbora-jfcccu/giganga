@@ -1,81 +1,187 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, GraduationCap, CheckCircle2, ChevronRight, Layers, Code2 } from 'lucide-react';
 import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
 import { CinematicSection } from './CinematicSection';
 
 export const PersonalJourney: React.FC = () => {
   const { journey } = PORTFOLIO_DATA;
+  const [selectedMilestone, setSelectedMilestone] = useState<number>(3); // Default to 2026 Graduation
+
+  const activeItem = journey.timeline[selectedMilestone] || journey.timeline[3];
 
   return (
     <CinematicSection id="journey" type="about" bg="secondary">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Section Header with Staggered Framer Motion Entrance */}
+        {/* Section Header */}
         <MotionSectionHeader
-          kicker="02. Personal Journey"
+          kicker="03. Educational & Technical Journey"
           title={journey.subtitle}
-          layout="stacked"
+          description="A verifiable multi-year progression from algorithmic foundations at Soban Singh Jeena University to production full-stack systems."
+          borderBottom={true}
         />
 
         {/* Narrative & Timeline Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          {/* Left Column: Reflective Prose with word-by-word scroll scrub */}
-          <div className="lg:col-span-5 space-y-6 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
-            {journey.paragraphs.map((p, i) => (
-              <ScrollScrubText
-                key={i}
-                as="p"
-                className="font-normal leading-relaxed"
-                startOffset="top 88%"
-                endOffset="top 42%"
-              >
-                {p}
-              </ScrollScrubText>
-            ))}
+          {/* Left Column: Reflective Narrative & Active Milestone Spotlight */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="space-y-4 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
+              {journey.paragraphs.map((p, i) => (
+                <ScrollScrubText
+                  key={i}
+                  as="p"
+                  className="font-normal leading-relaxed"
+                  startOffset="top 88%"
+                  endOffset="top 42%"
+                >
+                  {p}
+                </ScrollScrubText>
+              ))}
+            </div>
 
-            <div className="pt-4 p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
+            {/* Active Milestone Deep Inspection Spotlight */}
+            <div className="p-6 sm:p-7 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-md space-y-5 transition-all">
+              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+                <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-bold tracking-widest uppercase">
+                  MILESTONE SPOTLIGHT // {activeItem.year}
+                </span>
+                <span className="text-xs font-mono-code text-[var(--text-muted)]">
+                  {activeItem.period}
+                </span>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-bold text-[var(--text-primary)] mb-1">
+                  {activeItem.milestone}
+                </h4>
+                <p className="text-xs text-[var(--accent-champagne)] font-semibold font-mono-code">
+                  {activeItem.period}
+                </p>
+              </div>
+
+              {activeItem.keyFocus && (
+                <div>
+                  <span className="text-[11px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-1">
+                    Key Focus
+                  </span>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                    {activeItem.keyFocus}
+                  </p>
+                </div>
+              )}
+
+              {activeItem.tangibleOutcome && (
+                <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
+                  <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-semibold block mb-1">
+                    Verified Outcome
+                  </span>
+                  <p className="text-xs text-[var(--text-primary)] leading-relaxed font-medium">
+                    {activeItem.tangibleOutcome}
+                  </p>
+                </div>
+              )}
+
+              {activeItem.technologies && (
+                <div className="pt-2 border-t border-[var(--border-subtle)]">
+                  <span className="text-[11px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                    Core Competencies Mastered
+                  </span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--text-secondary)]">
+                    {activeItem.technologies.map((tech, idx) => (
+                      <React.Fragment key={idx}>
+                        <span className="text-[var(--text-primary)] font-medium">{tech}</span>
+                        {idx < activeItem.technologies.length - 1 && (
+                          <span className="text-[var(--accent-champagne)] font-mono-code">·</span>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Academic Credential Summary Box */}
+            <div className="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
               <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold mb-2">
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>ACADEMIC INTEGRITY</span>
+                <GraduationCap className="w-4 h-4" />
+                <span>SSJ UNIVERSITY FORMAL EDUCATION</span>
               </div>
               <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Soban Singh Jeena University (SSJ University) provided the rigorous algorithmic foundation in data structures, 
-                relational database normal forms, and distributed computer networks that underpin every architecture built today.
+                Soban Singh Jeena University, Almora (Class of 2026). 
+                Curriculum grounded in data structures, relational database normalization, and distributed computer systems.
               </p>
             </div>
           </div>
 
-          {/* Right Column: Verified Milestones Timeline */}
-          <div className="lg:col-span-7 space-y-8 relative before:absolute before:inset-0 before:left-3 before:w-px before:bg-[var(--border-subtle)]">
-            {journey.timeline.map((item, idx) => (
-              <div key={idx} className="relative pl-10 group">
-                {/* Timeline node */}
-                <div className="absolute left-1.5 top-1.5 w-3 h-3 rounded-full bg-[var(--bg-primary)] border-2 border-[var(--accent-champagne)] -translate-x-1/2 group-hover:scale-125 transition-transform" />
+          {/* Right Column: Refined Interactive Timeline */}
+          <div className="lg:col-span-7 space-y-6 relative before:absolute before:inset-0 before:left-3.5 before:w-px before:bg-[var(--border-subtle)]">
+            {journey.timeline.map((item, idx) => {
+              const isSelected = idx === selectedMilestone;
+              return (
+                <div key={idx} className="relative pl-10 group">
+                  {/* Timeline Node Pin */}
+                  <div
+                    className={`absolute left-2.5 top-5 w-3.5 h-3.5 rounded-full border-2 -translate-x-1/2 transition-all duration-300 ${
+                      isSelected
+                        ? 'bg-[var(--accent-champagne)] border-[var(--text-primary)] scale-125 shadow-sm'
+                        : 'bg-[var(--bg-primary)] border-[var(--accent-champagne)]/70 group-hover:scale-110'
+                    }`}
+                  />
 
-                <div
-                  data-sound-card="true"
-                  className="p-6 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-colors group/card cursor-default"
-                >
-                  <div className="flex items-center justify-between gap-4 mb-2">
-                    <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold tracking-wider">
-                      {item.year}
-                    </span>
-                    <span className="text-[11px] font-mono-code text-[var(--text-muted)]">
-                      MILESTONE {String(idx + 1).padStart(2, '0')}
-                    </span>
+                  {/* Interactive Card */}
+                  <div
+                    onClick={() => setSelectedMilestone(idx)}
+                    className={`p-6 sm:p-7 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                      isSelected
+                        ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)] shadow-md ring-1 ring-[var(--accent-champagne)]/20'
+                        : 'bg-[var(--bg-card)] border-[var(--border-card)] hover:border-[var(--border-hover)] hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-4 mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-mono-code font-bold text-[var(--accent-champagne)]">
+                          {item.year}
+                        </span>
+                        <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
+                        <span className="text-xs font-mono-code text-[var(--text-muted)]">
+                          {item.period}
+                        </span>
+                      </div>
+                      <span className="text-[11px] font-mono-code text-[var(--text-muted)]">
+                        CHAPTER 0{idx + 1}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] mb-2">
+                      {item.milestone}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+                      {item.description}
+                    </p>
+
+                    {/* Unboxed Metadata Strip (Zero Pill Rule) */}
+                    {item.technologies && (
+                      <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
+                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--text-muted)]">
+                          {item.technologies.slice(0, 3).map((t, ti) => (
+                            <React.Fragment key={ti}>
+                              <span>{t}</span>
+                              {ti < Math.min(item.technologies.length, 3) - 1 && <span>·</span>}
+                            </React.Fragment>
+                          ))}
+                        </div>
+                        <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold flex items-center gap-0.5">
+                          <span>{isSelected ? 'Inspecting' : 'Inspect Details'}</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    )}
                   </div>
-
-                  <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">
-                    {item.milestone}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-                    {item.description}
-                  </p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
