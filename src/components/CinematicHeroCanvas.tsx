@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { useTheme } from '../context/ThemeContext';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 interface CinematicHeroCanvasProps {
   scrollProgress: number; // 0 (top) to 1 (scrolled past hero)
@@ -8,19 +9,6 @@ interface CinematicHeroCanvasProps {
   introPortraitProgress?: number; // 0 to 1 for intro entrance reveal
   className?: string;
   onWebglFallback?: () => void;
-}
-
-// Robust WebGL capability check
-function isWebGLAvailable(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch {
-    return false;
-  }
 }
 
 export const CinematicHeroCanvas: React.FC<CinematicHeroCanvasProps> = ({
@@ -36,7 +24,7 @@ export const CinematicHeroCanvas: React.FC<CinematicHeroCanvasProps> = ({
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [webglSupported, setWebglSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return isWebGLAvailable();
+    return safeIsWebGLAvailable();
   });
 
   // State refs to pass live props to Three.js RAF loop without re-triggering useEffect
@@ -132,14 +120,21 @@ export const CinematicHeroCanvas: React.FC<CinematicHeroCanvasProps> = ({
     camera.position.set(0, 0, 5.0);
 
     // 3. Renderer
-    let renderer: THREE.WebGLRenderer;
+    let renderer: THREE.WebGLRenderer | null = null;
     try {
-      renderer = new THREE.WebGLRenderer({
+      renderer = createSafeWebGLRenderer({
         antialias: true,
         alpha: true,
         powerPreference: 'high-performance',
         depth: true,
       });
+
+      if (!renderer) {
+        setWebglSupported(false);
+        if (onWebglFallback) onWebglFallback();
+        return;
+      }
+
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.18;

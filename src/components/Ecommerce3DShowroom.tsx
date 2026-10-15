@@ -4,6 +4,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Sparkles, RotateCw, Eye, Sun, Layers, Maximize2, Check, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSound } from '../context/SoundContext';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 export type MaterialFinish = 'champagne' | 'obsidian' | 'platinum';
 export type LightingRig = 'editorial' | 'noir' | 'warm';
@@ -71,7 +72,7 @@ export const Ecommerce3DShowroom: React.FC<Ecommerce3DShowroomProps> = ({
   const [autoRotate, setAutoRotate] = useState(true);
   const [exploded, setExploded] = useState(false);
   const [activeHotspot, setActiveHotspot] = useState<ProductHotspot | null>(null);
-  const [webglSupported, setWebglSupported] = useState(true);
+  const [webglSupported, setWebglSupported] = useState<boolean>(() => safeIsWebGLAvailable());
   const [controlsOpen, setControlsOpen] = useState(mode === 'expanded');
 
   // Three.js instances ref
@@ -241,18 +242,7 @@ export const Ecommerce3DShowroom: React.FC<Ecommerce3DShowroomProps> = ({
     const mount = canvasMountRef.current;
     if (!mount) return;
 
-    // Detect WebGL
-    try {
-      const testCanvas = document.createElement('canvas');
-      const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
-      if (!gl) {
-        setWebglSupported(false);
-        return;
-      }
-    } catch {
-      setWebglSupported(false);
-      return;
-    }
+    if (!webglSupported) return;
 
     const width = mount.clientWidth || 600;
     const height = mount.clientHeight || (mode === 'compact' ? 360 : 500);
@@ -267,11 +257,17 @@ export const Ecommerce3DShowroom: React.FC<Ecommerce3DShowroomProps> = ({
     cameraRef.current = camera;
 
     // 3. Renderer with ACESFilmic Tone Mapping and SRGB Color Space
-    const renderer = new THREE.WebGLRenderer({
+    const renderer = createSafeWebGLRenderer({
       antialias: true,
       alpha: true,
       powerPreference: 'high-performance',
     });
+
+    if (!renderer) {
+      setWebglSupported(false);
+      return;
+    }
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.outputColorSpace = THREE.SRGBColorSpace;

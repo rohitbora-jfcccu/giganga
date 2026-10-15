@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Mic, MicOff, Volume2, Sparkles, Brain, Radio, Play, Pause, Terminal, Shield, Activity } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSound } from '../context/SoundContext';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 type JarvisState = 'IDLE' | 'LISTENING' | 'THINKING' | 'SPEAKING';
 
@@ -33,7 +34,7 @@ export const JarvisAICoreVisualization: React.FC<JarvisAICoreVisualizationProps>
     '[AGENT] Context vector memory: 128 clusters active',
     '[STATE] Transitioned to IDLE resonance',
   ]);
-  const [hasWebGL, setHasWebGL] = useState<boolean>(true);
+  const [hasWebGL, setHasWebGL] = useState<boolean>(() => safeIsWebGLAvailable());
 
   // Audio analysis references
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -113,14 +114,22 @@ export const JarvisAICoreVisualization: React.FC<JarvisAICoreVisualizationProps>
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    if (!hasWebGL) return;
+
     let renderer: THREE.WebGLRenderer | null = null;
     try {
-      renderer = new THREE.WebGLRenderer({
+      renderer = createSafeWebGLRenderer({
         canvas,
         alpha: true,
         antialias: true,
         powerPreference: 'high-performance',
       });
+
+      if (!renderer) {
+        setHasWebGL(false);
+        return;
+      }
+
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;

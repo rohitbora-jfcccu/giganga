@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Cpu, HardDrive, Wifi, Activity, Terminal, Shield, Play, Pause, RefreshCw, Layers } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSound } from '../context/SoundContext';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 interface CustomOSVisualizationProps {
   mode?: 'compact' | 'expanded';
@@ -106,7 +107,7 @@ export const CustomOSVisualization: React.FC<CustomOSVisualizationProps> = ({
   const [cpuHistory, setCpuHistory] = useState<number[]>([14, 18, 22, 19, 25, 20, 24, 21, 28, 22, 18, 24, 26, 21, 19, 23]);
   const [selectedNodeId, setSelectedNodeId] = useState<string>('ring0');
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [hasWebGL, setHasWebGL] = useState<boolean>(true);
+  const [hasWebGL, setHasWebGL] = useState<boolean>(() => safeIsWebGLAvailable());
 
   // Fetch host machine telemetry or fallback to simulation
   const fetchMetrics = useCallback(async () => {
@@ -156,14 +157,22 @@ export const CustomOSVisualization: React.FC<CustomOSVisualizationProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    if (!hasWebGL) return;
+
     let renderer: THREE.WebGLRenderer | null = null;
     try {
-      renderer = new THREE.WebGLRenderer({
+      renderer = createSafeWebGLRenderer({
         canvas,
         alpha: true,
         antialias: true,
         powerPreference: 'high-performance',
       });
+
+      if (!renderer) {
+        setHasWebGL(false);
+        return;
+      }
+
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;

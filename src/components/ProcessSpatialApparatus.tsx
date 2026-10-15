@@ -4,6 +4,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { useTheme } from '../context/ThemeContext';
 import { RotateCw, Eye, Sliders, ChevronDown, ChevronUp, Layers, Compass, Orbit, Disc } from 'lucide-react';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 export type CosmicModelType = 'orrery' | 'singularity';
 
@@ -32,7 +33,7 @@ export const ProcessSpatialApparatus: React.FC<ProcessSpatialApparatusProps> = (
   const [autoRotate, setAutoRotate] = useState(true);
   const [explodedAmount, setExplodedAmount] = useState(0); // 0 (assembled) to 1 (exploded)
   const [activePreset, setActivePreset] = useState<'iso' | 'top' | 'front'>('iso');
-  const [webglSupported, setWebglSupported] = useState(true);
+  const [webglSupported, setWebglSupported] = useState<boolean>(() => safeIsWebGLAvailable());
 
   // References to mutable 3D objects
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -102,6 +103,8 @@ export const ProcessSpatialApparatus: React.FC<ProcessSpatialApparatusProps> = (
     const mount = canvasMountRef.current;
     if (!mount) return;
 
+    if (!webglSupported) return;
+
     let animId: number;
     let clock = new THREE.Clock();
 
@@ -121,11 +124,17 @@ export const ProcessSpatialApparatus: React.FC<ProcessSpatialApparatusProps> = (
       cameraRef.current = camera;
 
       // 3. WebGL Renderer with PBR color pipeline
-      const renderer = new THREE.WebGLRenderer({
+      const renderer = createSafeWebGLRenderer({
         antialias: true,
         alpha: true,
         powerPreference: 'high-performance',
       });
+
+      if (!renderer) {
+        setWebglSupported(false);
+        return;
+      }
+
       renderer.setSize(width, height);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -831,12 +840,50 @@ export const ProcessSpatialApparatus: React.FC<ProcessSpatialApparatusProps> = (
       ref={containerRef}
       className={`relative w-full h-[470px] sm:h-[550px] lg:h-[610px] rounded-2xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border-card)] shadow-xl select-none ${className}`}
     >
-      {/* 3D WebGL Canvas Container */}
-      <div
-        ref={canvasMountRef}
-        className="w-full h-full cursor-grab active:cursor-grabbing"
-        title="Drag to orbit · Scroll to zoom"
-      />
+      {/* 3D WebGL Canvas Container or Fallback Cosmic Apparatus */}
+      {webglSupported ? (
+        <div
+          ref={canvasMountRef}
+          className="w-full h-full cursor-grab active:cursor-grabbing"
+          title="Drag to orbit · Scroll to zoom"
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center relative p-8 bg-[var(--bg-card)]">
+          <svg className="w-full max-w-[420px] h-auto aspect-square overflow-visible" viewBox="0 0 400 400">
+            {/* Ambient concentric orbital rings */}
+            <circle cx="200" cy="200" r="160" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4 6" className="text-[var(--border-card)] animate-spin" style={{ animationDuration: '40s' }} />
+            <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--accent-champagne)]/30" />
+            <circle cx="200" cy="200" r="80" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="2 4" className="text-[var(--accent-champagne)]/50 animate-spin" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />
+            <circle cx="200" cy="200" r="40" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--accent-champagne)]/60" />
+
+            {/* Glowing Core */}
+            <circle cx="200" cy="200" r="22" fill="currentColor" className="text-[var(--accent-champagne)]" />
+            <circle cx="200" cy="200" r="30" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--accent-champagne)]/40" />
+
+            {/* 6 Process Nodes */}
+            {[0, 1, 2, 3, 4, 5].map((idx) => {
+              const angle = (idx * Math.PI) / 3 - Math.PI / 2;
+              const radius = 120;
+              const cx = 200 + Math.cos(angle) * radius;
+              const cy = 200 + Math.sin(angle) * radius;
+              const isCurrent = idx === activeStageIndex;
+              return (
+                <g key={idx} className="cursor-pointer" onClick={() => onStageChange?.(idx)}>
+                  <circle cx={cx} cy={cy} r={isCurrent ? 14 : 9} fill={isCurrent ? 'var(--accent-champagne)' : 'var(--bg-elevated)'} stroke="var(--accent-champagne)" strokeWidth="2" />
+                  <text x={cx} y={cy + 4} textAnchor="middle" fontSize={isCurrent ? '10' : '8'} fontWeight="bold" fill={isCurrent ? '#000000' : 'var(--text-primary)'} fontFamily="monospace">
+                    0{idx + 1}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+          <div className="absolute bottom-16 text-center">
+            <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-widest">
+              Interactive 2D Blueprint Mode · Click Nodes to Navigate
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Top Left: Model Switcher & Technical Spec */}
       <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">

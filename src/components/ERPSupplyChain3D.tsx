@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Globe, RefreshCw, Activity, Layers, Maximize2, ShieldCheck, Box, Navigation, Truck, Plane } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSound } from '../context/SoundContext';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 interface ERPSupplyChain3DProps {
   mode?: 'compact' | 'expanded';
@@ -187,7 +188,7 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
   const [logistics, setLogistics] = useState<LogisticsData>(FALLBACK_LOGISTICS);
   const [selectedHub, setSelectedHub] = useState<LogisticsHub | null>(FALLBACK_LOGISTICS.hubs[0]);
   const [autoRotate, setAutoRotate] = useState(true);
-  const [webglSupported, setWebglSupported] = useState(true);
+  const [webglSupported, setWebglSupported] = useState<boolean>(() => safeIsWebGLAvailable());
   const [showArcs, setShowArcs] = useState(true);
   const [showBeacons, setShowBeacons] = useState(true);
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -268,17 +269,7 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
     const mount = canvasMountRef.current;
     if (!mount) return;
 
-    try {
-      const testCanvas = document.createElement('canvas');
-      const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
-      if (!gl) {
-        setWebglSupported(false);
-        return;
-      }
-    } catch {
-      setWebglSupported(false);
-      return;
-    }
+    if (!webglSupported) return;
 
     const width = mount.clientWidth || 600;
     const height = mount.clientHeight || (mode === 'compact' ? 360 : 500);
@@ -287,11 +278,17 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 50);
     camera.position.set(0, 0, mode === 'compact' ? 3.8 : 3.4);
 
-    const renderer = new THREE.WebGLRenderer({
+    const renderer = createSafeWebGLRenderer({
       antialias: true,
       alpha: true,
       powerPreference: 'high-performance',
     });
+
+    if (!renderer) {
+      setWebglSupported(false);
+      return;
+    }
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.outputColorSpace = THREE.SRGBColorSpace;

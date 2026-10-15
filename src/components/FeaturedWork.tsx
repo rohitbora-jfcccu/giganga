@@ -40,8 +40,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-[var(--border-subtle)] mb-16 sm:mb-20">
           <div>
             <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold tracking-widest uppercase mb-3">
-              <span className="w-2 h-2 rounded-full bg-[var(--accent-champagne)] animate-pulse" />
-              <span>01. Selected Works // Architectural Portfolio</span>
+              <span>01. Selected Works · Architectural Portfolio</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-[var(--text-primary)] leading-[1.08]">
               Architectural Case Studies

@@ -1,22 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import * as THREE from 'three';
+import { safeIsWebGLAvailable, createSafeWebGLRenderer } from '../lib/webgl-guard';
 
 interface OpeningSequenceProps {
   onComplete: () => void;
-}
-
-// Robust WebGL capability detection helper
-function isWebGLAvailable(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch {
-    return false;
-  }
 }
 
 export const OpeningSequence: React.FC<OpeningSequenceProps> = ({ onComplete }) => {
@@ -33,7 +21,7 @@ export const OpeningSequence: React.FC<OpeningSequenceProps> = ({ onComplete }) 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [webglSupported, setWebglSupported] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return isWebGLAvailable();
+    return safeIsWebGLAvailable();
   });
 
   // Mouse coordinates for 3D parallax
@@ -87,11 +75,16 @@ export const OpeningSequence: React.FC<OpeningSequenceProps> = ({ onComplete }) 
       camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
       camera.position.set(0, 0, 5.6);
 
-      renderer = new THREE.WebGLRenderer({
+      renderer = createSafeWebGLRenderer({
         antialias: true,
         alpha: true,
         powerPreference: 'high-performance',
       });
+
+      if (!renderer) {
+        setWebglSupported(false);
+        return;
+      }
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
