@@ -3,6 +3,7 @@ import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { Globe, ShoppingBag, LayoutDashboard, Sparkles } from 'lucide-react';
 import { ScrollHeadlineReveal } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
+import { CinematicSection } from './CinematicSection';
 
 export const Capabilities: React.FC = () => {
   const { capabilities } = PORTFOLIO_DATA;
@@ -15,7 +16,7 @@ export const Capabilities: React.FC = () => {
   ];
 
   return (
-    <section id="capabilities" className="py-24 sm:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
+    <CinematicSection id="capabilities" type="capabilities" bg="primary">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header with Staggered Framer Motion Entrance */}
         <MotionSectionHeader
@@ -30,7 +31,8 @@ export const Capabilities: React.FC = () => {
           {capabilities.map((cap, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+              data-sound-card="true"
+              className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group group/card cursor-default"
             >
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -69,6 +71,6 @@ export const Capabilities: React.FC = () => {
           ))}
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 };

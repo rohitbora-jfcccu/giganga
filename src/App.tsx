@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { SoundProvider, useSound } from './context/SoundContext';
+import { TransitionProvider, useTransition } from './context/TransitionContext';
+import { CinematicVeil } from './components/CinematicVeil';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { FeaturedWork } from './components/FeaturedWork';
@@ -13,12 +16,23 @@ import { CaseStudyModal } from './components/CaseStudyModal';
 import { ResumeModal } from './components/ResumeModal';
 import { ScrollProgress } from './components/ScrollProgress';
 import { OpeningSequence } from './components/OpeningSequence';
-import { ProjectCaseStudy } from './data/portfolio-data';
+import { PORTFOLIO_DATA, ProjectCaseStudy } from './data/portfolio-data';
 
-function PortfolioContent() {
-  const { theme, toggleTheme } = useTheme();
-  const [selectedProject, setSelectedProject] = useState<ProjectCaseStudy | null>(null);
-  const [isResumeOpen, setIsResumeOpen] = useState(false);
+function PortfolioContent({
+  selectedProject,
+  setSelectedProject,
+  isResumeOpen,
+  setIsResumeOpen,
+}: {
+  selectedProject: ProjectCaseStudy | null;
+  setSelectedProject: (p: ProjectCaseStudy | null) => void;
+  isResumeOpen: boolean;
+  setIsResumeOpen: (open: boolean) => void;
+}) {
+  const { theme } = useTheme();
+  const { playModalTransition } = useSound();
+  const { transitionTo } = useTransition();
+
   const [showOpeningSequence, setShowOpeningSequence] = useState(() => {
     if (typeof window === 'undefined') return false;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
@@ -29,15 +43,77 @@ function PortfolioContent() {
     }
   });
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  // Handle direct initial URL hash loading (e.g. /#contact, /#project-atelier-noir)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const initialHash = window.location.hash;
+    if (!initialHash) return;
+
+    if (initialHash === '#resume') {
+      setIsResumeOpen(true);
+    } else if (initialHash.startsWith('#project-')) {
+      const pId = initialHash.replace('#project-', '');
+      const found = PORTFOLIO_DATA.projects.find((p) => p.id === pId);
+      if (found) setSelectedProject(found);
+    } else if (['#work', '#journey', '#capabilities', '#process', '#contact'].includes(initialHash)) {
+      const targetEl = document.querySelector(initialHash);
+      if (targetEl) {
+        window.setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
     }
+  }, [setIsResumeOpen, setSelectedProject]);
+
+  const handleOpenProject = (p: ProjectCaseStudy) => {
+    transitionTo(`#project-${p.id}`, {
+      sceneTitle: `CASE STUDY // ${p.title.toUpperCase()}`,
+      sceneNumber: p.id === 'atelier-noir' ? '01A' : '01B',
+      customAction: () => {
+        playModalTransition(true);
+        setSelectedProject(p);
+      },
+    });
+  };
+
+  const handleCloseProject = () => {
+    transitionTo('#work', {
+      sceneTitle: 'SELECTED WORKS & ARCHITECTURE',
+      sceneNumber: '01',
+      customAction: () => {
+        playModalTransition(false);
+        setSelectedProject(null);
+      },
+    });
+  };
+
+  const handleOpenResume = () => {
+    transitionTo('#resume', {
+      sceneTitle: 'VERIFIED CURRICULUM VITAE',
+      sceneNumber: '06',
+      customAction: () => {
+        playModalTransition(true);
+        setIsResumeOpen(true);
+      },
+    });
+  };
+
+  const handleCloseResume = () => {
+    transitionTo('#top', {
+      sceneTitle: 'INDEX // ROHIT SINGH BORA',
+      sceneNumber: '00',
+      customAction: () => {
+        playModalTransition(false);
+        setIsResumeOpen(false);
+      },
+    });
   };
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--selection-bg)] selection:text-[var(--selection-text)] transition-colors duration-300">
+      {/* Cinematic Film Shutter Veil (Active during scene navigation) */}
+      <CinematicVeil />
+
       {/* Cinematic 4-Stage Opening Sequence */}
       {showOpeningSequence && (
         <OpeningSequence onComplete={() => setShowOpeningSequence(false)} />
@@ -46,23 +122,23 @@ function PortfolioContent() {
       {/* Viewport Scroll Depth Progress Bar */}
       <ScrollProgress />
 
-      {/* 3-Zone Header Top Bar with Theme Switcher */}
+      {/* 3-Zone Header Top Bar with Theme & Sound Switchers */}
       <Header
-        onContactClick={() => scrollToSection('contact')}
-        onResumeClick={() => setIsResumeOpen(true)}
+        onContactClick={() => transitionTo('#contact')}
+        onResumeClick={handleOpenResume}
       />
 
       {/* Main Experience */}
       <main>
         {/* Cinematic Hero with Dotted Portrait Canvas */}
         <Hero
-          onExploreWork={() => scrollToSection('work')}
-          onContactClick={() => scrollToSection('contact')}
-          onResumeClick={() => setIsResumeOpen(true)}
+          onExploreWork={() => transitionTo('#work')}
+          onContactClick={() => transitionTo('#contact')}
+          onResumeClick={handleOpenResume}
         />
 
         {/* Selected Works (Atelier Noir & LogixCore ERP) */}
-        <FeaturedWork onSelectProject={(p) => setSelectedProject(p)} />
+        <FeaturedWork onSelectProject={handleOpenProject} />
 
         {/* Personal Educational & Technical Journey */}
         <PersonalJourney />
@@ -74,7 +150,7 @@ function PortfolioContent() {
         <WorkingProcess />
 
         {/* Formal Education & Verified Skills */}
-        <SkillsEducation onResumeClick={() => setIsResumeOpen(true)} />
+        <SkillsEducation onResumeClick={handleOpenResume} />
 
         {/* Server-Validated Contact System */}
         <ContactSection />
@@ -86,22 +162,47 @@ function PortfolioContent() {
       {/* Interactive Case Study Deep Dive Modal */}
       <CaseStudyModal
         project={selectedProject}
-        onClose={() => setSelectedProject(null)}
+        onClose={handleCloseProject}
       />
 
       {/* Curriculum Vitae Modal */}
       <ResumeModal
         isOpen={isResumeOpen}
-        onClose={() => setIsResumeOpen(false)}
+        onClose={handleCloseResume}
       />
     </div>
   );
 }
 
 export default function App() {
+  const [selectedProject, setSelectedProject] = useState<ProjectCaseStudy | null>(null);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
+
+  const handleSelectProjectId = (id: string | null) => {
+    if (!id) {
+      setSelectedProject(null);
+      return;
+    }
+    const found = PORTFOLIO_DATA.projects.find((p) => p.id === id);
+    setSelectedProject(found || null);
+  };
+
   return (
     <ThemeProvider>
-      <PortfolioContent />
+      <SoundProvider>
+        <TransitionProvider
+          onSelectProject={handleSelectProjectId}
+          onOpenResume={() => setIsResumeOpen(true)}
+          onCloseResume={() => setIsResumeOpen(false)}
+        >
+          <PortfolioContent
+            selectedProject={selectedProject}
+            setSelectedProject={setSelectedProject}
+            isResumeOpen={isResumeOpen}
+            setIsResumeOpen={setIsResumeOpen}
+          />
+        </TransitionProvider>
+      </SoundProvider>
     </ThemeProvider>
   );
 }

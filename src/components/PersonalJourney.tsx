@@ -3,12 +3,13 @@ import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { BookOpen } from 'lucide-react';
 import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
+import { CinematicSection } from './CinematicSection';
 
 export const PersonalJourney: React.FC = () => {
   const { journey } = PORTFOLIO_DATA;
 
   return (
-    <section id="journey" className="py-24 sm:py-32 bg-[var(--bg-secondary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
+    <CinematicSection id="journey" type="about" bg="secondary">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header with Staggered Framer Motion Entrance */}
         <MotionSectionHeader
@@ -52,7 +53,10 @@ export const PersonalJourney: React.FC = () => {
                 {/* Timeline node */}
                 <div className="absolute left-1.5 top-1.5 w-3 h-3 rounded-full bg-[var(--bg-primary)] border-2 border-[var(--accent-champagne)] -translate-x-1/2 group-hover:scale-125 transition-transform" />
 
-                <div className="p-6 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-colors">
+                <div
+                  data-sound-card="true"
+                  className="p-6 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-colors group/card cursor-default"
+                >
                   <div className="flex items-center justify-between gap-4 mb-2">
                     <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold tracking-wider">
                       {item.year}
@@ -75,6 +79,6 @@ export const PersonalJourney: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 };

@@ -3,6 +3,7 @@ import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { GraduationCap } from 'lucide-react';
 import { ScrollHeadlineReveal } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
+import { CinematicSection } from './CinematicSection';
 
 interface SkillsEducationProps {
   onResumeClick: () => void;
@@ -12,7 +13,7 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
   const { skills, education } = PORTFOLIO_DATA;
 
   return (
-    <section id="education" className="py-24 sm:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
+    <CinematicSection id="education" type="skills" bg="primary">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header with Staggered Framer Motion Entrance */}
         <MotionSectionHeader
@@ -32,7 +33,7 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Education Credentials */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-6 shadow-sm">
+            <div data-sound-card="true" className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] space-y-6 shadow-sm group/card cursor-default transition-colors">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-card)] text-[var(--accent-champagne)]">
                   <GraduationCap className="w-6 h-6" />
@@ -108,6 +109,6 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
           </div>
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 };

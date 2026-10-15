@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Github, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Github, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { ProjectCaseStudy } from '../data/portfolio-data';
 
 interface CaseStudyModalProps {
@@ -21,6 +21,30 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [project, onClose]);
+
+  const readingEstimate = React.useMemo(() => {
+    if (!project) return { minutes: 4, wordCount: 850 };
+    const textCorpus = [
+      project.title,
+      project.tagline,
+      project.summary,
+      project.overview,
+      project.problem,
+      project.actualRole,
+      ...project.scope,
+      ...project.designDecisions,
+      ...project.engineeringApproach,
+      ...project.implementedFeatures.map((f) => `${f.title} ${f.description}`),
+      ...project.technologiesUsed.flatMap((t) => t.items),
+      ...project.challengesAndSolutions.map((c) => `${c.challenge} ${c.solution}`),
+      ...project.verifiedOutcomes,
+    ].join(' ');
+
+    const words = textCorpus.trim().split(/\s+/).filter(Boolean).length;
+    // Standard reading speed for technical architectural case studies: ~200 WPM
+    const minutes = Math.max(1, Math.ceil(words / 200));
+    return { minutes, wordCount: words };
+  }, [project]);
 
   if (!project) return null;
 
@@ -54,11 +78,24 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
         {/* Modal Content Scrollable Area */}
         <div className="p-6 sm:p-10 overflow-y-auto space-y-12 text-[var(--text-primary)]">
           {/* Header & Hero Image */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <h2 id="case-study-title" className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
               {project.title}
             </h2>
-            <p className="text-lg text-[var(--accent-champagne)] font-medium">
+
+            {/* Reading Time Estimator below the project title using 'font-mono-code' style */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono-code text-[var(--text-muted)] pt-0.5">
+              <span className="flex items-center gap-1.5 text-[var(--accent-champagne)] font-semibold">
+                <Clock className="w-3.5 h-3.5" />
+                <span>~{readingEstimate.minutes} MIN READ</span>
+              </span>
+              <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
+              <span>{readingEstimate.wordCount.toLocaleString()} WORDS</span>
+              <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
+              <span className="text-[var(--text-secondary)] uppercase tracking-wider">Comprehensive Architecture</span>
+            </div>
+
+            <p className="text-lg text-[var(--accent-champagne)] font-medium pt-1">
               {project.tagline}
             </p>
 

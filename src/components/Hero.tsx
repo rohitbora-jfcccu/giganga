@@ -4,6 +4,7 @@ import { useGSAP } from './useGSAP';
 import { gsap } from 'gsap';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { useTheme } from '../context/ThemeContext';
+import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
 
 interface HeroProps {
   onExploreWork: () => void;
@@ -118,10 +119,15 @@ export const Hero: React.FC<HeroProps> = ({
               </span>
             </div>
 
-            {/* Core introduction statement */}
-            <p className="hero-fade-item text-lg sm:text-xl font-normal text-[var(--text-primary)] leading-relaxed tracking-tight max-w-md font-sans">
+            {/* Core introduction statement with scroll scrub */}
+            <ScrollScrubText
+              as="p"
+              className="hero-fade-item text-lg sm:text-xl font-normal text-[var(--text-primary)] leading-relaxed tracking-tight max-w-md font-sans"
+              startOffset="top 90%"
+              endOffset="bottom 50%"
+            >
               I build modern websites and digital experiences with a focus on design, usability, and technology.
-            </p>
+            </ScrollScrubText>
 
             {/* Divider hairline */}
             <div className="hero-fade-item w-full h-px bg-[var(--border-subtle)]" />
@@ -202,13 +208,14 @@ export const Hero: React.FC<HeroProps> = ({
             ref={rightColRef}
             className="lg:col-span-4 flex flex-col justify-center order-3 text-left lg:text-left space-y-6"
           >
-            <h1 className="font-editorial text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-medium leading-[1.06] tracking-tight text-[var(--text-primary)] [text-wrap:balance]">
-              <span className="block">Creative</span>
-              <span className="block">Developer</span>
-              <span className="block italic text-[var(--accent-champagne)] font-normal">&amp; Digital</span>
-              <span className="block">Experience</span>
-              <span className="block">Builder</span>
-            </h1>
+            <ScrollHeadlineReveal
+              as="h1"
+              isHero={true}
+              accentIndices={[2]}
+              className="font-editorial text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-medium leading-[1.06] tracking-tight text-[var(--text-primary)] [text-wrap:balance]"
+            >
+              Creative Developer & Digital Experience Builder
+            </ScrollHeadlineReveal>
 
             <div className="hidden lg:block pt-4">
               <p className="text-xs font-mono-code uppercase tracking-[0.2em] text-[var(--text-secondary)]">

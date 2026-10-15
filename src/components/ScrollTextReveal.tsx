@@ -1,4 +1,4 @@
-import React, { useRef, useId, useEffect, useState } from 'react';
+import React, { useRef, useId, useEffect, useState, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from './useGSAP';
@@ -14,17 +14,16 @@ interface ScrollHeadlineRevealProps {
   as?: 'h1' | 'h2' | 'h3' | 'h4' | 'div' | 'span';
   isHero?: boolean;
   accentIndices?: number[]; // indices of words to highlight in champagne
-  scrubSpeed?: number | boolean; // scrub lag in seconds (default 0.7) or boolean
-  startOffset?: string; // e.g. "top 88%"
-  endOffset?: string; // e.g. "top 46%"
+  scrubSpeed?: number | boolean; // scrub lag in seconds (default 0.5) or boolean
+  startOffset?: string; // e.g. "top 90%"
+  endOffset?: string; // e.g. "top 52%"
 }
 
 /**
- * Editorial ScrollHeadlineReveal (inspired by deepakkk.com)
- * Splices editorial headlines into masked word containers.
- * As the visitor scrolls through the trigger range, words glide smoothly
- * upward from beneath a clipping mask with a subtle vertical travel
- * and scrubbed opacity into crisp, luminous ivory typography.
+ * Editorial ScrollHeadlineReveal
+ * Progressively reveals major headlines with subtle vertical travel,
+ * opacity scaling, and color hydration in sync with actual scroll progress.
+ * Scrolling down advances the reveal; scrolling up reverses it smoothly.
  */
 export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
   children,
@@ -32,12 +31,12 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
   as: Component = 'h2',
   isHero = false,
   accentIndices = [],
-  scrubSpeed = 0.7,
-  startOffset = 'top 90%',
-  endOffset = 'top 48%',
+  scrubSpeed = 0.5,
+  startOffset = 'top 92%',
+  endOffset = 'top 52%',
 }) => {
   const containerRef = useRef<HTMLElement | null>(null);
-  const words = React.useMemo(() => children.split(/\s+/).filter(Boolean), [children]);
+  const words = useMemo(() => children.split(/\s+/).filter(Boolean), [children]);
   const instanceId = useId();
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
@@ -61,11 +60,9 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
       if (!wordElements.length) return;
 
       if (isHero) {
-        // Hero Headline (in first viewport):
-        // Remains 100% visible and readable immediately on load so the first viewport
-        // is never blank.
-        // As the visitor initiates scrolling (from top: 0 down to bottom of hero),
-        // words scrub with subtle staggered cinematic depth and gentle parallax float.
+        // Hero Headline (first viewport):
+        // 100% visible immediately so first impression is never blank.
+        // As visitor scrolls down past the hero, words glide with subtle staggered depth.
         gsap.fromTo(
           wordElements,
           {
@@ -73,24 +70,24 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
             opacity: 1,
           },
           {
-            y: (i) => -16 - i * 5,
-            opacity: 0.85,
-            stagger: 0.03,
+            y: (i) => -14 - i * 3,
+            opacity: 0.75,
+            stagger: 0.02,
             ease: 'none',
             scrollTrigger: {
               trigger: containerRef.current,
               start: 'top top',
-              end: 'bottom top+=120',
+              end: 'bottom top+=100',
               scrub: scrubSpeed,
               invalidateOnRefresh: true,
             },
           }
         );
       } else {
-        // Major section headings & project titles:
-        // Masked entry with subtle upward movement (38px / 100%) and scrubbed opacity.
-        // Scrolling down advances the reveal line-by-line / word-by-word;
-        // scrolling back up reverses the reveal naturally.
+        // Section headlines:
+        // Controlled upward travel (24px) from muted opacity (0.28) to full luminous contrast.
+        // Scrolling downward advances the reveal word-by-word;
+        // scrolling upward smoothly reverses it without jumps.
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
@@ -104,14 +101,14 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
         tl.fromTo(
           wordElements,
           {
-            y: '105%',
-            opacity: 0.2, // Subtle baseline fallback ensures content is never completely hidden
+            y: 24,
+            opacity: 0.28,
           },
           {
-            y: '0%',
+            y: 0,
             opacity: 1,
             stagger: {
-              each: 0.08,
+              each: 0.06,
               from: 'start',
             },
             ease: 'power2.out',
@@ -123,6 +120,14 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
     { scope: containerRef, dependencies: [children, isHero, isReducedMotion, startOffset, endOffset] }
   );
 
+  if (isReducedMotion) {
+    return (
+      <Component className={className}>
+        {children}
+      </Component>
+    );
+  }
+
   return (
     <Component
       ref={containerRef as any}
@@ -132,20 +137,20 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
       {/* Complete accessible text for screen readers */}
       <span className="sr-only">{children}</span>
 
-      {/* Visual masked word containers with native whitespace preservation */}
+      {/* Visual masked word spans with native whitespace preservation */}
       <span aria-hidden="true" className="contents">
         {words.map((word, idx) => {
           const isAccent = accentIndices.includes(idx);
           return (
             <React.Fragment key={`${idx}-${word}`}>
-              <span className="inline-block overflow-hidden align-baseline pb-[0.1em] -mb-[0.1em]">
+              <span className="inline-block overflow-hidden align-baseline pb-[0.08em] -mb-[0.08em]">
                 <span
                   className={`bora-reveal-word inline-block will-change-transform ${
                     isAccent ? 'text-[var(--accent-champagne)]' : ''
                   }`}
                   style={{
-                    transform: isReducedMotion ? 'none' : 'translateY(0%)',
-                    transition: 'color 0.3s ease',
+                    transform: 'translateY(0%)',
+                    transition: 'color 0.25s ease',
                   }}
                 >
                   {word}
@@ -164,28 +169,29 @@ interface ScrollScrubTextProps {
   children: string;
   className?: string;
   as?: 'p' | 'div' | 'span';
-  startOffset?: string; // e.g. "top 86%"
-  endOffset?: string; // e.g. "top 42%"
+  startOffset?: string; // e.g. "top 88%"
+  endOffset?: string; // e.g. "top 46%"
   scrubSpeed?: number | boolean;
 }
 
 /**
- * Editorial ScrollScrubText (signature deepakkk.com effect)
- * Progressively changes narrative text from muted grey to warm luminous ivory
- * word-by-word as the visitor scrolls through the content.
- * Features a subtle warm champagne highlight at the leading edge of the scroll.
- * Scrolling down advances the reveal; scrolling back up smoothly reverses it.
+ * Editorial ScrollScrubText (signature Locomotive / Apple Pro scroll scrub effect)
+ * Progressively transitions words from muted tone (opacity: 0.25) to luminous primary
+ * text in sync with actual scroll progress.
+ * As each word is actively reached by the scroll wavefront, it momentarily illuminates
+ * with subtle champagne warmth before settling into full contrast.
+ * Scrolling up smoothly reverses the reveal line-by-line without flicker or jumps.
  */
 export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
   children,
   className = '',
   as: Component = 'p',
-  startOffset = 'top 86%',
-  endOffset = 'top 40%',
-  scrubSpeed = 0.6,
+  startOffset = 'top 88%',
+  endOffset = 'top 46%',
+  scrubSpeed = 0.5,
 }) => {
   const containerRef = useRef<HTMLElement | null>(null);
-  const words = React.useMemo(() => children.split(/\s+/).filter(Boolean), [children]);
+  const words = useMemo(() => children.split(/\s+/).filter(Boolean), [children]);
   const instanceId = useId();
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
@@ -208,7 +214,7 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
       const wordElements = containerRef.current.querySelectorAll('.bora-scrub-word');
       if (!wordElements.length) return;
 
-      // Word-by-word scrub timeline from muted grey to warm ivory
+      // Two-way scroll-linked scrub timeline
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -219,17 +225,18 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
         },
       });
 
+      // Word-by-word progression from muted state to crisp primary text
       tl.fromTo(
         wordElements,
         {
-          opacity: 0.24,
+          opacity: 0.25,
           color: 'var(--text-muted)',
         },
         {
           opacity: 1,
           color: 'var(--text-primary)',
           stagger: {
-            each: 0.05,
+            each: 0.04,
             from: 'start',
           },
           ease: 'power1.out',
@@ -239,6 +246,14 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
     },
     { scope: containerRef, dependencies: [children, isReducedMotion, startOffset, endOffset] }
   );
+
+  if (isReducedMotion) {
+    return (
+      <Component className={className}>
+        {children}
+      </Component>
+    );
+  }
 
   return (
     <Component
@@ -256,7 +271,8 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
             <span
               className="bora-scrub-word inline-block will-change-[opacity,color] transition-colors duration-150"
               style={{
-                opacity: isReducedMotion ? 1 : 1, // Fallback default ensures readable text
+                opacity: 0.25, // Reliable baseline fallback ensures text is legible before scrolling
+                color: 'var(--text-muted)',
               }}
             >
               {word}

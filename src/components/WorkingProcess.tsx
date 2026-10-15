@@ -1,13 +1,14 @@
 import React from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
-import { ScrollHeadlineReveal } from './ScrollTextReveal';
+import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
+import { CinematicSection } from './CinematicSection';
 
 export const WorkingProcess: React.FC = () => {
   const { process } = PORTFOLIO_DATA;
 
   return (
-    <section id="process" className="py-24 sm:py-32 bg-[var(--bg-secondary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
+    <CinematicSection id="process" type="process" bg="secondary">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header with Staggered Framer Motion Entrance */}
         <MotionSectionHeader
@@ -22,7 +23,8 @@ export const WorkingProcess: React.FC = () => {
           {process.map((stage, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+              data-sound-card="true"
+              className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group group/card cursor-default"
             >
               <div>
                 <div className="flex items-center justify-between mb-6">
@@ -42,9 +44,14 @@ export const WorkingProcess: React.FC = () => {
                   {stage.shortDescription}
                 </p>
 
-                <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
+                <ScrollScrubText
+                  as="p"
+                  className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed"
+                  startOffset="top 90%"
+                  endOffset="top 55%"
+                >
                   {stage.detail}
-                </p>
+                </ScrollScrubText>
               </div>
 
               <div className="pt-6 mt-6 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px] font-mono-code text-[var(--text-muted)]">
@@ -55,6 +62,6 @@ export const WorkingProcess: React.FC = () => {
           ))}
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 };

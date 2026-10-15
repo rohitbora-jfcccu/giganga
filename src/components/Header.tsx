@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, Volume2, VolumeX } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useSound } from '../context/SoundContext';
 
 interface HeaderProps {
   onContactClick: () => void;
@@ -9,6 +10,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick }) => {
   const { theme, toggleTheme, setTheme } = useTheme();
+  const { soundEnabled, toggleSound } = useSound();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -67,8 +69,62 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
           </button>
         </nav>
 
-        {/* Zone 3: Visual Theme Toggle Switch + Primary Action */}
-        <div className="hidden md:flex items-center gap-4 shrink-0">
+        {/* Zone 3: Visual Theme Toggle + Ambient Sound Toggle + Primary Action */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          {/* Ambient Sound Toggle: Minimalist switch with Volume2/VolumeX icons, animated audio bars & [M] shortcut badge */}
+          <div className="relative group/sound flex items-center">
+            <button
+              onClick={() => toggleSound('manual')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono-code transition-all duration-200 border cursor-pointer ${
+                soundEnabled
+                  ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)]/50 text-[var(--text-primary)] shadow-xs'
+                  : 'bg-[var(--bg-card)] border-[var(--border-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+              }`}
+              title={soundEnabled ? "Mute ambient audio (Press 'M')" : "Enable subtle ambient audio textures (Press 'M')"}
+              aria-label={soundEnabled ? "Mute ambient audio" : "Enable subtle ambient audio textures"}
+              aria-pressed={soundEnabled}
+              aria-keyshortcuts="m"
+            >
+              {soundEnabled ? (
+                <div className="flex items-center gap-1.5">
+                  <Volume2 className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
+                  <span className="flex items-end gap-0.5 h-3 w-3 select-none" aria-hidden="true">
+                    <span className="w-0.5 bg-[var(--accent-champagne)] rounded-full animate-soundbar-1" />
+                    <span className="w-0.5 bg-[var(--accent-champagne)] rounded-full animate-soundbar-2" />
+                    <span className="w-0.5 bg-[var(--accent-champagne)] rounded-full animate-soundbar-3" />
+                  </span>
+                  <span className="text-[11px] font-semibold text-[var(--accent-champagne)]">Sound</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <VolumeX className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                  <span className="text-[11px]">Sound Off</span>
+                </div>
+              )}
+
+              <kbd
+                className="ml-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono-code font-semibold border border-[var(--border-card)] text-[var(--text-muted)] bg-[var(--bg-elevated)] inline-block select-none"
+                title="Shortcut: Press 'M' key to toggle sound"
+              >
+                M
+              </kbd>
+            </button>
+
+            {/* Subtle floating tooltip on hover */}
+            <div
+              role="tooltip"
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 group-hover/sound:opacity-100 transition-all duration-200 translate-y-1 group-hover/sound:translate-y-0 z-50 whitespace-nowrap"
+            >
+              <div className="px-2.5 py-1 rounded-md bg-[var(--bg-elevated)]/95 border border-[var(--border-card)] shadow-xl backdrop-blur-md flex items-center gap-1.5 text-[11px] font-mono-code text-[var(--text-secondary)]">
+                <span>Press</span>
+                <kbd className="px-1 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--accent-champagne)] font-bold text-[10px] leading-none">
+                  M
+                </kbd>
+                <span>to toggle audio textures</span>
+              </div>
+            </div>
+          </div>
+
           {/* Visual Theme Toggle: Segmented switch with Sun/Moon icons & 'Press T to toggle' indicator */}
           <div className="relative group/theme flex items-center">
             <div
@@ -140,6 +196,27 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
 
         {/* Mobile controls */}
         <div className="md:hidden flex items-center gap-2">
+          {/* Mobile Sound Toggle Button */}
+          <button
+            onClick={() => toggleSound('manual')}
+            className={`px-2.5 py-1.5 rounded-lg border flex items-center gap-1.5 text-xs font-mono-code transition-colors cursor-pointer ${
+              soundEnabled
+                ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)]/50 text-[var(--accent-champagne)]'
+                : 'bg-[var(--bg-card)] border-[var(--border-card)] text-[var(--text-muted)]'
+            }`}
+            title={soundEnabled ? "Mute audio (Press 'M')" : "Enable audio (Press 'M')"}
+            aria-label={soundEnabled ? "Mute ambient audio" : "Enable ambient audio"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+            )}
+            <span className="text-[10px] px-1 py-0.2 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)] font-mono-code border border-[var(--border-subtle)]">
+              M
+            </span>
+          </button>
+
           {/* Mobile Visual Toggle Button */}
           <button
             onClick={toggleTheme}
@@ -228,6 +305,42 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
               >
                 <Sun className="w-3.5 h-3.5 text-[#886C4B]" />
                 <span>Ivory Mode</span>
+              </button>
+            </div>
+
+            {/* Mobile Ambient Audio Section */}
+            <div className="pt-2 flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs font-mono-code text-[var(--text-muted)] px-1">
+                <span>AMBIENT SOUND TEXTURES</span>
+                <span>SHORTCUT: [M]</span>
+              </div>
+              <button
+                onClick={() => toggleSound('manual')}
+                className={`w-full py-2.5 px-3 rounded-xl border flex items-center justify-between text-xs font-mono-code transition-all ${
+                  soundEnabled
+                    ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)]/50 text-[var(--text-primary)]'
+                    : 'bg-[var(--bg-card)] border-[var(--border-card)] text-[var(--text-muted)]'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {soundEnabled ? (
+                    <Volume2 className="w-4 h-4 text-[var(--accent-champagne)]" />
+                  ) : (
+                    <VolumeX className="w-4 h-4 text-[var(--text-muted)]" />
+                  )}
+                  <span className="font-medium">
+                    {soundEnabled ? 'Ambient Audio Active' : 'Ambient Audio Muted'}
+                  </span>
+                </div>
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    soundEnabled
+                      ? 'bg-[var(--accent-champagne)] text-black'
+                      : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
+                  }`}
+                >
+                  {soundEnabled ? 'ON' : 'OFF'}
+                </span>
               </button>
             </div>
 
