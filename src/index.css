@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@layer base {
+  :root, [data-theme="noir"] {
+    --bg-primary: #000000;
+    --bg-secondary: #060606;
+    --bg-surface: #0a0a0a;
+    --bg-card: #0e0e0e;
+    --bg-elevated: #141414;
+    --bg-input: #121212;
+    --text-primary: #F4F0E8;
+    --text-secondary: #AAA69E;
+    --text-muted: #66635D;
+    --border-subtle: #1e1e1e;
+    --border-card: #242424;
+    --border-hover: #383838;
+    --accent-champagne: #C9B79C;
+    --accent-contrast: #F4F0E8;
+    --selection-bg: rgba(201, 183, 156, 0.3);
+    --selection-text: #F4F0E8;
+    --canvas-bg: #000000;
+  }
+
+  [data-theme="ivory"], html.light {
+    --bg-primary: #F4F0E8;
+    --bg-secondary: #EDE7DC;
+    --bg-surface: #E5DFC9;
+    --bg-card: #FAF8F5;
+    --bg-elevated: #FFFFFF;
+    --bg-input: #EFE9DE;
+    --text-primary: #121212;
+    --text-secondary: #4A463F;
+    --text-muted: #78736A;
+    --border-subtle: #D8D1C2;
+    --border-card: #CFC7B6;
+    --border-hover: #AFA694;
+    --accent-champagne: #886C4B;
+    --accent-contrast: #121212;
+    --selection-bg: rgba(136, 108, 75, 0.25);
+    --selection-text: #121212;
+    --canvas-bg: #F4F0E8;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  .font-editorial {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .font-mono-code {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom refined scrollbar responsive to active theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-card);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Canvas containment */
+.canvas-portrait-container {
+  touch-action: pan-y;
+  background-color: var(--canvas-bg);
+}
