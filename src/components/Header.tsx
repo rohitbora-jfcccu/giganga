@@ -69,48 +69,64 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
 
         {/* Zone 3: Visual Theme Toggle Switch + Primary Action */}
         <div className="hidden md:flex items-center gap-4 shrink-0">
-          {/* Visual Theme Toggle: Segmented switch with Sun/Moon icons & 'T' key shortcut badge */}
-          <div
-            className="flex items-center p-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] shadow-xs transition-colors"
-            role="group"
-            aria-label="Theme selection"
-          >
-            <button
-              onClick={() => setTheme('noir')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono-code transition-all duration-200 cursor-pointer ${
-                theme === 'noir'
-                  ? 'bg-[#181818] text-[#F4F0E8] shadow-sm font-semibold'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
-              title="Switch to Noir dark theme (Press 'T')"
-              aria-label="Noir dark theme"
-              aria-pressed={theme === 'noir'}
+          {/* Visual Theme Toggle: Segmented switch with Sun/Moon icons & 'Press T to toggle' indicator */}
+          <div className="relative group/theme flex items-center">
+            <div
+              className="flex items-center p-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] shadow-xs transition-colors"
+              role="group"
+              aria-label="Theme selection (Shortcut: Press T)"
             >
-              <Moon className="w-3.5 h-3.5 text-[#C9B79C]" />
-              <span className="text-[11px]">Noir</span>
-            </button>
+              <button
+                onClick={() => setTheme('noir')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                  theme === 'noir'
+                    ? 'bg-[#181818] text-[#F4F0E8] shadow-sm font-semibold'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
+                title="Switch to Noir dark theme (Press 'T')"
+                aria-label="Noir dark theme"
+                aria-pressed={theme === 'noir'}
+              >
+                <Moon className="w-3.5 h-3.5 text-[#C9B79C]" />
+                <span className="text-[11px]">Noir</span>
+              </button>
 
-            <button
-              onClick={() => setTheme('ivory')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono-code transition-all duration-200 cursor-pointer ${
-                theme === 'ivory'
-                  ? 'bg-[#FFFFFF] text-[#121212] shadow-sm font-semibold'
-                  : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-              }`}
-              title="Switch to Ivory light theme (Press 'T')"
-              aria-label="Ivory light theme"
-              aria-pressed={theme === 'ivory'}
-            >
-              <Sun className="w-3.5 h-3.5 text-[#886C4B]" />
-              <span className="text-[11px]">Ivory</span>
-            </button>
+              <button
+                onClick={() => setTheme('ivory')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                  theme === 'ivory'
+                    ? 'bg-[#FFFFFF] text-[#121212] shadow-sm font-semibold'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
+                title="Switch to Ivory light theme (Press 'T')"
+                aria-label="Ivory light theme"
+                aria-pressed={theme === 'ivory'}
+              >
+                <Sun className="w-3.5 h-3.5 text-[#886C4B]" />
+                <span className="text-[11px]">Ivory</span>
+              </button>
 
-            <span
-              className="ml-1 mr-1 px-1.5 py-0.5 rounded text-[10px] font-mono-code font-semibold border border-[var(--border-card)] text-[var(--text-muted)] bg-[var(--bg-elevated)] hidden xl:inline-block select-none"
-              title="Shortcut: Press 'T' key to toggle"
+              <kbd
+                className="ml-1 mr-1 px-1.5 py-0.5 rounded text-[10px] font-mono-code font-semibold border border-[var(--border-card)] text-[var(--text-muted)] bg-[var(--bg-elevated)] inline-block select-none"
+                title="Shortcut: Press 'T' key to toggle theme"
+              >
+                T
+              </kbd>
+            </div>
+
+            {/* Subtle floating tooltip on hover */}
+            <div
+              role="tooltip"
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 group-hover/theme:opacity-100 transition-all duration-200 translate-y-1 group-hover/theme:translate-y-0 z-50 whitespace-nowrap"
             >
-              T
-            </span>
+              <div className="px-2.5 py-1 rounded-md bg-[var(--bg-elevated)]/95 border border-[var(--border-card)] shadow-xl backdrop-blur-md flex items-center gap-1.5 text-[11px] font-mono-code text-[var(--text-secondary)]">
+                <span>Press</span>
+                <kbd className="px-1 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--accent-champagne)] font-bold text-[10px] leading-none">
+                  T
+                </kbd>
+                <span>to toggle theme</span>
+              </div>
+            </div>
           </div>
 
           {/* Primary Action Button */}

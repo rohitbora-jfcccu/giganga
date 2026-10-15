@@ -118,13 +118,31 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
     setTimeout(() => setStatusMessage(null), 3000);
   };
 
-  // Handle custom image file upload & client-side halftone processing
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [sourceStatus, setSourceStatus] = useState<{ hasSourcePhoto: boolean; sourcePhotoPath: string | null } | null>(null);
+
+  // Check server-side source photo status on mount
+  useEffect(() => {
+    fetch('/api/portrait/status')
+      .then((r) => r.json())
+      .then((data) => {
+        setSourceStatus(data);
+      })
+      .catch((err) => {
+        console.warn('Could not query portrait status:', err);
+      });
+  }, []);
+
+  // Process an image file pixel-by-pixel with Sobel edge contour detection
+  const processImageFile = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setStatusMessage('Please select a valid image file (JPEG, PNG, WebP).');
+      setTimeout(() => setStatusMessage(null), 3000);
+      return;
+    }
 
     setIsProcessing(true);
-    setStatusMessage('Rasterizing image into halftone matrix...');
+    setStatusMessage('Rasterizing photograph pixel-by-pixel with Sobel edge contours...');
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -135,7 +153,10 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
         const width = rect.width || 480;
         const height = rect.height || 560;
 
-        // Draw image onto offscreen canvas to sample pixels
+        // Sample offscreen canvas with high spatial resolution (540px width)
+        const sampleWidth = 540;
+        const sampleHeight = Math.round((sampleWidth * img.height) / img.width);
+
         const offscreen = document.createElement('canvas');
         const offCtx = offscreen.getContext('2d');
         if (!offCtx) {
@@ -143,25 +164,88 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
           return;
         }
 
-        offscreen.width = 300;
-        offscreen.height = Math.round((300 * img.height) / img.width);
-        offCtx.drawImage(img, 0, 0, offscreen.width, offscreen.height);
+        offscreen.width = sampleWidth;
+        offscreen.height = sampleHeight;
+        offCtx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
 
-        const imgData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
+        const imgData = offCtx.getImageData(0, 0, sampleWidth, sampleHeight);
         const dots = processImageDataToDots(imgData, width, height, {
-          gridStep: 6.5,
-          contrast: 1.35,
-          champagneAccentRatio: 0.05,
+          gridStep: 3.9,
+          minRadius: 0.75,
+          maxRadius: 2.7,
+          contrast: 1.4,
+          brightness: 0.04,
+          edgeWeight: 1.8,
+          champagneAccentRatio: 0.04,
+          theme,
+          suppressBackground: true,
         });
 
         initEngine(dots);
         setIsProcessing(false);
-        setStatusMessage(`Rasterized ${dots.length} halftone particles`);
-        setTimeout(() => setStatusMessage(null), 3500);
+        setStatusMessage(`Rasterized ${dots.length.toLocaleString()} particles. Persisting to project assets...`);
+
+        // Automatically persist dots to server so they become the new default in src/data/rohit-portrait-dots.json
+        const compactDots = dots.map((d) => [
+          Math.round(d.originX * 10) / 10,
+          Math.round(d.originY * 10) / 10,
+          Math.round(d.baseRadius * 10) / 10,
+          d.isAccent ? 1 : 0,
+        ]);
+
+        fetch('/api/portrait/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ width, height, dots: compactDots }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              setStatusMessage(`✓ Processed & saved ${dots.length.toLocaleString()} particles to project assets.`);
+              setPortraitMode('artwork');
+            }
+          })
+          .catch((err) => {
+            console.warn('Could not auto-save portrait dots to server:', err);
+          })
+          .finally(() => {
+            setTimeout(() => setStatusMessage(null), 4000);
+          });
       };
       img.src = event.target?.result as string;
     };
     reader.readAsDataURL(file);
+  }, [initEngine, theme]);
+
+  // Handle custom image file upload via file input
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  // Drag-and-drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
   };
 
   // Adjust parameters
@@ -178,7 +262,12 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full aspect-[4/5] max-w-[500px] mx-auto rounded-xl bg-[var(--canvas-bg)] border border-[var(--border-card)] overflow-hidden canvas-portrait-container group shadow-2xl transition-colors duration-300 ${className}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`relative w-full aspect-[4/5] max-w-[500px] mx-auto rounded-xl bg-[var(--canvas-bg)] border border-[var(--border-card)] overflow-hidden canvas-portrait-container group shadow-2xl transition-colors duration-300 ${
+        isDraggingOver ? 'ring-2 ring-[var(--accent-champagne)]' : ''
+      } ${className}`}
       aria-label="Interactive Canvas Dotted Portrait of Rohit Singh Bora"
     >
       {/* 2D Canvas */}
@@ -186,6 +275,19 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
         ref={canvasRef}
         className="w-full h-full block cursor-crosshair select-none"
       />
+
+      {/* Drag & Drop Overlay */}
+      {isDraggingOver && (
+        <div className="absolute inset-0 bg-black/85 backdrop-blur-sm z-30 border-2 border-dashed border-[var(--accent-champagne)] rounded-xl flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-150">
+          <Upload className="w-8 h-8 text-[var(--accent-champagne)] mb-2 animate-bounce" />
+          <p className="text-sm font-semibold text-[#F4F0E8]">
+            Drop Rohit's Portrait Photo Here
+          </p>
+          <p className="text-xs text-[#AAA69E] mt-1 max-w-[280px]">
+            Will rasterize pixel-by-pixel with Sobel edge contours & auto-save to project assets
+          </p>
+        </div>
+      )}
 
       {/* Subtle interaction cue at bottom */}
       <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs text-[var(--text-muted)] pointer-events-none select-none transition-opacity duration-300 group-hover:text-[var(--text-secondary)]">
@@ -231,7 +333,7 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
 
       {/* Status banner */}
       {statusMessage && (
-        <div className="absolute top-12 left-3 right-3 bg-[var(--bg-elevated)]/95 border border-[var(--accent-champagne)]/40 text-[var(--text-primary)] text-[11px] px-3 py-1.5 rounded-md backdrop-blur-md shadow-lg font-mono-code transition-all">
+        <div className="absolute top-12 left-3 right-3 bg-[var(--bg-elevated)]/95 border border-[var(--accent-champagne)]/40 text-[var(--text-primary)] text-[11px] px-3 py-1.5 rounded-md backdrop-blur-md shadow-lg font-mono-code transition-all z-20">
           {statusMessage}
         </div>
       )}
@@ -261,6 +363,25 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
           </div>
 
           <div className="space-y-3 text-xs">
+            {/* Source photo availability badge */}
+            <div className="p-2 rounded bg-[var(--bg-input)] border border-[var(--border-card)] text-[11px]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-medium text-[var(--text-secondary)]">Photo Source:</span>
+                <span className={`font-mono-code px-1.5 py-0.5 rounded text-[10px] ${
+                  sourceStatus?.hasSourcePhoto
+                    ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50'
+                    : 'bg-amber-950/60 text-amber-400 border border-amber-800/50'
+                }`}>
+                  {sourceStatus?.hasSourcePhoto ? 'Private Photo Mounted' : 'Manual Upload / Stipple Matrix'}
+                </span>
+              </div>
+              <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                {sourceStatus?.hasSourcePhoto
+                  ? `Active source: ${sourceStatus.sourcePhotoPath}`
+                  : 'Place portrait.jpg into assets-private/ (Git-ignored) or drop photograph directly onto canvas.'}
+              </p>
+            </div>
+
             {/* Repulsion slider */}
             <div>
               <div className="flex justify-between text-[var(--text-secondary)] mb-1">
@@ -297,7 +418,7 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
 
             {/* Portrait source selection */}
             <div>
-              <span className="text-[var(--text-secondary)] block mb-1.5 font-medium">Portrait Source</span>
+              <span className="text-[var(--text-secondary)] block mb-1.5 font-medium">Portrait Mode</span>
               <div className="grid grid-cols-2 gap-1.5">
                 <button
                   type="button"
@@ -335,7 +456,7 @@ export const PortraitCanvas: React.FC<PortraitCanvasProps> = ({
                 className="flex-1 py-1.5 px-3 rounded bg-[var(--bg-input)] hover:bg-[var(--border-hover)] text-[var(--text-primary)] border border-[var(--border-card)] transition-colors flex items-center justify-center gap-1.5 font-medium text-[11px]"
               >
                 <Upload className="w-3 h-3 text-[var(--accent-champagne)]" />
-                <span>Upload Photograph</span>
+                <span>Upload Real Photo</span>
               </button>
               <button
                 type="button"

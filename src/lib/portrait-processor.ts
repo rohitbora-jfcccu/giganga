@@ -21,9 +21,13 @@ export interface ProcessingOptions {
   minRadius?: number;
   maxRadius?: number;
   contrast?: number;
+  brightness?: number;
+  edgeWeight?: number;
   silhouetteDispersal?: boolean;
   champagneAccentRatio?: number;
   theme?: 'noir' | 'ivory';
+  invertTones?: boolean;
+  suppressBackground?: boolean;
 }
 
 import rohitPortraitData from '../data/rohit-portrait-dots.json';
@@ -110,7 +114,12 @@ function pseudoRandom(seed: number): () => number {
 }
 
 /**
- * Processes an HTMLImageElement or ImageData into a collection of halftone dots.
+ * High-precision Pixel-by-Pixel Halftone & Stipple Processing Engine:
+ * - Sobel gradient operator for edge detection (eyes, pupils, eyebrows, nose, lips, jawline, ears)
+ * - Perceptual luminance calculation (ITU-R BT.709) with contrast and dynamic range expansion
+ * - Corner background sampling and intelligent silhouette separation
+ * - Fine stipple dot scaling with edge-aligned particle clustering
+ * - Restrained specular champagne highlights on focal facial landmarks
  */
 export function processImageDataToDots(
   imageData: ImageData,
@@ -119,93 +128,202 @@ export function processImageDataToDots(
   options: ProcessingOptions = {}
 ): PortraitDot[] {
   const {
-    gridStep = 5.5,
-    minRadius = 1.0,
-    maxRadius = 3.2,
-    contrast = 1.3,
+    gridStep = 4.2,
+    minRadius = 0.8,
+    maxRadius = 2.8,
+    contrast = 1.35,
+    brightness = 0.05,
+    edgeWeight = 1.6,
     champagneAccentRatio = 0.04,
     theme = 'noir',
+    invertTones = false,
+    suppressBackground = true,
   } = options;
 
   const { data, width, height } = imageData;
   const dots: PortraitDot[] = [];
 
-  const scaleX = targetWidth / width;
-  const scaleY = targetHeight / height;
+  // Step 1: Pre-calculate grayscale luminance map and detect corner background tone
+  const lumMap = new Float32Array(width * height);
+  const alphaMap = new Uint8Array(width * height);
 
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const maxDist = Math.hypot(centerX, centerY);
+  for (let i = 0; i < width * height; i++) {
+    const idx = i * 4;
+    const r = data[idx];
+    const g = data[idx + 1];
+    const b = data[idx + 2];
+    const a = data[idx + 3];
+    alphaMap[i] = a;
+
+    if (a < 20) {
+      lumMap[i] = -1; // Transparent / void
+    } else {
+      // ITU-R BT.709 accurate perceptual luminance formula
+      let l = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0;
+      // Contrast and brightness adjustment
+      l = Math.min(1, Math.max(0, (l - 0.5) * contrast + 0.5 + brightness));
+      lumMap[i] = invertTones ? 1.0 - l : l;
+    }
+  }
+
+  // Detect corner background luminance to suppress background if present
+  let bgLuminance = 0;
+  let bgSamples = 0;
+  const cornerCoords = [
+    [0, 0], [width - 1, 0], [0, height - 1], [width - 1, height - 1],
+    [Math.floor(width * 0.1), 0], [Math.floor(width * 0.9), 0],
+  ];
+  for (const [cx, cy] of cornerCoords) {
+    const val = lumMap[cy * width + cx];
+    if (val >= 0) {
+      bgLuminance += val;
+      bgSamples++;
+    }
+  }
+  const avgBgLum = bgSamples > 0 ? bgLuminance / bgSamples : 0;
+  const isLightBackground = avgBgLum > 0.65;
+
+  // Step 2: Compute Sobel edge gradient magnitude map
+  const edgeMap = new Float32Array(width * height);
+  let maxEdge = 0.001;
+
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const idx = y * width + x;
+      if (alphaMap[idx] < 20) continue;
+
+      const p00 = lumMap[(y - 1) * width + (x - 1)];
+      const p10 = lumMap[(y - 1) * width + x];
+      const p20 = lumMap[(y - 1) * width + (x + 1)];
+      const p01 = lumMap[y * width + (x - 1)];
+      const p21 = lumMap[y * width + (x + 1)];
+      const p02 = lumMap[(y + 1) * width + (x - 1)];
+      const p12 = lumMap[(y + 1) * width + x];
+      const p22 = lumMap[(y + 1) * width + (x + 1)];
+
+      if (p00 < 0 || p22 < 0) continue;
+
+      // 3x3 Sobel kernels
+      const gx = -p00 - 2 * p01 - p02 + p20 + 2 * p21 + p22;
+      const gy = -p00 - 2 * p10 - p20 + p02 + 2 * p12 + p22;
+      const mag = Math.hypot(gx, gy);
+      edgeMap[idx] = mag;
+      if (mag > maxEdge) maxEdge = mag;
+    }
+  }
+
+  // Normalize edge magnitudes
+  for (let i = 0; i < width * height; i++) {
+    edgeMap[i] = edgeMap[i] / maxEdge;
+  }
+
+  // Step 3: Compute dot placements with edge-directed refinement
+  const scale = Math.min(targetWidth / width, targetHeight / height) * 0.96;
+  const offsetX = (targetWidth - width * scale) / 2;
+  const offsetY = (targetHeight - height * scale) / 2;
+
+  // Pseudo-random generator for organic organic stippling dispersal
+  let seed = 48271;
+  const rand = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
 
   for (let y = 0; y < height; y += gridStep) {
     for (let x = 0; x < width; x += gridStep) {
-      const idx = (y * width + x) * 4;
-      const r = data[idx];
-      const g = data[idx + 1];
-      const b = data[idx + 2];
-      const a = data[idx + 3];
+      // Subpixel jitter for authentic hand-stippled pointillist texture
+      const jx = Math.min(width - 1, Math.max(0, Math.round(x + (rand() - 0.5) * (gridStep * 0.7))));
+      const jy = Math.min(height - 1, Math.max(0, Math.round(y + (rand() - 0.5) * (gridStep * 0.7))));
 
-      if (a < 30) continue;
+      const pixelIdx = jy * width + jx;
+      const alpha = alphaMap[pixelIdx];
+      if (alpha < 30) continue;
 
-      // Standard perceptual luminance formula
-      let luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      
-      // Contrast adjustment curve
-      luminance = Math.min(1, Math.max(0, (luminance - 0.5) * contrast + 0.5));
+      let lum = lumMap[pixelIdx];
+      if (lum < 0) continue;
 
-      // Skip background pixels
-      if (theme === 'noir' && luminance < 0.12) continue;
-      if (theme === 'ivory' && luminance > 0.92) continue;
+      const edge = edgeMap[pixelIdx] || 0;
 
-      const distFromCenter = Math.hypot(x - centerX, y - centerY);
-      const edgeFactor = distFromCenter / maxDist;
-
-      let radius = minRadius + luminance * (maxRadius - minRadius);
-      if (edgeFactor > 0.65) {
-        radius *= 1.0 + (edgeFactor - 0.65) * 0.8;
+      // Invert tones if image has white background and we're drawing white particles on dark canvas
+      let particleDensity = lum;
+      if (isLightBackground && theme === 'noir') {
+        // In a photo with light background, person's hair and shadows are dark (lum < 0.5), skin is midtone.
+        // On black background, particles represent light stippling (inverse ink).
+        // If suppressBackground is true and it matches background luminance:
+        const distFromBg = Math.abs(lum - avgBgLum);
+        if (suppressBackground && distFromBg < 0.12 && edge < 0.15) {
+          continue; // Filter out blank background
+        }
+        // Invert ink density so dark features (hair, eyes, collar) get dense stippling
+        particleDensity = 1.0 - lum;
+      } else if (!isLightBackground && theme === 'noir') {
+        // Photo already has dark background
+        if (lum < 0.08 && edge < 0.12) continue;
+        particleDensity = lum;
       }
 
-      let color = theme === 'ivory' ? '#121212' : '#F4F0E8';
+      // Feature contours (eyes, lips, nose, jaw) boosted by edge gradient
+      const hasStrongEdge = edge > 0.22;
+      const combinedDensity = Math.min(1.0, particleDensity + edge * edgeWeight * 0.5);
+
+      if (combinedDensity < 0.10 && !hasStrongEdge) continue;
+
+      // Particle radius calculation:
+      // - Strong edges get smaller, tighter, precision dots for razor-sharp facial contours
+      // - Smooth tonal areas get soft organic halftone radii
+      let radius = minRadius + combinedDensity * (maxRadius - minRadius);
+      if (hasStrongEdge) {
+        radius = Math.max(minRadius, radius * 0.85); // Sharper edge dots
+      }
+
+      // Scale to target canvas coordinates
+      const worldX = jx * scale + offsetX;
+      const worldY = jy * scale + offsetY;
+
+      // Accents & color selection
+      let color = '#F4F0E8';
       let isAccent = false;
 
+      // Champagne highlights on specular peaks (catchlights, nose apex, upper lip)
+      const isSpecularPeak = (lum > 0.82 || (hasStrongEdge && edge > 0.55));
+      if (isSpecularPeak && rand() < champagneAccentRatio * 2.5) {
+        isAccent = true;
+      }
+
       if (theme === 'ivory') {
-        if (luminance > 0.80 && Math.random() < champagneAccentRatio) {
-          color = '#886C4B';
-          isAccent = true;
-        } else if (luminance < 0.35) {
-          color = '#121212';
-        } else if (luminance < 0.65) {
+        if (isAccent) {
+          color = '#886C4B'; // warm bronze highlight in Ivory mode
+        } else if (combinedDensity > 0.70) {
+          color = '#121212'; // deep ink
+        } else if (combinedDensity > 0.40) {
           color = '#38342E';
         } else {
           color = '#6B6457';
         }
       } else {
-        if (luminance > 0.85 && Math.random() < champagneAccentRatio) {
-          color = '#C9B79C';
-          isAccent = true;
-        } else if (luminance < 0.35) {
-          color = '#5A5A5A';
-        } else if (luminance < 0.65) {
-          color = '#A4A099';
+        if (isAccent) {
+          color = '#C9B79C'; // subtle champagne gold accent
+        } else if (combinedDensity > 0.65) {
+          color = '#F4F0E8'; // dense ivory-white
+        } else if (combinedDensity > 0.35) {
+          color = '#D1CCC3'; // warm ivory midtone
         } else {
-          color = '#F4F0E8';
+          color = '#7A766F'; // subtle shadow particle
         }
       }
 
-      const worldX = x * scaleX;
-      const worldY = y * scaleY;
-      const alpha = Math.min(1, 0.45 + luminance * 0.55);
+      const dotAlpha = Math.min(1.0, 0.45 + combinedDensity * 0.55);
 
       dots.push({
         x: worldX,
         y: worldY,
         originX: worldX,
         originY: worldY,
-        radius,
-        baseRadius: radius,
+        radius: Math.max(0.65, radius),
+        baseRadius: Math.max(0.65, radius),
         color,
-        alpha,
-        baseAlpha: alpha,
+        alpha: dotAlpha,
+        baseAlpha: dotAlpha,
         isAccent,
       });
     }

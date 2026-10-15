@@ -2,14 +2,17 @@ import express, { Request, Response } from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import fs from 'fs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// JSON parser with body size limit to avoid abuse
-app.use(express.json({ limit: '50kb' }));
+// JSON parser with body size limit for dot matrix payloads
+app.use(express.json({ limit: '10mb' }));
+
 
 // Rate limiting state in memory
 interface RateLimitRecord {
@@ -150,6 +153,96 @@ app.post('/api/contact', async (req: Request, res: Response) => {
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', brand: 'BORA Portfolio 2.0', owner: 'Rohit Singh Bora', timestamp: new Date().toISOString() });
 });
+
+// Check if private source photograph is available on disk
+app.get('/api/portrait/status', (_req, res) => {
+  const candidatePaths = [
+    path.resolve(__dirname, 'assets-private/portrait.jpg'),
+    path.resolve(__dirname, 'assets-private/portrait.jpeg'),
+    path.resolve(__dirname, 'assets-private/portrait.png'),
+    path.resolve(__dirname, 'src/assets/images/portrait.jpg'),
+    path.resolve(__dirname, 'src/assets/images/portrait.png'),
+  ];
+
+  let foundPath: string | null = null;
+  for (const p of candidatePaths) {
+    if (fs.existsSync(p)) {
+      foundPath = p;
+      break;
+    }
+  }
+
+  res.json({
+    hasSourcePhoto: Boolean(foundPath),
+    sourcePhotoPath: foundPath ? path.relative(__dirname, foundPath) : null,
+    checkedPaths: candidatePaths.map(p => path.relative(__dirname, p)),
+    defaultArtPath: 'src/data/rohit-portrait-dots.json',
+  });
+});
+
+// Endpoint to persist newly rasterized portrait dots and SVGs
+app.post('/api/portrait/save', async (req: Request, res: Response) => {
+  try {
+    const { width, height, dots } = req.body;
+    if (!width || !height || !Array.isArray(dots) || dots.length === 0) {
+      res.status(400).json({ success: false, error: 'Invalid dot matrix data.' });
+      return;
+    }
+
+    const jsonPath = path.resolve(__dirname, 'src/data/rohit-portrait-dots.json');
+    const svgNoirPath = path.resolve(__dirname, 'public/assets/rohit_stipple_portrait.svg');
+    const svgIvoryPath = path.resolve(__dirname, 'public/assets/rohit_stipple_portrait_ivory.svg');
+    const srcSvgNoir = path.resolve(__dirname, 'src/assets/images/rohit_stipple_portrait.svg');
+    const srcSvgIvory = path.resolve(__dirname, 'src/assets/images/rohit_stipple_portrait_ivory.svg');
+
+    // 1. Save JSON
+    fs.writeFileSync(jsonPath, JSON.stringify({ width, height, dots }, null, 2));
+
+    // 2. Generate SVGs for Noir and Ivory
+    let noirCircles = '';
+    let ivoryCircles = '';
+
+    for (const [x, y, r, isAccent] of dots) {
+      const rx = Number(x).toFixed(1);
+      const ry = Number(y).toFixed(1);
+      const rad = Number(r).toFixed(1);
+
+      // Noir theme
+      const noirColor = isAccent === 1 ? '#C9B79C' : '#F4F0E8';
+      const noirOpacity = isAccent === 1 ? '1.00' : '0.95';
+      noirCircles += `  <circle cx="${rx}" cy="${ry}" r="${rad}" fill="${noirColor}" opacity="${noirOpacity}"/>\n`;
+
+      // Ivory theme
+      const ivoryColor = isAccent === 1 ? '#886C4B' : '#121212';
+      const ivoryOpacity = isAccent === 1 ? '1.00' : '0.95';
+      ivoryCircles += `  <circle cx="${rx}" cy="${ry}" r="${rad}" fill="${ivoryColor}" opacity="${ivoryOpacity}"/>\n`;
+    }
+
+    const svgNoir = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">\n  <rect width="100%" height="100%" fill="#000000"/>\n${noirCircles}</svg>\n`;
+    const svgIvory = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">\n  <rect width="100%" height="100%" fill="#F4F0E8"/>\n${ivoryCircles}</svg>\n`;
+
+    fs.writeFileSync(svgNoirPath, svgNoir);
+    fs.writeFileSync(svgIvoryPath, svgIvory);
+    if (fs.existsSync(path.dirname(srcSvgNoir))) {
+      fs.writeFileSync(srcSvgNoir, svgNoir);
+      fs.writeFileSync(srcSvgIvory, svgIvory);
+    }
+
+    res.json({
+      success: true,
+      dotsCount: dots.length,
+      savedFiles: [
+        'src/data/rohit-portrait-dots.json',
+        'public/assets/rohit_stipple_portrait.svg',
+        'public/assets/rohit_stipple_portrait_ivory.svg',
+      ],
+    });
+  } catch (err: unknown) {
+    console.error('Save portrait error:', err);
+    res.status(500).json({ success: false, error: 'Failed to persist portrait matrix.' });
+  }
+});
+
 
 // Vite middleware in dev or static serving in production
 async function startServer() {
