@@ -94,12 +94,12 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const normX = (x - centerX) / centerX;
-    const normY = (y - centerY) / centerY;
+    const normX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
+    const normY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
 
-    // Restrained tilt angles (max 5 degrees)
-    const rotateY = normX * 5.0;
-    const rotateX = -normY * 5.0;
+    // Refined subtle 3D tilt angles (max 5.5 degrees)
+    const rotateY = Number((normX * 5.5).toFixed(2));
+    const rotateX = Number((-normY * 5.5).toFixed(2));
 
     const glareX = (x / rect.width) * 100;
     const glareY = (y / rect.height) * 100;
@@ -230,7 +230,13 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
 
           {/* Render 3D Model or Large Editorial Preview */}
           {hasInteractive3D && previewMode === '3d' ? (
-            <div className="relative rounded-2xl overflow-hidden border border-[var(--border-card)] bg-[var(--bg-card)] shadow-xl">
+            <div
+              className="relative rounded-2xl overflow-hidden border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 bg-[var(--bg-card)] shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
+              style={{
+                perspective: '1200px',
+                transformStyle: 'preserve-3d',
+              }}
+            >
               {isAtelier ? (
                 <Ecommerce3DShowroom mode="compact" onOpenFullExperience={() => onSelectProject(project)} />
               ) : (
@@ -245,17 +251,27 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
               onPointerEnter={handlePointerEnter}
               onClick={() => onSelectProject(project)}
               style={{
+                perspective: '1200px',
                 transform: isReducedMotion
                   ? 'none'
-                  : `rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) ${
-                      tilt.isHovered ? 'scale3d(1.012, 1.012, 1.012)' : 'scale3d(1, 1, 1)'
+                  : `perspective(1200px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) ${
+                      tilt.isHovered
+                        ? 'translateZ(16px) translateY(-5px) scale3d(1.02, 1.02, 1.02)'
+                        : 'translateZ(0px) translateY(0px) scale3d(1, 1, 1)'
                     }`,
                 transformStyle: 'preserve-3d',
+                boxShadow: tilt.isHovered
+                  ? isNoir
+                    ? '0 30px 65px -15px rgba(0, 0, 0, 0.9), 0 0 35px -5px rgba(201, 183, 156, 0.22)'
+                    : '0 30px 60px -15px rgba(0, 0, 0, 0.18), 0 0 35px -5px rgba(136, 108, 75, 0.18)'
+                  : isNoir
+                  ? '0 12px 30px -10px rgba(0, 0, 0, 0.5)'
+                  : '0 10px 25px -10px rgba(0, 0, 0, 0.08)',
                 transition: tilt.isHovered
-                  ? 'transform 100ms ease-out, border-color 250ms ease, box-shadow 250ms ease'
-                  : 'transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 250ms ease, box-shadow 250ms ease',
+                  ? 'transform 120ms ease-out, border-color 300ms ease, box-shadow 300ms ease'
+                  : 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 300ms ease',
               }}
-              className="relative aspect-video sm:aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--border-card)] group-hover/card:border-[var(--accent-champagne)]/60 bg-[var(--bg-card)] shadow-lg hover:shadow-2xl cursor-pointer select-none"
+              className="relative aspect-video sm:aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--border-card)] group-hover/card:border-[var(--accent-champagne)]/60 bg-[var(--bg-card)] shadow-lg hover:shadow-2xl cursor-pointer select-none will-change-transform"
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -272,10 +288,10 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 style={{
                   transform: isReducedMotion
                     ? 'none'
-                    : `translate3d(${-tilt.rotateY * 1.5}px, ${tilt.rotateX * 1.5}px, 0) scale(1.04)`,
+                    : `translate3d(${-tilt.rotateY * 2.2}px, ${tilt.rotateX * 2.2}px, -6px) scale(1.06)`,
                   transition: tilt.isHovered
                     ? 'transform 120ms ease-out'
-                    : 'transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    : 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               >
                 <img
@@ -303,8 +319,8 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                   className="absolute inset-0 pointer-events-none transition-opacity duration-200"
                   style={{
                     background: isNoir
-                      ? `radial-gradient(circle 380px at ${tilt.glareX}% ${tilt.glareY}%, rgba(201, 183, 156, 0.22), transparent 70%)`
-                      : `radial-gradient(circle 380px at ${tilt.glareX}% ${tilt.glareY}%, rgba(136, 108, 75, 0.16), transparent 70%)`,
+                      ? `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(201, 183, 156, 0.24), transparent 70%)`
+                      : `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(136, 108, 75, 0.18), transparent 70%)`,
                   }}
                 />
               )}
@@ -313,7 +329,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
               <div
                 className="absolute top-4 left-4 right-4 flex items-center justify-between text-xs font-mono-code z-20 pointer-events-none"
                 style={{
-                  transform: isReducedMotion ? 'none' : 'translateZ(24px)',
+                  transform: isReducedMotion ? 'none' : 'translateZ(28px)',
                 }}
               >
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-[#F4F0E8] text-[11px] shadow-sm">
@@ -340,7 +356,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 <div
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none text-center px-4"
                   style={{
-                    transform: isReducedMotion ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) translateZ(28px)',
+                    transform: isReducedMotion ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) translateZ(34px)',
                   }}
                 >
                   <div className="px-4 py-2.5 rounded-xl bg-black/85 backdrop-blur-md border border-[var(--border-card)] shadow-2xl max-w-sm mx-auto">
@@ -360,7 +376,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
               <div
                 className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-20 pointer-events-none"
                 style={{
-                  transform: isReducedMotion ? 'none' : 'translateZ(30px)',
+                  transform: isReducedMotion ? 'none' : 'translateZ(36px)',
                 }}
               >
                 <div className="space-y-0.5">
@@ -449,6 +465,45 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
           >
             {project.summary}
           </ScrollScrubText>
+
+          {/* Project Statistics Bar (Clean Monospace Figures with Tabular Numerals) */}
+          {project.stats && (
+            <div className="py-2.5 px-3.5 sm:px-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] grid grid-cols-3 gap-2 sm:gap-4 divide-x divide-[var(--border-subtle)] font-mono-code shadow-xs">
+              <div className="pr-1 sm:pr-2">
+                <span className="text-[9px] sm:text-[10px] text-[var(--text-muted)] uppercase tracking-wider block font-semibold mb-0.5">
+                  Dev Time
+                </span>
+                <span
+                  className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tabular-nums truncate block"
+                  title={project.stats.devTime}
+                >
+                  {project.stats.devTime}
+                </span>
+              </div>
+              <div className="px-2 sm:px-3">
+                <span className="text-[9px] sm:text-[10px] text-[var(--text-muted)] uppercase tracking-wider block font-semibold mb-0.5">
+                  Collaborators
+                </span>
+                <span
+                  className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tabular-nums truncate block"
+                  title={project.stats.collaborators}
+                >
+                  {project.stats.collaborators}
+                </span>
+              </div>
+              <div className="pl-2 sm:pl-3">
+                <span className="text-[9px] sm:text-[10px] text-[var(--accent-champagne)] uppercase tracking-wider block font-semibold mb-0.5">
+                  Scale
+                </span>
+                <span
+                  className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tabular-nums truncate block"
+                  title={project.stats.scale}
+                >
+                  {project.stats.scale}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Actual Role & Engineering Responsibility Card */}
           <div className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-1.5">

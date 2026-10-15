@@ -10,6 +10,11 @@ export interface ProjectCaseStudy {
   heroImage: string;
   liveDemoUrl?: string;
   repositoryUrl?: string;
+  stats?: {
+    devTime: string;
+    collaborators: string;
+    scale: string;
+  };
   summary: string;
   overview: string;
   problem: string;
@@ -118,6 +123,11 @@ export const PORTFOLIO_DATA = {
       status: 'Operational' as const,
       heroImage: '/images/fashion_ecommerce_showcase_1792009263343.jpg',
       repositoryUrl: 'https://github.com/rohitbora/atelier-noir',
+      stats: {
+        devTime: '4 Months',
+        collaborators: 'Solo Engineer',
+        scale: '120+ SKU Lookbook',
+      },
       summary: 'A bespoke fashion commerce platform engineered for luxury aesthetic restraint, sub-second product transitions, and robust cart state synchronization.',
       overview: 'Atelier Noir was conceived to address the clunky, plugin-heavy nature of standard e-commerce templates. It combines a brutalist, editorial aesthetic with modern SPA performance, featuring custom catalog filtering, optimistic cart management, and seamless micro-interactions.',
       problem: 'Conventional fashion platforms suffer from heavy JavaScript bundles, disjointed checkout states, and generic card templates that dilute brand identity. The goal was to build a zero-bloat, deeply art-directed e-commerce experience that delivers high visual fidelity without sacrificing performance.',
@@ -190,6 +200,11 @@ export const PORTFOLIO_DATA = {
       status: 'Production Core' as const,
       heroImage: '/images/erp_supply_chain_showcase_1792009263752.jpg',
       repositoryUrl: 'https://github.com/rohitbora/logixcore-erp',
+      stats: {
+        devTime: '5 Months',
+        collaborators: 'Lead Architect',
+        scale: '14,000+ Units / 6 Hubs',
+      },
       summary: 'An operational command center engineered for multi-warehouse freight routing, SKU batch normalization, and supplier dispatch tracking.',
       overview: 'LogixCore was engineered to replace outdated, fragmented enterprise supply chain software. It delivers real-time operational visibility into cross-dock logistics, inventory reorder thresholds, and warehouse dispatch metrics with tabular precision.',
       problem: 'Enterprise warehouse managers frequently struggle with bloated ERP software that has slow table interactions, confusing workflows, and poor data density. LogixCore solves this through high-density tabular layouts, rapid keyboard shortcuts, and strict data validation.',
@@ -262,6 +277,11 @@ export const PORTFOLIO_DATA = {
       status: 'UNDER DEVELOPMENT' as const,
       isUnderDevelopment: true,
       heroImage: '/images/custom_os_interface_1792062303242.jpg',
+      stats: {
+        devTime: 'In Progress (Active R&D)',
+        collaborators: 'Solo Research',
+        scale: 'x86_64 Kernel & MMU Spec',
+      },
       summary: 'Building my own custom operating system, exploring system architecture, core functionality, and a personalized computing experience.',
       overview: 'Building my own custom operating system, exploring system architecture, core functionality, and a personalized computing experience. This architectural research initiative investigates low-level machine bootstrapping, memory management, kernel task scheduling, and minimal POSIX-compliant terminal environments.',
       problem: 'Modern commercial operating systems are monolithic, heavily layered, and hide critical hardware scheduling abstractions. The initiative aims to explore low-level machine execution from first principles, studying how a minimal, personalized computing environment can be constructed from scratch.',
@@ -318,6 +338,11 @@ export const PORTFOLIO_DATA = {
       status: 'UNDER DEVELOPMENT' as const,
       isUnderDevelopment: true,
       heroImage: '/images/jarvis_ai_interface_1792062302735.jpg',
+      stats: {
+        devTime: 'In Progress (Active R&D)',
+        collaborators: 'Solo Architect',
+        scale: 'Multimodal Intent Engine',
+      },
       summary: 'Developing my own AI-powered personal assistant inspired by JARVIS, with the goal of creating a more intelligent and interactive digital experience.',
       overview: 'Developing my own AI-powered personal assistant inspired by JARVIS, with the goal of creating a more intelligent and interactive digital experience. The system explores contextual intent parsing, real-time audio waveform feedback, autonomous task delegation, and a futuristic holographic interface.',
       problem: 'Conventional voice assistants are rigid, fragmented, and disconnected from developer workflows. The goal is to design a cohesive, highly personalized digital companion that can comprehend nuanced technical prompts, orchestrate local developer tasks, and deliver a fluid conversational presence.',
