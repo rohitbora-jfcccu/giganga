@@ -61,8 +61,8 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       setSoundToast(
         next
-          ? 'Ambient Audio Enabled · Subtle spatial feedback active (Press [M])'
-          : 'Audio Muted · Spatial sound textures disabled (Press [M])'
+          ? 'Ambient Audio Enabled · Subtle spatial feedback active (Press [S])'
+          : 'Audio Muted · Spatial sound textures disabled (Press [S])'
       );
       return next;
     });
@@ -77,24 +77,26 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => clearTimeout(timer);
   }, [soundToast]);
 
-  // Global Keyboard Listener: Press 'M' key to toggle sound
+  // Global Keyboard Listener: Press 'S' key to toggle sound
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is holding Ctrl, Meta, or Alt
+      // Ignore if user is holding Ctrl, Meta, or Alt (avoid browser conflicts like Ctrl+S save page)
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-      if (e.key === 'm' || e.key === 'M') {
+      if (e.key === 's' || e.key === 'S') {
         const target = e.target as HTMLElement | null;
         if (
           target &&
           (target.tagName === 'INPUT' ||
             target.tagName === 'TEXTAREA' ||
             target.tagName === 'SELECT' ||
-            target.isContentEditable)
+            target.isContentEditable ||
+            target.closest('input, textarea, select, [contenteditable="true"]'))
         ) {
           return;
         }
 
+        e.preventDefault();
         toggleSound('shortcut');
       }
     };

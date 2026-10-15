@@ -81,8 +81,12 @@ CORE ARCHITECTURAL PROJECTS:
       role="dialog"
       aria-modal="true"
       aria-labelledby="resume-title"
+      onClick={onClose}
     >
-      <div className="relative w-full max-w-3xl bg-[var(--bg-primary)] border border-[var(--border-card)] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col transition-colors duration-300">
+      <div
+        className="relative w-full max-w-3xl bg-[var(--bg-primary)] border border-[var(--border-card)] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col transition-colors duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header toolbar */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[var(--bg-primary)]/95 backdrop-blur-md border-b border-[var(--border-subtle)]">
           <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider">
@@ -107,9 +111,13 @@ CORE ARCHITECTURAL PROJECTS:
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors cursor-pointer"
-              aria-label="Close dialog"
+              className="group/close flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-colors cursor-pointer"
+              aria-label="Close resume dialog (Press Escape)"
+              aria-keyshortcuts="Escape"
             >
+              <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono-code font-bold bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-muted)] group-hover/close:text-[var(--text-primary)]">
+                ESC
+              </kbd>
               <X className="w-4 h-4" />
             </button>
           </div>

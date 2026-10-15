@@ -4,6 +4,7 @@ export interface ProjectCaseStudy {
   tagline: string;
   category: string;
   timeline: string;
+  readingTime?: string;
   status: 'Production Core' | 'Operational' | 'Active Development' | 'UNDER DEVELOPMENT';
   isUnderDevelopment?: boolean;
   heroImage: string;
@@ -113,6 +114,7 @@ export const PORTFOLIO_DATA = {
       tagline: 'High-End Architectural Fashion E-Commerce Platform',
       category: 'E-Commerce Architecture',
       timeline: '2025 – 2026',
+      readingTime: '5 min read',
       status: 'Operational' as const,
       heroImage: '/images/fashion_ecommerce_showcase_1792009263343.jpg',
       liveDemoUrl: '#',
@@ -185,6 +187,7 @@ export const PORTFOLIO_DATA = {
       tagline: 'Enterprise Supply Chain & Inventory Operations System',
       category: 'Enterprise Systems',
       timeline: '2025 – 2026',
+      readingTime: '6 min read',
       status: 'Production Core' as const,
       heroImage: '/images/erp_supply_chain_showcase_1792009263752.jpg',
       liveDemoUrl: '#',
@@ -257,6 +260,7 @@ export const PORTFOLIO_DATA = {
       tagline: 'System Architecture & Kernel Core Exploration',
       category: 'Operating Systems & Architecture',
       timeline: '2026 · Active Research',
+      readingTime: '4 min read',
       status: 'UNDER DEVELOPMENT' as const,
       isUnderDevelopment: true,
       heroImage: '/images/custom_os_interface_1792062303242.jpg',
@@ -312,6 +316,7 @@ export const PORTFOLIO_DATA = {
       tagline: 'AI-Powered Personal Assistant & Interactive System',
       category: 'Artificial Intelligence & Systems',
       timeline: '2026 · Active Research',
+      readingTime: '4 min read',
       status: 'UNDER DEVELOPMENT' as const,
       isUnderDevelopment: true,
       heroImage: '/images/jarvis_ai_interface_1792062302735.jpg',

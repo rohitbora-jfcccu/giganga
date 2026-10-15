@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Sun, Moon, Volume2, VolumeX } from 'lucide-react';
+import { Menu, X, Sun, Moon, Volume2, VolumeX, Keyboard } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useSound } from '../context/SoundContext';
 
 interface HeaderProps {
   onContactClick: () => void;
   onResumeClick: () => void;
+  onShortcutsClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick }) => {
+export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick, onShortcutsClick }) => {
   const { theme, toggleTheme, setTheme } = useTheme();
   const { soundEnabled, toggleSound } = useSound();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,6 +22,18 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile drawer on Escape key
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
 
   const navLinks = [
     { label: 'Work', href: '#work' },
@@ -69,9 +82,9 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
           </button>
         </nav>
 
-        {/* Zone 3: Visual Theme Toggle + Ambient Sound Toggle + Primary Action */}
+        {/* Zone 3: Visual Theme Toggle + Ambient Sound Toggle + Shortcuts Helper + Primary Action */}
         <div className="hidden md:flex items-center gap-3 shrink-0">
-          {/* Ambient Sound Toggle: Minimalist switch with Volume2/VolumeX icons, animated audio bars & [M] shortcut badge */}
+          {/* Ambient Sound Toggle: Minimalist switch with Volume2/VolumeX icons, animated audio bars & [S] shortcut badge */}
           <div className="relative group/sound flex items-center">
             <button
               onClick={() => toggleSound('manual')}
@@ -80,10 +93,10 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
                   ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)]/50 text-[var(--text-primary)] shadow-xs'
                   : 'bg-[var(--bg-card)] border-[var(--border-card)] text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               }`}
-              title={soundEnabled ? "Mute ambient audio (Press 'M')" : "Enable subtle ambient audio textures (Press 'M')"}
+              title={soundEnabled ? "Mute ambient audio (Press 'S')" : "Enable subtle ambient audio textures (Press 'S')"}
               aria-label={soundEnabled ? "Mute ambient audio" : "Enable subtle ambient audio textures"}
               aria-pressed={soundEnabled}
-              aria-keyshortcuts="m"
+              aria-keyshortcuts="s"
             >
               {soundEnabled ? (
                 <div className="flex items-center gap-1.5">
@@ -104,9 +117,9 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
 
               <kbd
                 className="ml-0.5 px-1.5 py-0.2 rounded text-[10px] font-mono-code font-semibold border border-[var(--border-card)] text-[var(--text-muted)] bg-[var(--bg-elevated)] inline-block select-none"
-                title="Shortcut: Press 'M' key to toggle sound"
+                title="Shortcut: Press 'S' key to toggle sound"
               >
-                M
+                S
               </kbd>
             </button>
 
@@ -118,19 +131,19 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
               <div className="px-2.5 py-1 rounded-md bg-[var(--bg-elevated)]/95 border border-[var(--border-card)] shadow-xl backdrop-blur-md flex items-center gap-1.5 text-[11px] font-mono-code text-[var(--text-secondary)]">
                 <span>Press</span>
                 <kbd className="px-1 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--accent-champagne)] font-bold text-[10px] leading-none">
-                  M
+                  S
                 </kbd>
                 <span>to toggle audio textures</span>
               </div>
             </div>
           </div>
 
-          {/* Visual Theme Toggle: Segmented switch with Sun/Moon icons & 'Press T to toggle' indicator */}
+          {/* Visual Theme Toggle: Segmented switch with Sun/Moon icons & 'Press M to toggle' indicator */}
           <div className="relative group/theme flex items-center">
             <div
               className="flex items-center p-1 rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] shadow-xs transition-colors"
               role="group"
-              aria-label="Theme selection (Shortcut: Press T)"
+              aria-label="Theme selection (Shortcut: Press M)"
             >
               <button
                 onClick={() => setTheme('noir')}
@@ -139,9 +152,10 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
                     ? 'bg-[#181818] text-[#F4F0E8] shadow-sm font-semibold'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
-                title="Switch to Noir dark theme (Press 'T')"
+                title="Switch to Noir dark theme (Press 'M')"
                 aria-label="Noir dark theme"
                 aria-pressed={theme === 'noir'}
+                aria-keyshortcuts="m"
               >
                 <Moon className="w-3.5 h-3.5 text-[#C9B79C]" />
                 <span className="text-[11px]">Noir</span>
@@ -154,9 +168,10 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
                     ? 'bg-[#FFFFFF] text-[#121212] shadow-sm font-semibold'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
-                title="Switch to Ivory light theme (Press 'T')"
+                title="Switch to Ivory light theme (Press 'M')"
                 aria-label="Ivory light theme"
                 aria-pressed={theme === 'ivory'}
+                aria-keyshortcuts="m"
               >
                 <Sun className="w-3.5 h-3.5 text-[#886C4B]" />
                 <span className="text-[11px]">Ivory</span>
@@ -164,9 +179,9 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
 
               <kbd
                 className="ml-1 mr-1 px-1.5 py-0.5 rounded text-[10px] font-mono-code font-semibold border border-[var(--border-card)] text-[var(--text-muted)] bg-[var(--bg-elevated)] inline-block select-none"
-                title="Shortcut: Press 'T' key to toggle theme"
+                title="Shortcut: Press 'M' key to toggle theme"
               >
-                T
+                M
               </kbd>
             </div>
 
@@ -178,12 +193,28 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
               <div className="px-2.5 py-1 rounded-md bg-[var(--bg-elevated)]/95 border border-[var(--border-card)] shadow-xl backdrop-blur-md flex items-center gap-1.5 text-[11px] font-mono-code text-[var(--text-secondary)]">
                 <span>Press</span>
                 <kbd className="px-1 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-[var(--accent-champagne)] font-bold text-[10px] leading-none">
-                  T
+                  M
                 </kbd>
                 <span>to toggle theme</span>
               </div>
             </div>
           </div>
+
+          {/* Keyboard Shortcuts Cheatsheet Trigger */}
+          {onShortcutsClick && (
+            <button
+              onClick={onShortcutsClick}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/40 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer shadow-xs"
+              title="Keyboard Shortcuts & Navigation (Press '?')"
+              aria-label="Keyboard Shortcuts (Press '?')"
+              aria-keyshortcuts="?"
+            >
+              <Keyboard className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
+              <kbd className="px-1.5 py-0.2 rounded text-[10px] font-mono-code font-semibold border border-[var(--border-subtle)] text-[var(--text-muted)] bg-[var(--bg-elevated)] select-none">
+                ?
+              </kbd>
+            </button>
+          )}
 
           {/* Primary Action Button */}
           <button
@@ -204,8 +235,9 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
                 ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)]/50 text-[var(--accent-champagne)]'
                 : 'bg-[var(--bg-card)] border-[var(--border-card)] text-[var(--text-muted)]'
             }`}
-            title={soundEnabled ? "Mute audio (Press 'M')" : "Enable audio (Press 'M')"}
+            title={soundEnabled ? "Mute audio (Press 'S')" : "Enable audio (Press 'S')"}
             aria-label={soundEnabled ? "Mute ambient audio" : "Enable ambient audio"}
+            aria-keyshortcuts="s"
           >
             {soundEnabled ? (
               <Volume2 className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
@@ -213,17 +245,17 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
               <VolumeX className="w-3.5 h-3.5 text-[var(--text-muted)]" />
             )}
             <span className="text-[10px] px-1 py-0.2 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)] font-mono-code border border-[var(--border-subtle)]">
-              M
+              S
             </span>
           </button>
 
           {/* Mobile Visual Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="px-2.5 py-1.5 rounded-lg bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-card)] flex items-center gap-1.5 text-xs font-mono-code"
-            title={`Switch to ${theme === 'noir' ? 'Ivory' : 'Noir'} theme (Press 'T')`}
+            className="px-2.5 py-1.5 rounded-lg bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-card)] flex items-center gap-1.5 text-xs font-mono-code cursor-pointer"
+            title={`Switch to ${theme === 'noir' ? 'Ivory' : 'Noir'} theme (Press 'M')`}
             aria-label={`Toggle theme (currently ${theme})`}
-            aria-keyshortcuts="t"
+            aria-keyshortcuts="m"
           >
             {theme === 'noir' ? (
               <>
@@ -237,15 +269,16 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
               </>
             )}
             <span className="text-[10px] px-1 py-0.2 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)] font-mono-code border border-[var(--border-subtle)]">
-              T
+              M
             </span>
           </button>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-[var(--text-primary)] hover:text-[var(--accent-champagne)] transition-colors"
-            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+            className="p-2 text-[var(--text-primary)] hover:text-[var(--accent-champagne)] transition-colors cursor-pointer"
+            aria-label={mobileMenuOpen ? 'Close navigation (Press Escape)' : 'Open navigation'}
             aria-expanded={mobileMenuOpen}
+            aria-keyshortcuts="Escape"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -275,17 +308,35 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
             View Resume
           </button>
 
+          {onShortcutsClick && (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onShortcutsClick();
+              }}
+              className="py-2 text-left border-b border-[var(--border-subtle)] hover:text-[var(--accent-champagne)] transition-colors cursor-pointer flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <Keyboard className="w-4 h-4 text-[var(--accent-champagne)]" />
+                <span>Keyboard Shortcuts Cheatsheet</span>
+              </div>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-card)] text-[var(--accent-champagne)] font-mono-code font-bold">
+                ?
+              </span>
+            </button>
+          )}
+
           {/* Mobile Visual Theme Switcher */}
           <div className="pt-2 flex flex-col gap-3">
             <div className="flex items-center justify-between text-xs font-mono-code text-[var(--text-muted)] px-1">
               <span>VISUAL THEME</span>
-              <span>SHORTCUT: PRESS [T]</span>
+              <span>SHORTCUT: PRESS [M]</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)]">
               <button
                 onClick={() => setTheme('noir')}
-                className={`py-2 rounded-lg text-xs font-mono-code font-semibold flex items-center justify-center gap-2 transition-all ${
+                className={`py-2 rounded-lg text-xs font-mono-code font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   theme === 'noir'
                     ? 'bg-[#181818] text-[#F4F0E8] shadow-sm'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
@@ -297,7 +348,7 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
 
               <button
                 onClick={() => setTheme('ivory')}
-                className={`py-2 rounded-lg text-xs font-mono-code font-semibold flex items-center justify-center gap-2 transition-all ${
+                className={`py-2 rounded-lg text-xs font-mono-code font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                   theme === 'ivory'
                     ? 'bg-[#FFFFFF] text-[#121212] shadow-sm'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
@@ -312,11 +363,11 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
             <div className="pt-2 flex flex-col gap-2">
               <div className="flex items-center justify-between text-xs font-mono-code text-[var(--text-muted)] px-1">
                 <span>AMBIENT SOUND TEXTURES</span>
-                <span>SHORTCUT: [M]</span>
+                <span>SHORTCUT: [S]</span>
               </div>
               <button
                 onClick={() => toggleSound('manual')}
-                className={`w-full py-2.5 px-3 rounded-xl border flex items-center justify-between text-xs font-mono-code transition-all ${
+                className={`w-full py-2.5 px-3 rounded-xl border flex items-center justify-between text-xs font-mono-code transition-all cursor-pointer ${
                   soundEnabled
                     ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)]/50 text-[var(--text-primary)]'
                     : 'bg-[var(--bg-card)] border-[var(--border-card)] text-[var(--text-muted)]'

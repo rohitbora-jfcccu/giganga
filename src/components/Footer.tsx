@@ -1,8 +1,12 @@
 import React from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
-import { ArrowUp, Github, Linkedin, Mail } from 'lucide-react';
+import { ArrowUp, Github, Linkedin, Mail, Keyboard } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onShortcutsClick?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onShortcutsClick }) => {
   const { identity } = PORTFOLIO_DATA;
 
   const scrollToTop = () => {
@@ -23,7 +27,7 @@ export const Footer: React.FC = () => {
             </p>
           </div>
 
-          {/* Social / Direct Links */}
+          {/* Social / Direct Links & Shortcuts */}
           <div className="flex flex-wrap items-center gap-6 text-xs text-[var(--text-secondary)]">
             <a
               href={`mailto:${identity.email}`}
@@ -53,6 +57,22 @@ export const Footer: React.FC = () => {
                 <Linkedin className="w-3.5 h-3.5" />
                 <span>LinkedIn</span>
               </a>
+            )}
+
+            {onShortcutsClick && (
+              <button
+                onClick={onShortcutsClick}
+                className="hover:text-[var(--accent-champagne)] transition-colors flex items-center gap-1.5 cursor-pointer font-mono-code"
+                title="View keyboard navigation shortcuts (Press '?')"
+                aria-label="View keyboard shortcuts"
+                aria-keyshortcuts="?"
+              >
+                <Keyboard className="w-3.5 h-3.5" />
+                <span>Shortcuts</span>
+                <kbd className="px-1 py-0.2 rounded text-[10px] font-mono-code font-bold bg-[var(--bg-card)] border border-[var(--border-card)] text-[var(--text-muted)]">
+                  ?
+                </kbd>
+              </button>
             )}
           </div>
 

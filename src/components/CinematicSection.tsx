@@ -77,10 +77,10 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
 
       switch (type) {
         case 'projects': {
-          // Architectural scale bloom and gentle vertical lift
+          // Architectural scale bloom and gentle vertical lift with subtle fade-in
           gsap.fromTo(
             el,
-            { opacity: 0.85, y: 32, scale: 0.988 },
+            { opacity: 0.35, y: 36, scale: 0.99 },
             {
               opacity: 1,
               y: 0,
@@ -88,9 +88,9 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 88%',
-                end: 'top 48%',
-                scrub: 0.6,
+                start: 'top 92%',
+                end: 'top 52%',
+                scrub: 0.5,
                 invalidateOnRefresh: true,
               },
             }

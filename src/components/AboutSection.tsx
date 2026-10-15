@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
@@ -29,6 +29,40 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
   const [activeTab, setActiveTab] = useState<'philosophy' | 'pillars' | 'almaMater'>('philosophy');
   const [selectedPillar, setSelectedPillar] = useState<number>(0);
 
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (isReduced) {
+      setIsVisible(true);
+      return;
+    }
+
+    const element = sectionRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const pillarIcons = [
     <Cpu className="w-4 h-4 text-[var(--accent-champagne)]" key="cpu" />,
     <Terminal className="w-4 h-4 text-[var(--accent-champagne)]" key="terminal" />,
@@ -38,37 +72,53 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
 
   return (
     <CinematicSection id="about" type="about" bg="primary">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Section Header */}
-        <MotionSectionHeader
-          kicker={about.kicker}
-          title={about.title}
-          description="A dedication to software engineering that balances rigorous computer science invariants with haute-couture editorial typography and sub-second performance."
-          borderBottom={true}
-          rightContent={
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onResumeClick}
-                className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
-              >
-                <GraduationCap className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
-                <span>Verified CV</span>
-              </button>
-              {onContactClick && (
+      <div ref={sectionRef} className="max-w-7xl mx-auto px-6 lg:px-12">
+        {/* Section Header with Subtle Upward Fade-in */}
+        <div
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(24px)',
+            transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          <MotionSectionHeader
+            kicker={about.kicker}
+            title={about.title}
+            description="A dedication to software engineering that balances rigorous computer science invariants with haute-couture editorial typography and sub-second performance."
+            borderBottom={true}
+            rightContent={
+              <div className="flex items-center gap-3">
                 <button
-                  onClick={onContactClick}
-                  className="px-4 py-2 rounded-lg bg-[var(--text-primary)] hover:bg-[var(--accent-champagne)] text-[var(--bg-primary)] hover:text-black text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
+                  onClick={onResumeClick}
+                  className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
                 >
-                  <span>Initiate Contact</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <GraduationCap className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
+                  <span>Verified CV</span>
                 </button>
-              )}
-            </div>
-          }
-        />
+                {onContactClick && (
+                  <button
+                    onClick={onContactClick}
+                    className="px-4 py-2 rounded-lg bg-[var(--text-primary)] hover:bg-[var(--accent-champagne)] text-[var(--bg-primary)] hover:text-black text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-sm flex items-center gap-1.5"
+                  >
+                    <span>Initiate Contact</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            }
+          />
+        </div>
 
-        {/* Interactive Perspective Tabs */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 border-b border-[var(--border-subtle)]" role="tablist">
+        {/* Interactive Perspective Tabs with Staggered Upward Fade-in */}
+        <div
+          className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 border-b border-[var(--border-subtle)]"
+          role="tablist"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(22px)',
+            transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 120ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 120ms',
+          }}
+        >
           <button
             role="tab"
             aria-selected={activeTab === 'philosophy'}
@@ -106,6 +156,15 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             03. Academic Roots & Alma Mater
           </button>
         </div>
+
+        {/* Tab Panels Container with Upward Fade-in */}
+        <div
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(26px)',
+            transition: 'opacity 750ms cubic-bezier(0.16, 1, 0.3, 1) 220ms, transform 750ms cubic-bezier(0.16, 1, 0.3, 1) 220ms',
+          }}
+        >
 
         {/* Tab 1: Personal Philosophy Content */}
         {activeTab === 'philosophy' && (
@@ -354,6 +413,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             </div>
           </div>
         )}
+        </div>
       </div>
     </CinematicSection>
   );

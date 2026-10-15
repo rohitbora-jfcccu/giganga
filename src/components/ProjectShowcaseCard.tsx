@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUpRight, Github, ExternalLink, ShieldCheck, Cpu, Layers, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Github, ExternalLink, ShieldCheck, Cpu, Layers, Sparkles, Clock } from 'lucide-react';
 import { ProjectCaseStudy } from '../data/portfolio-data';
 import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
 import { useSound } from '../context/SoundContext';
@@ -112,51 +112,59 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
           }`}
           style={{ perspective: 1200 }}
         >
-          {/* 3D vs Concept Interface Toggle for Under-Development Architectures */}
-          {(project.id === 'custom-os' || project.id === 'my-own-jarvis') && (
-            <div className="flex items-center justify-between mb-3 px-1">
-              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)]">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    playClick();
-                    setViewMode('3d');
-                  }}
-                  className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all cursor-pointer ${
-                    viewMode === '3d'
-                      ? 'bg-[var(--accent-champagne)] text-black font-bold shadow-xs'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  ⚡ Interactive 3D Model
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    playClick();
-                    setViewMode('image');
-                  }}
-                  className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all cursor-pointer ${
-                    viewMode === 'image'
-                      ? 'bg-[var(--accent-champagne)] text-black font-bold shadow-xs'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  Concept Interface
-                </button>
-              </div>
-              <span className="text-[10px] font-mono-code text-[var(--accent-champagne)] font-semibold hidden sm:inline">
-                REAL-TIME WEBGL RENDERING
+          {/* 3D vs Concept Interface Toggle for All Architectures */}
+          <div className="flex items-center justify-between mb-3 px-1">
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)]">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playClick();
+                  setViewMode('3d');
+                }}
+                className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all cursor-pointer ${
+                  viewMode === '3d'
+                    ? 'bg-[var(--accent-champagne)] text-black font-bold shadow-xs'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                ⚡ Interactive 3D Model
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playClick();
+                  setViewMode('image');
+                }}
+                className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all cursor-pointer ${
+                  viewMode === 'image'
+                    ? 'bg-[var(--accent-champagne)] text-black font-bold shadow-xs'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
+                }`}
+              >
+                Concept Interface
+              </button>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono-code text-[var(--accent-champagne)] font-medium">
+                <Clock className="w-3 h-3 text-[var(--accent-champagne)]" />
+                <span>{project.readingTime || '5 min read'}</span>
+              </span>
+              <span className="text-[10px] font-mono-code text-[var(--text-muted)] font-semibold hidden sm:inline">
+                REAL-TIME WEBGL
               </span>
             </div>
-          )}
+          </div>
 
-          {/* Live Interactive 3D Model Viewport */}
-          {project.id === 'custom-os' && viewMode === '3d' ? (
+          {/* Live Interactive 3D Model Viewport (Active by Default) */}
+          {viewMode === '3d' && project.id === 'atelier-noir' ? (
+            <Ecommerce3DShowroom mode="compact" onOpenFullExperience={() => onSelectProject(project)} />
+          ) : viewMode === '3d' && project.id === 'logixcore-erp' ? (
+            <ERPSupplyChain3D mode="compact" onOpenFullExperience={() => onSelectProject(project)} />
+          ) : viewMode === '3d' && project.id === 'custom-os' ? (
             <CustomOSVisualization mode="compact" onOpenFullExperience={() => onSelectProject(project)} />
-          ) : project.id === 'my-own-jarvis' && viewMode === '3d' ? (
+          ) : viewMode === '3d' && project.id === 'my-own-jarvis' ? (
             <JarvisAICoreVisualization mode="compact" onOpenFullExperience={() => onSelectProject(project)} />
           ) : (
             <div
@@ -290,11 +298,16 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 transform: isReducedMotion ? 'none' : 'translateZ(26px)',
               }}
             >
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[#F4F0E8] text-[11px]">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/10 text-[#F4F0E8] text-[11px] shadow-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C9B79C] animate-pulse" />
                 <span>{project.category}</span>
                 <span className="text-white/40">·</span>
                 <span className="text-white/80">{project.timeline}</span>
+                <span className="text-white/40">·</span>
+                <span className="text-[var(--accent-champagne)] inline-flex items-center gap-1 font-semibold">
+                  <Clock className="w-3 h-3 text-[var(--accent-champagne)]" />
+                  <span>{project.readingTime || '5 min read'}</span>
+                </span>
               </div>
 
               {project.status === 'UNDER DEVELOPMENT' ? (
@@ -352,11 +365,16 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
             inverted ? 'lg:order-1' : 'lg:order-2'
           }`}
         >
-          {/* Section Kicker with Unboxed Metadata & Elegant Champagne UNDER DEVELOPMENT Badge */}
+          {/* Section Kicker with Unboxed Metadata, Reading Time Estimate & Status */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--accent-champagne)] font-mono-code font-semibold tracking-wider">
             <span>{projectNumber} // {project.category.toUpperCase()}</span>
             <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
             <span>{project.timeline}</span>
+            <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
+            <span className="inline-flex items-center gap-1.5 text-[var(--text-secondary)] font-medium" title="Estimated reading time">
+              <Clock className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
+              <span>{project.readingTime || '5 min read'}</span>
+            </span>
             <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
             {project.status === 'UNDER DEVELOPMENT' ? (
               <span className="px-2.5 py-0.5 rounded-full bg-[var(--accent-champagne)]/15 border border-[var(--accent-champagne)] text-[var(--accent-champagne)] text-[10px] font-bold tracking-wider inline-flex items-center gap-1.5 shadow-xs">

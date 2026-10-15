@@ -56,7 +56,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     if (source === 'shortcut') {
-      setShortcutToast(mode === 'ivory' ? 'Ivory Mode Enabled · Press [T] to switch' : 'Noir Mode Enabled · Press [T] to switch');
+      setShortcutToast(mode === 'ivory' ? 'Ivory Mode Enabled · Press [M] to switch' : 'Noir Mode Enabled · Press [M] to switch');
     }
   }, []);
 
@@ -70,7 +70,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         console.warn('Unable to persist theme to localStorage', e);
       }
       if (source === 'shortcut') {
-        setShortcutToast(next === 'ivory' ? 'Ivory Mode Enabled · Press [T] to switch' : 'Noir Mode Enabled · Press [T] to switch');
+        setShortcutToast(next === 'ivory' ? 'Ivory Mode Enabled · Press [M] to switch' : 'Noir Mode Enabled · Press [M] to switch');
       }
       return next;
     });
@@ -85,14 +85,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => clearTimeout(timer);
   }, [shortcutToast]);
 
-  // Global Keyboard Listener: Press 'T' to toggle theme
+  // Global Keyboard Listener: Press 'M' (or 'T') to toggle theme
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is holding Ctrl, Meta, or Alt (avoid browser shortcut conflicts like Ctrl+T)
+      // Ignore if user is holding Ctrl, Meta, or Alt (avoid browser shortcut conflicts like Ctrl+T or Ctrl+M)
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-      // Check if key is 't' or 'T'
-      if (e.key === 't' || e.key === 'T') {
+      // Check if key is 'm' / 'M' or fallback 't' / 'T'
+      const key = e.key.toLowerCase();
+      if (key === 'm' || key === 't') {
         // Do not trigger if typing in an input, textarea, select, or editable element
         const target = e.target as HTMLElement | null;
         if (
@@ -100,7 +101,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           (target.tagName === 'INPUT' ||
             target.tagName === 'TEXTAREA' ||
             target.tagName === 'SELECT' ||
-            target.isContentEditable)
+            target.isContentEditable ||
+            target.closest('input, textarea, select, [contenteditable="true"]'))
         ) {
           return;
         }

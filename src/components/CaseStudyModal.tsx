@@ -3,6 +3,8 @@ import { X, Github, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { ProjectCaseStudy } from '../data/portfolio-data';
 import { CustomOSVisualization } from './CustomOSVisualization';
 import { JarvisAICoreVisualization } from './JarvisAICoreVisualization';
+import { Ecommerce3DShowroom } from './Ecommerce3DShowroom';
+import { ERPSupplyChain3D } from './ERPSupplyChain3D';
 
 interface CaseStudyModalProps {
   project: ProjectCaseStudy | null;
@@ -56,8 +58,12 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
       role="dialog"
       aria-modal="true"
       aria-labelledby="case-study-title"
+      onClick={onClose}
     >
-      <div className="relative w-full max-w-4xl bg-[var(--bg-primary)] border border-[var(--border-card)] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col transition-colors duration-300">
+      <div
+        className="relative w-full max-w-4xl bg-[var(--bg-primary)] border border-[var(--border-card)] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col transition-colors duration-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Top Bar */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[var(--bg-primary)]/95 backdrop-blur-md border-b border-[var(--border-subtle)]">
           <div className="flex items-center gap-3 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold">
@@ -76,10 +82,14 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
 
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors cursor-pointer"
-            aria-label="Close case study dialog"
+            className="group/close flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--border-card)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-colors cursor-pointer"
+            aria-label="Close case study dialog (Press Escape)"
+            aria-keyshortcuts="Escape"
           >
-            <X className="w-5 h-5" />
+            <kbd className="px-1.5 py-0.5 rounded text-[10px] font-mono-code font-bold bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--text-muted)] group-hover/close:text-[var(--text-primary)]">
+              ESC
+            </kbd>
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -107,8 +117,16 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
               {project.tagline}
             </p>
 
-            {/* Interactive 3D Workstation Experience for Custom OS & JARVIS */}
-            {project.id === 'custom-os' ? (
+            {/* Interactive 3D Workstation Experience for Architectural Projects */}
+            {project.id === 'atelier-noir' ? (
+              <div className="w-full shadow-2xl">
+                <Ecommerce3DShowroom mode="expanded" />
+              </div>
+            ) : project.id === 'logixcore-erp' ? (
+              <div className="w-full shadow-2xl">
+                <ERPSupplyChain3D mode="expanded" />
+              </div>
+            ) : project.id === 'custom-os' ? (
               <div className="w-full shadow-2xl">
                 <CustomOSVisualization mode="expanded" />
               </div>
