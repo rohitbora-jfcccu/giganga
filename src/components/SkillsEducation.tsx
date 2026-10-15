@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
-import { GraduationCap, ArrowUpRight, CheckCircle2, Terminal, Code2, Layers, Cpu, ShieldCheck } from 'lucide-react';
-import { ScrollHeadlineReveal } from './ScrollTextReveal';
+import { GraduationCap } from 'lucide-react';
 import { MotionSectionHeader } from './MotionSectionHeader';
 import { CinematicSection } from './CinematicSection';
 
@@ -12,18 +11,6 @@ interface SkillsEducationProps {
 export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick }) => {
   const { skills, education } = PORTFOLIO_DATA;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  
-  // Track selected skill for deep inspection drawer (default to TypeScript)
-  const defaultSkill = skills[0].skills[0];
-  const [activeSkill, setActiveSkill] = useState<{
-    name: string;
-    context: string;
-    application?: string;
-    categoryTitle?: string;
-  }>({
-    ...defaultSkill,
-    categoryTitle: skills[0].title,
-  });
 
   const categories = [
     { id: 'all', label: 'All Stacks' },
@@ -80,44 +67,8 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Academic Credentials & Active Skill Inspection */}
+          {/* Left Column: Academic Degree & Formal Coursework */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Active Skill Inspection Card */}
-            <div className="p-6 sm:p-7 rounded-2xl bg-[var(--bg-card)] border border-[var(--accent-champagne)]/60 shadow-md space-y-4">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-widest font-bold">
-                  SKILL APPLICATION PROFILE
-                </span>
-                <span className="text-[11px] font-mono-code text-[var(--text-muted)]">
-                  {activeSkill.categoryTitle || 'Core Competency'}
-                </span>
-              </div>
-
-              <div>
-                <h4 className="text-xl font-bold text-[var(--text-primary)]">
-                  {activeSkill.name}
-                </h4>
-                <p className="text-xs text-[var(--accent-champagne)] mt-1 font-mono-code">
-                  {activeSkill.context}
-                </p>
-              </div>
-
-              {activeSkill.application && (
-                <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] space-y-1.5">
-                  <span className="text-[10px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-semibold block">
-                    Verified Production Deployment
-                  </span>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    {activeSkill.application}
-                  </p>
-                </div>
-              )}
-
-              <p className="text-[11px] font-mono-code text-[var(--text-muted)] pt-1">
-                Click any skill tag on the right to inspect its verified architectural role.
-              </p>
-            </div>
-
             {/* Formal Academic Degree Card */}
             <div
               data-sound-card="true"
@@ -185,38 +136,20 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
                     <span className="text-[var(--text-muted)] text-xs">0{idx + 1}</span>
                   </h3>
 
-                  <div className="space-y-4">
-                    {domain.skills.map((s, i) => {
-                      const isSelected = activeSkill.name === s.name;
-                      return (
-                        <div
-                          key={i}
-                          onClick={() =>
-                            setActiveSkill({
-                              ...s,
-                              categoryTitle: domain.title,
-                            })
-                          }
-                          className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[var(--bg-elevated)] border-[var(--accent-champagne)] ring-1 ring-[var(--accent-champagne)]/30'
-                              : 'bg-transparent border-transparent hover:bg-[var(--bg-elevated)]/60 hover:border-[var(--border-subtle)]'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="font-bold text-xs sm:text-sm text-[var(--text-primary)]">
-                              {s.name}
-                            </span>
-                            <span className="text-[10px] font-mono-code text-[var(--accent-champagne)] opacity-80">
-                              {isSelected ? 'Active' : 'Inspect'}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-[var(--text-secondary)] leading-normal">
-                            {s.context}
-                          </p>
-                        </div>
-                      );
-                    })}
+                  <div className="space-y-3">
+                    {domain.skills.map((s, i) => (
+                      <div
+                        key={i}
+                        className="p-2.5 rounded-xl bg-[var(--bg-elevated)]/40 border border-[var(--border-subtle)] hover:border-[var(--accent-champagne)]/40 transition-colors"
+                      >
+                        <span className="font-bold text-xs sm:text-sm text-[var(--text-primary)] block mb-0.5">
+                          {s.name}
+                        </span>
+                        <p className="text-[11px] text-[var(--text-secondary)] leading-normal">
+                          {s.context}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

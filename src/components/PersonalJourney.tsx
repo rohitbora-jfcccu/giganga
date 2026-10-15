@@ -23,25 +23,25 @@ export const PersonalJourney: React.FC = () => {
         />
 
         {/* Narrative & Timeline Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
           {/* Left Column: Reflective Narrative & Active Milestone Spotlight */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-4 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
-              {journey.paragraphs.map((p, i) => (
-                <ScrollScrubText
-                  key={i}
-                  as="p"
-                  className="font-normal leading-relaxed"
-                  startOffset="top 88%"
-                  endOffset="top 42%"
-                >
-                  {p}
-                </ScrollScrubText>
-              ))}
+            <div className="space-y-3 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
+              <ScrollScrubText
+                as="p"
+                className="font-editorial text-xl sm:text-2xl text-[var(--text-primary)] leading-snug"
+                startOffset="top 88%"
+                endOffset="top 42%"
+              >
+                From algorithmic first principles in the Himalayas to production-grade web systems.
+              </ScrollScrubText>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                My work balances foundational computer science invariants from Soban Singh Jeena University, Almora, with high-craft digital products that execute with mathematical precision.
+              </p>
             </div>
 
             {/* Active Milestone Deep Inspection Spotlight */}
-            <div className="p-6 sm:p-7 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-md space-y-5 transition-all">
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-md space-y-4 transition-all">
               <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
                 <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-bold tracking-widest uppercase">
                   MILESTONE SPOTLIGHT // {activeItem.year}
@@ -55,25 +55,16 @@ export const PersonalJourney: React.FC = () => {
                 <h4 className="text-lg font-bold text-[var(--text-primary)] mb-1">
                   {activeItem.milestone}
                 </h4>
-                <p className="text-xs text-[var(--accent-champagne)] font-semibold font-mono-code">
-                  {activeItem.period}
-                </p>
-              </div>
-
-              {activeItem.keyFocus && (
-                <div>
-                  <span className="text-[11px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-1">
-                    Key Focus
-                  </span>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                {activeItem.keyFocus && (
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-1">
                     {activeItem.keyFocus}
                   </p>
-                </div>
-              )}
+                )}
+              </div>
 
               {activeItem.tangibleOutcome && (
-                <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                  <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-semibold block mb-1">
+                <div className="p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
+                  <span className="text-[10px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-semibold block mb-0.5">
                     Verified Outcome
                   </span>
                   <p className="text-xs text-[var(--text-primary)] leading-relaxed font-medium">
@@ -84,8 +75,8 @@ export const PersonalJourney: React.FC = () => {
 
               {activeItem.technologies && (
                 <div className="pt-2 border-t border-[var(--border-subtle)]">
-                  <span className="text-[11px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-2">
-                    Core Competencies Mastered
+                  <span className="text-[10px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">
+                    Mastered Competencies
                   </span>
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--text-secondary)]">
                     {activeItem.technologies.map((tech, idx) => (
@@ -99,18 +90,6 @@ export const PersonalJourney: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Academic Credential Summary Box */}
-            <div className="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
-              <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold mb-2">
-                <GraduationCap className="w-4 h-4" />
-                <span>SSJ UNIVERSITY FORMAL EDUCATION</span>
-              </div>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                Soban Singh Jeena University, Almora (Class of 2026). 
-                Curriculum grounded in data structures, relational database normalization, and distributed computer systems.
-              </p>
             </div>
           </div>
 

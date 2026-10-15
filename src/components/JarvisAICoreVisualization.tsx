@@ -288,7 +288,10 @@ export const JarvisAICoreVisualization: React.FC<JarvisAICoreVisualizationProps>
     const clock = new THREE.Clock();
     const audioDataArray = new Uint8Array(64);
 
+    let isVisible = false;
+
     const animate = () => {
+      if (!isVisible) return;
       animId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
@@ -329,7 +332,7 @@ export const JarvisAICoreVisualization: React.FC<JarvisAICoreVisualizationProps>
       ring1.rotation.z += delta * 0.4 * stateSpeedMultiplier;
       ring2.rotation.x += delta * 0.5 * stateSpeedMultiplier;
       ring2.rotation.y -= delta * 0.3 * stateSpeedMultiplier;
-      ring3.rotation.z -= delta * 0.35 * stateSpeedMultiplier;
+      ring3.rotation.z += delta * 0.35 * stateSpeedMultiplier;
 
       // Pulse and scale core orb
       const baseScale = 1.0 + audioLevel * 0.45;
@@ -357,9 +360,27 @@ export const JarvisAICoreVisualization: React.FC<JarvisAICoreVisualizationProps>
       renderer?.render(scene, camera);
     };
 
-    animate();
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible) {
+          clock.start();
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(animate);
+        } else if (!isVisible && wasVisible) {
+          cancelAnimationFrame(animId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animId);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', resize);

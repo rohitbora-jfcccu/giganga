@@ -25,8 +25,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
   onContactClick,
   onResumeClick,
 }) => {
-  const { identity, about, education } = PORTFOLIO_DATA;
-  const [activeTab, setActiveTab] = useState<'philosophy' | 'pillars' | 'almaMater'>('philosophy');
+  const { identity, about } = PORTFOLIO_DATA;
+  const [activeTab, setActiveTab] = useState<'philosophy' | 'pillars'>('philosophy');
   const [selectedPillar, setSelectedPillar] = useState<number>(0);
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -142,18 +142,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
             }`}
           >
             02. Core Architectural Pillars
-          </button>
-          <button
-            role="tab"
-            aria-selected={activeTab === 'almaMater'}
-            onClick={() => setActiveTab('almaMater')}
-            className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-colors border-b-2 cursor-pointer whitespace-nowrap ${
-              activeTab === 'almaMater'
-                ? 'border-[var(--accent-champagne)] text-[var(--text-primary)]'
-                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
-            }`}
-          >
-            03. Academic Roots & Alma Mater
           </button>
         </div>
 
@@ -333,83 +321,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 3: Alma Mater & SSJ University */}
-        {activeTab === 'almaMater' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            <div className="lg:col-span-6 space-y-6">
-              <div className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-card)] text-[var(--accent-champagne)]">
-                    <GraduationCap className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider">
-                      Academic Institution
-                    </span>
-                    <h3 className="text-xl font-bold text-[var(--text-primary)]">
-                      {education.institution}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="space-y-3 text-sm text-[var(--text-secondary)] border-t border-[var(--border-subtle)] pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[var(--text-muted)]">Degree Awarded:</span>
-                    <span className="font-semibold text-[var(--text-primary)]">{education.degree}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[var(--text-muted)]">Academic Tenure:</span>
-                    <span className="font-mono-code">{education.period}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[var(--text-muted)]">Status:</span>
-                    <span className="font-mono-code text-[var(--accent-champagne)] font-semibold">{education.status}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[var(--text-muted)]">Location:</span>
-                    <span>{education.location}</span>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-[var(--border-subtle)]">
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    Soban Singh Jeena University (SSJ University) in Almora provided the foundational crucible in rigorous computing. 
-                    From pointers and manual memory allocation in C/C++ to relational database theory and network socket communications, this curriculum forms the analytical backbone of every modern web architecture I deploy today.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6 space-y-6">
-              <div className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm space-y-4">
-                <h4 className="text-sm font-mono-code uppercase tracking-wider text-[var(--accent-champagne)] font-semibold">
-                  Curriculum Competencies
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {education.coursework.map((course, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-xs text-[var(--text-primary)] flex items-start gap-2"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
-                      <span>{course}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-4 mt-2">
-                  <button
-                    onClick={onResumeClick}
-                    className="w-full py-3 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)] text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer text-center block"
-                  >
-                    View Official Transcript &amp; Full Curriculum Vitae →
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         )}

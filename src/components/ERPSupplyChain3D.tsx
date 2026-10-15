@@ -481,9 +481,11 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
 
     // 7. Render Loop
     let animId = 0;
+    let isVisible = false;
     const clock = new THREE.Clock();
 
     const renderTick = () => {
+      if (!isVisible) return;
       animId = requestAnimationFrame(renderTick);
       const delta = Math.min(clock.getDelta(), 0.1);
       const time = clock.getElapsedTime() * speedMultiplier;
@@ -517,7 +519,24 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
       renderer.render(scene, camera);
     };
 
-    renderTick();
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible) {
+          clock.start();
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(renderTick);
+        } else if (!isVisible && wasVisible) {
+          cancelAnimationFrame(animId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    if (containerRef.current) {
+      intersectionObserver.observe(containerRef.current);
+    }
 
     const handleResize = () => {
       if (!mount || !renderer || !camera) return;
@@ -533,6 +552,7 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
     resizeObserver.observe(mount);
 
     return () => {
+      intersectionObserver.disconnect();
       cancelAnimationFrame(animId);
       resizeObserver.disconnect();
       renderer.dispose();

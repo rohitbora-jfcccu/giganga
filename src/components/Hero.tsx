@@ -104,8 +104,8 @@ export const Hero: React.FC<HeroProps> = ({
         className="absolute inset-0 pointer-events-none transition-opacity duration-700 -z-10"
         style={{
           background: isIvory
-            ? 'radial-gradient(circle at 50% 30%, rgba(136,108,75,0.08) 0%, rgba(244,240,232,0.9) 65%, #F4F0E8 100%)'
-            : 'radial-gradient(circle at 50% 30%, rgba(201,183,156,0.07) 0%, rgba(5,5,5,0.92) 65%, #000000 100%)',
+            ? 'radial-gradient(circle at 50% 30%, rgba(116,84,61,0.08) 0%, rgba(245,239,235,0.92) 65%, #F5EFEB 100%)'
+            : 'radial-gradient(circle at 50% 30%, rgba(197,168,121,0.06) 0%, rgba(8,7,6,0.94) 65%, #080706 100%)',
         }}
       />
 
@@ -121,13 +121,13 @@ export const Hero: React.FC<HeroProps> = ({
         <h1
           className={`font-editorial text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase leading-none select-none text-transparent bg-clip-text transition-colors duration-300 ${
             isIvory
-              ? 'bg-gradient-to-b from-[#181512] via-[#3E342A] to-[#886C4B]'
-              : 'bg-gradient-to-b from-[#FFFFFF] via-[#F4F0E8] to-[#C9B79C]'
+              ? 'bg-gradient-to-b from-[#1C1612] via-[#261E18] to-[#74543D]'
+              : 'bg-gradient-to-b from-[#C9C0B4] via-[#E8E0D4] to-[#C5A879]'
           }`}
           style={{
             textShadow: isIvory
-              ? '0 2px 24px rgba(136, 108, 75, 0.15)'
-              : '0 4px 32px rgba(201, 183, 156, 0.25)',
+              ? '0 2px 24px rgba(116, 84, 61, 0.15)'
+              : '0 4px 32px rgba(197, 168, 121, 0.18)',
           }}
         >
           BORA
@@ -203,8 +203,8 @@ export const Hero: React.FC<HeroProps> = ({
                 className="absolute inset-0 pointer-events-none opacity-40 transition-opacity duration-500 -z-0"
                 style={{
                   background: isIvory
-                    ? 'radial-gradient(circle at 50% 30%, rgba(136,108,75,0.18) 0%, transparent 70%)'
-                    : 'radial-gradient(circle at 50% 30%, rgba(201,183,156,0.16) 0%, transparent 70%)',
+                    ? 'radial-gradient(circle at 50% 30%, rgba(116,84,61,0.16) 0%, transparent 70%)'
+                    : 'radial-gradient(circle at 50% 30%, rgba(197,168,121,0.14) 0%, transparent 70%)',
                 }}
               />
 
@@ -212,6 +212,8 @@ export const Hero: React.FC<HeroProps> = ({
               <img
                 src="/images/bora-portrait.png"
                 alt="Rohit Singh Bora — Software Engineer"
+                fetchPriority="high"
+                decoding="async"
                 className="relative z-10 w-full h-full object-cover object-top select-none transition-transform duration-700 hover:scale-[1.02]"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
@@ -227,8 +229,8 @@ export const Hero: React.FC<HeroProps> = ({
                 className="absolute inset-x-0 bottom-0 h-16 pointer-events-none z-20"
                 style={{
                   background: isIvory
-                    ? 'linear-gradient(to top, rgba(237,231,220,0.6) 0%, transparent 100%)'
-                    : 'linear-gradient(to top, rgba(6,6,6,0.7) 0%, transparent 100%)',
+                    ? 'linear-gradient(to top, rgba(245,239,235,0.7) 0%, transparent 100%)'
+                    : 'linear-gradient(to top, rgba(8,7,6,0.75) 0%, transparent 100%)',
                 }}
               />
             </div>
@@ -242,7 +244,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="lg:col-span-4 flex flex-col justify-center space-y-4 text-left lg:text-right order-3 will-change-transform"
             style={{ willChange: 'transform, opacity' }}
           >
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[2.65rem] font-medium leading-[1.12] tracking-tight text-[var(--text-primary)] [text-wrap:balance]">
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[2.65rem] font-medium leading-[1.12] tracking-tight text-[var(--text-heading)] [text-wrap:balance]">
               Creative Developer <span className="italic text-[var(--accent-champagne)]">&amp; Digital Experience</span> Builder
             </h2>
 

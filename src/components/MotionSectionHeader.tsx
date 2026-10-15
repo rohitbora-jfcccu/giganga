@@ -9,6 +9,7 @@ interface MotionSectionHeaderProps {
   className?: string;
   layout?: 'split' | 'stacked';
   borderBottom?: boolean;
+  champagneSweep?: boolean;
 }
 
 export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
@@ -19,6 +20,7 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
   className = '',
   layout = 'split',
   borderBottom = false,
+  champagneSweep = false,
 }) => {
   const shouldReduceMotion = useReducedMotion();
 
@@ -27,8 +29,8 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.12,
-        delayChildren: shouldReduceMotion ? 0 : 0.05,
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+        delayChildren: shouldReduceMotion ? 0 : 0.04,
       },
     },
   };
@@ -36,16 +38,24 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
   const itemVariants = {
     hidden: {
       opacity: 0,
-      y: shouldReduceMotion ? 0 : 22,
+      y: shouldReduceMotion ? 0 : 20,
+      rotateX: shouldReduceMotion ? 0 : 1.5,
     },
     visible: {
       opacity: 1,
       y: 0,
+      rotateX: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.01 : 0.7,
+        duration: shouldReduceMotion ? 0.01 : 0.65,
         ease: [0.22, 1, 0.36, 1] as const,
       },
     },
+  };
+
+  const viewportConfig = {
+    once: false,
+    amount: 0.15,
+    margin: '-40px 0px -40px 0px',
   };
 
   if (layout === 'stacked') {
@@ -54,11 +64,12 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
         className={`max-w-3xl mb-16 ${borderBottom ? 'pb-8 border-b border-[var(--border-subtle)]' : ''} ${className}`}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: '-60px' }}
+        viewport={viewportConfig}
         variants={containerVariants}
+        style={{ perspective: 1000 }}
       >
         {kicker && (
-          <motion.div variants={itemVariants} className="mb-2">
+          <motion.div variants={itemVariants} className="mb-2.5">
             <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold block">
               {kicker}
             </span>
@@ -67,7 +78,9 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
 
         <motion.h2
           variants={itemVariants}
-          className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] mb-4 [text-wrap:balance]"
+          className={`text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-heading)] mb-4 [text-wrap:balance] ${
+            champagneSweep ? 'text-champagne-sweep' : ''
+          }`}
         >
           {title}
         </motion.h2>
@@ -101,12 +114,13 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
       } ${className}`}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={viewportConfig}
       variants={containerVariants}
+      style={{ perspective: 1000 }}
     >
       <div className="max-w-2xl">
         {kicker && (
-          <motion.div variants={itemVariants} className="mb-2">
+          <motion.div variants={itemVariants} className="mb-2.5">
             <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold block">
               {kicker}
             </span>
@@ -115,7 +129,9 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
 
         <motion.h2
           variants={itemVariants}
-          className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] [text-wrap:balance]"
+          className={`text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-heading)] [text-wrap:balance] ${
+            champagneSweep ? 'text-champagne-sweep' : ''
+          }`}
         >
           {title}
         </motion.h2>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUpRight, Github, ShieldCheck, Cpu, Clock, Layers, Sparkles, AlertCircle, Eye, Box } from 'lucide-react';
+import { ArrowUpRight, Github, ShieldCheck, Cpu, Clock, Eye, Box, AlertCircle } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ProjectCaseStudy } from '../data/portfolio-data';
@@ -31,11 +31,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
   const { theme } = useTheme();
   const isNoir = theme === 'noir';
 
-  // Active specification tab ('highlights' | 'outcomes' | 'scope')
-  const [activeTab, setActiveTab] = useState<'highlights' | 'outcomes' | 'scope'>('highlights');
-
-  // Preview mode toggle for projects with interactive 3D companions
-  // ('preview' | '3d')
+  // Preview mode toggle for projects with interactive 3D companions ('preview' | '3d')
   const [previewMode, setPreviewMode] = useState<'preview' | '3d'>('preview');
 
   // Pointer-based 3D tilt and light sweep state
@@ -307,8 +303,8 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 <div
                   className={`absolute inset-0 transition-opacity duration-300 ${
                     isNoir
-                      ? 'bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 group-hover/card:opacity-60'
-                      : 'bg-gradient-to-t from-[#121212]/85 via-[#121212]/20 to-transparent opacity-60 group-hover/card:opacity-40'
+                      ? 'bg-gradient-to-t from-[#080706]/92 via-[#080706]/35 to-transparent opacity-85 group-hover/card:opacity-65'
+                      : 'bg-gradient-to-t from-[#1C1612]/85 via-[#1C1612]/25 to-transparent opacity-65 group-hover/card:opacity-45'
                   }`}
                 />
               </div>
@@ -319,8 +315,8 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                   className="absolute inset-0 pointer-events-none transition-opacity duration-200"
                   style={{
                     background: isNoir
-                      ? `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(201, 183, 156, 0.24), transparent 70%)`
-                      : `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(136, 108, 75, 0.18), transparent 70%)`,
+                      ? `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(197, 168, 121, 0.22), transparent 70%)`
+                      : `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(116, 84, 61, 0.16), transparent 70%)`,
                   }}
                 />
               )}
@@ -332,19 +328,19 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                   transform: isReducedMotion ? 'none' : 'translateZ(28px)',
                 }}
               >
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-[#F4F0E8] text-[11px] shadow-sm">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-primary)]/85 backdrop-blur-md border border-[var(--border-card)] text-[var(--text-primary)] text-[11px] shadow-sm">
                   <span className="font-semibold text-[var(--accent-champagne)]">{projectNumber}</span>
-                  <span className="text-white/40">·</span>
+                  <span className="text-[var(--text-muted)]">·</span>
                   <span>{project.category}</span>
                 </div>
 
                 {isUnderDev ? (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/85 backdrop-blur-md border border-[var(--accent-champagne)]/60 text-[var(--accent-champagne)] text-[10px] font-bold tracking-wider shadow-sm">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-primary)]/90 backdrop-blur-md border border-[var(--accent-champagne)]/60 text-[var(--accent-champagne)] text-[10px] font-bold tracking-wider shadow-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-champagne)]" />
                     <span>UNDER DEVELOPMENT</span>
                   </div>
                 ) : (
-                  <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/10 text-[var(--accent-champagne)] text-[11px] font-semibold">
+                  <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--bg-primary)]/85 backdrop-blur-md border border-[var(--border-card)] text-[var(--accent-champagne)] text-[11px] font-semibold">
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>{project.status}</span>
                   </div>
@@ -359,11 +355,11 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                     transform: isReducedMotion ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) translateZ(34px)',
                   }}
                 >
-                  <div className="px-4 py-2.5 rounded-xl bg-black/85 backdrop-blur-md border border-[var(--border-card)] shadow-2xl max-w-sm mx-auto">
+                  <div className="px-4 py-2.5 rounded-xl bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border-card)] shadow-2xl max-w-sm mx-auto">
                     <p className="text-[11px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-bold">
                       {isCustomOS ? 'Kernel & Architecture Research' : 'Multimodal Agent Exploration'}
                     </p>
-                    <p className="text-[11px] text-[#AAA69E] mt-1 font-sans">
+                    <p className="text-[11px] text-[var(--text-secondary)] mt-1 font-sans">
                       {isCustomOS
                         ? 'Low-level x86 bootstrapping, memory paging & POSIX terminal primitives.'
                         : 'Intent recognition, Web Audio frequency reactivity & developer automation.'}
@@ -383,13 +379,13 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                   <span className="text-[10px] uppercase font-mono-code tracking-wider text-[var(--accent-champagne)] font-semibold">
                     {project.category}
                   </span>
-                  <h4 className="text-base sm:text-lg font-bold text-[#F4F0E8] tracking-tight drop-shadow-sm">
+                  <h4 className="text-base sm:text-lg font-bold text-[var(--text-heading)] tracking-tight drop-shadow-sm">
                     {project.title}
                   </h4>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1.5 rounded-lg bg-[var(--accent-champagne)] text-black text-xs font-semibold flex items-center gap-1.5 shadow-md group-hover/card:scale-105 transition-transform duration-200">
+                  <span className="px-3 py-1.5 rounded-lg bg-[var(--accent-champagne)] text-[#1C1612] text-xs font-semibold flex items-center gap-1.5 shadow-md group-hover/card:scale-105 transition-transform duration-200">
                     <span>{isUnderDev ? 'View Blueprint' : 'Inspect Case Study'}</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </span>
@@ -445,7 +441,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
           <div>
             <ScrollHeadlineReveal
               as="h3"
-              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--text-primary)] leading-[1.08]"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--text-heading)] leading-[1.08]"
               startOffset="top 92%"
               endOffset="top 60%"
             >
@@ -505,114 +501,15 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
             </div>
           )}
 
-          {/* Actual Role & Engineering Responsibility Card */}
+          {/* Engineering Responsibility & Core Architecture */}
           <div className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-1.5">
             <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold">
               <Cpu className="w-3.5 h-3.5" />
-              <span>{isUnderDev ? 'RESEARCH SCOPE & ARCHITECTURE' : 'ENGINEERING ROLE & INVARIANTS'}</span>
+              <span>{isUnderDev ? 'RESEARCH SCOPE' : 'CORE ARCHITECTURE'}</span>
             </div>
             <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               {project.actualRole}
             </p>
-          </div>
-
-          {/* Interactive Specification Tabs: Highlights | Verified Outcomes | Scope */}
-          <div className="space-y-3 pt-1">
-            <div
-              className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)]"
-              role="tablist"
-              aria-label="Project detail tabs"
-            >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'highlights'}
-                onClick={() => {
-                  playClick();
-                  setActiveTab('highlights');
-                }}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
-                  activeTab === 'highlights'
-                    ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-xs font-semibold'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {isUnderDev ? 'Exploration Focus' : 'Highlights'}
-              </button>
-
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'outcomes'}
-                onClick={() => {
-                  playClick();
-                  setActiveTab('outcomes');
-                }}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
-                  activeTab === 'outcomes'
-                    ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-xs font-semibold'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                {isUnderDev ? 'Roadmap Milestones' : 'Verified Outcomes'}
-              </button>
-
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'scope'}
-                onClick={() => {
-                  playClick();
-                  setActiveTab('scope');
-                }}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
-                  activeTab === 'scope'
-                    ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-xs font-semibold'
-                    : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
-                }`}
-              >
-                System Scope
-              </button>
-            </div>
-
-            {/* Tab Panel Content */}
-            <div className="min-h-[105px]">
-              {activeTab === 'highlights' && (
-                <div className="space-y-2 text-xs text-[var(--text-secondary)]">
-                  {project.implementedFeatures.slice(0, 3).map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5">
-                      <span className="text-[var(--accent-champagne)] font-mono-code shrink-0">·</span>
-                      <p>
-                        <strong className="text-[var(--text-primary)] font-semibold">{feat.title}:</strong>{' '}
-                        <span>{feat.description}</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {activeTab === 'outcomes' && (
-                <div className="space-y-2 text-xs text-[var(--text-secondary)]">
-                  {project.verifiedOutcomes.map((outcome, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
-                      <span>{outcome}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {activeTab === 'scope' && (
-                <div className="space-y-2 text-xs text-[var(--text-secondary)]">
-                  {project.scope.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5">
-                      <span className="text-[var(--accent-champagne)] font-mono-code shrink-0">·</span>
-                      <span>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Unboxed Technologies List with Zero-Pill Typographic Separators */}

@@ -566,9 +566,11 @@ export const Ecommerce3DShowroom: React.FC<Ecommerce3DShowroomProps> = ({
 
     // 8. Animation & Render Loop
     let animId = 0;
+    let isVisible = false;
     const clock = new THREE.Clock();
 
     const renderTick = () => {
+      if (!isVisible) return;
       animId = requestAnimationFrame(renderTick);
       const delta = Math.min(clock.getDelta(), 0.1);
       const time = clock.getElapsedTime();
@@ -616,7 +618,24 @@ export const Ecommerce3DShowroom: React.FC<Ecommerce3DShowroomProps> = ({
       renderer.render(scene, camera);
     };
 
-    renderTick();
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible) {
+          clock.start();
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(renderTick);
+        } else if (!isVisible && wasVisible) {
+          cancelAnimationFrame(animId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    if (containerRef.current) {
+      intersectionObserver.observe(containerRef.current);
+    }
 
     // Resize observer
     const handleResize = () => {
@@ -633,6 +652,7 @@ export const Ecommerce3DShowroom: React.FC<Ecommerce3DShowroomProps> = ({
     resizeObserver.observe(mount);
 
     return () => {
+      intersectionObserver.disconnect();
       cancelAnimationFrame(animId);
       resizeObserver.disconnect();
       renderer.dispose();

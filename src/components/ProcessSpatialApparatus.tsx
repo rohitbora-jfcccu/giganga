@@ -647,11 +647,13 @@ export const ProcessSpatialApparatus: React.FC<ProcessSpatialApparatusProps> = (
       window.addEventListener('resize', handleResize);
 
       // -------------------------------------------------------------
-      // 8. 60 FPS Render & Animation Loop
+      // 8. Viewport-Aware 60 FPS Render & Animation Loop
       // -------------------------------------------------------------
       let baseAngle = 0;
+      let isVisible = false;
 
       const tick = () => {
+        if (!isVisible) return;
         animId = requestAnimationFrame(tick);
 
         const delta = Math.min(clock.getDelta(), 0.1);
@@ -810,9 +812,27 @@ export const ProcessSpatialApparatus: React.FC<ProcessSpatialApparatusProps> = (
         renderer.render(scene, camera);
       };
 
-      tick();
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          const wasVisible = isVisible;
+          isVisible = entry.isIntersecting;
+          if (isVisible && !wasVisible) {
+            clock.start();
+            cancelAnimationFrame(animId);
+            animId = requestAnimationFrame(tick);
+          } else if (!isVisible && wasVisible) {
+            cancelAnimationFrame(animId);
+          }
+        },
+        { threshold: 0.05 }
+      );
+
+      if (containerRef.current) {
+        observer.observe(containerRef.current);
+      }
 
       return () => {
+        observer.disconnect();
         cancelAnimationFrame(animId);
         window.removeEventListener('resize', handleResize);
         controls.dispose();

@@ -56,15 +56,15 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       if (glowRef.current) {
         gsap.fromTo(
           glowRef.current,
-          { opacity: 0.1, scaleX: 0.5 },
+          { opacity: 0.1, scaleX: 0.4 },
           {
-            opacity: isNoir ? 0.8 : 0.6,
+            opacity: isNoir ? 0.75 : 0.55,
             scaleX: 1,
             ease: 'power2.out',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: 'top 92%',
-              end: 'top 60%',
+              start: 'top 94%',
+              end: 'top 58%',
               scrub: 0.5,
               invalidateOnRefresh: true,
             },
@@ -72,25 +72,26 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
         );
       }
 
-      // 2. Section-Specific Depth & Vertical Entrance Physics
+      // 2. Section-Specific 3D Depth, Parallax & Vertical Entrance Physics
       const el = contentRef.current;
 
       switch (type) {
         case 'projects': {
-          // Architectural scale bloom and gentle vertical lift with subtle fade-in
+          // Architectural scale bloom, subtle 3D tilt and gentle vertical lift
           gsap.fromTo(
             el,
-            { opacity: 0.35, y: 36, scale: 0.99 },
+            { opacity: 0.3, y: 36, scale: 0.985, rotateX: 1.5 },
             {
               opacity: 1,
               y: 0,
               scale: 1,
+              rotateX: 0,
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 92%',
-                end: 'top 52%',
-                scrub: 0.5,
+                start: 'top 90%',
+                end: 'top 50%',
+                scrub: 0.55,
                 invalidateOnRefresh: true,
               },
             }
@@ -99,19 +100,20 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
         }
 
         case 'about': {
-          // Editorial timeline emergence: vertical glide with atmospheric clarity
+          // Editorial timeline emergence: gentle vertical glide with subtle 3D perspective
           gsap.fromTo(
             el,
-            { opacity: 0.85, y: 36 },
+            { opacity: 0.35, y: 34, rotateX: 1 },
             {
               opacity: 1,
               y: 0,
+              rotateX: 0,
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 86%',
-                end: 'top 46%',
-                scrub: 0.6,
+                start: 'top 88%',
+                end: 'top 48%',
+                scrub: 0.55,
                 invalidateOnRefresh: true,
               },
             }
@@ -120,10 +122,10 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
         }
 
         case 'capabilities': {
-          // Dimensional matrix reveal with layered elevation
+          // Dimensional matrix reveal with layered elevation and scale
           gsap.fromTo(
             el,
-            { opacity: 0.85, y: 30, scale: 0.99 },
+            { opacity: 0.35, y: 32, scale: 0.99 },
             {
               opacity: 1,
               y: 0,
@@ -132,7 +134,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
               scrollTrigger: {
                 trigger: sectionRef.current,
                 start: 'top 88%',
-                end: 'top 50%',
+                end: 'top 48%',
                 scrub: 0.5,
                 invalidateOnRefresh: true,
               },
@@ -145,14 +147,14 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
           // Sequential methodology pipeline entrance
           gsap.fromTo(
             el,
-            { opacity: 0.85, y: 34 },
+            { opacity: 0.35, y: 34 },
             {
               opacity: 1,
               y: 0,
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 86%',
+                start: 'top 88%',
                 end: 'top 48%',
                 scrub: 0.5,
                 invalidateOnRefresh: true,
@@ -163,10 +165,10 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
         }
 
         case 'skills': {
-          // Academic registry structural anchor
+          // Academic registry structural anchor with calm vertical lift
           gsap.fromTo(
             el,
-            { opacity: 0.88, y: 28 },
+            { opacity: 0.35, y: 30 },
             {
               opacity: 1,
               y: 0,
@@ -174,7 +176,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
               scrollTrigger: {
                 trigger: sectionRef.current,
                 start: 'top 88%',
-                end: 'top 52%',
+                end: 'top 50%',
                 scrub: 0.5,
                 invalidateOnRefresh: true,
               },
@@ -187,16 +189,17 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
           // Direct correspondence focal convergence
           gsap.fromTo(
             el,
-            { opacity: 0.85, y: 38 },
+            { opacity: 0.35, y: 36, scale: 0.99 },
             {
               opacity: 1,
               y: 0,
+              scale: 1,
               ease: 'power2.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
                 start: 'top 88%',
                 end: 'top 48%',
-                scrub: 0.6,
+                scrub: 0.55,
                 invalidateOnRefresh: true,
               },
             }
@@ -235,8 +238,8 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
             className="absolute -top-6 left-1/2 -translate-x-1/2 w-3/4 h-12 blur-xl pointer-events-none"
             style={{
               background: isNoir
-                ? 'radial-gradient(ellipse at 50% 0%, rgba(201, 183, 156, 0.16), transparent 70%)'
-                : 'radial-gradient(ellipse at 50% 0%, rgba(136, 108, 75, 0.12), transparent 70%)',
+                ? 'radial-gradient(ellipse at 50% 0%, rgba(197, 168, 121, 0.16), transparent 70%)'
+                : 'radial-gradient(ellipse at 50% 0%, rgba(116, 84, 61, 0.12), transparent 70%)',
             }}
           />
         </div>
@@ -245,7 +248,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       {/* 2. Soft Ambient Vignette Layer */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none opacity-[0.035] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]"
+        className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]"
       />
 
       {/* 3. Section Motion Content Container */}
@@ -254,6 +257,7 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
         className="w-full relative z-10 will-change-transform"
         style={{
           transform: isReducedMotion ? 'none' : 'translateY(0px)',
+          perspective: '1200px',
           opacity: 1, // Reliable base fallback ensures content is never hidden
         }}
       >

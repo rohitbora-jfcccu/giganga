@@ -155,55 +155,6 @@ export const WorkingProcess: React.FC = () => {
             />
           </div>
         </div>
-
-        {/* Full 6-Stage Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {process.map((stage, idx) => {
-            const isSelected = idx === activeStage;
-            return (
-              <div
-                key={idx}
-                data-sound-card="true"
-                onClick={() => setActiveStage(idx)}
-                className={`p-6 sm:p-8 rounded-2xl border transition-all duration-300 flex flex-col justify-between cursor-pointer group ${
-                  isSelected
-                    ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)] shadow-md'
-                    : 'bg-[var(--bg-card)] border-[var(--border-card)] hover:border-[var(--border-hover)] hover:shadow-sm'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold tracking-widest uppercase">
-                      STAGE {stage.step}
-                    </span>
-                    <span className="text-xs font-mono-code text-[var(--text-muted)]">
-                      0{idx + 1}/06
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">
-                    {stage.title}
-                  </h3>
-
-                  <p className="text-xs text-[var(--accent-champagne)] font-medium mb-3">
-                    {stage.shortDescription}
-                  </p>
-
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    {stage.detail}
-                  </p>
-                </div>
-
-                <div className="pt-4 mt-6 border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px] font-mono-code text-[var(--text-muted)]">
-                  <span>Deliverable</span>
-                  <span className="text-[var(--text-secondary)] font-medium">
-                    {stage.deliverables?.[0] || 'Verified Artifact'}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </CinematicSection>
   );

@@ -372,8 +372,10 @@ export const CustomOSVisualization: React.FC<CustomOSVisualizationProps> = ({
     // Animation Render Loop
     let animId: number;
     let clock = new THREE.Clock();
+    let isVisible = false;
 
     const animate = () => {
+      if (!isVisible) return;
       animId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
@@ -413,9 +415,27 @@ export const CustomOSVisualization: React.FC<CustomOSVisualizationProps> = ({
       renderer?.render(scene, camera);
     };
 
-    animate();
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+        if (isVisible && !wasVisible) {
+          clock.start();
+          cancelAnimationFrame(animId);
+          animId = requestAnimationFrame(animate);
+        } else if (!isVisible && wasVisible) {
+          cancelAnimationFrame(animId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    if (containerRef.current) {
+      intersectionObserver.observe(containerRef.current);
+    }
 
     return () => {
+      intersectionObserver.disconnect();
       cancelAnimationFrame(animId);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', resize);
