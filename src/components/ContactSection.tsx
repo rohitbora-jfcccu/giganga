@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Send, CheckCircle2, AlertCircle, Copy, ArrowUpRight } from 'lucide-react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { ScrollHeadlineReveal } from './ScrollTextReveal';
+import { motion } from 'motion/react';
 
 export const ContactSection: React.FC = () => {
   const { identity } = PORTFOLIO_DATA;
@@ -94,22 +95,48 @@ export const ContactSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Direct Invitation & Direct Contact Info */}
           <div className="lg:col-span-5 space-y-6">
-            <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold block">
-              06. Direct Engagement
-            </span>
-            <ScrollHeadlineReveal
-              as="h2"
-              className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] [text-wrap:balance]"
-              startOffset="top 90%"
-              endOffset="top 50%"
-              accentIndices={[5]}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.12, delayChildren: 0.05 },
+                },
+              }}
+              className="space-y-4"
             >
-              Let us build something of consequence.
-            </ScrollHeadlineReveal>
-            <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
-              Available for full-time software engineering roles, enterprise contract architecture, 
-              and legitimate freelance digital product builds.
-            </p>
+              <motion.span
+                variants={{
+                  hidden: { opacity: 0, y: 18 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
+                }}
+                className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold block"
+              >
+                06. Direct Engagement
+              </motion.span>
+              <motion.h2
+                variants={{
+                  hidden: { opacity: 0, y: 22 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
+                }}
+                className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] [text-wrap:balance]"
+              >
+                Let us build something of consequence.
+              </motion.h2>
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0, y: 18 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const } },
+                }}
+                className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed"
+              >
+                Available for full-time software engineering roles, enterprise contract architecture, 
+                and legitimate freelance digital product builds.
+              </motion.p>
+            </motion.div>
 
             <div className="pt-6 space-y-4">
               <div className="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">

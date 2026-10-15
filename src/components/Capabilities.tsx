@@ -2,6 +2,7 @@ import React from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { Globe, ShoppingBag, LayoutDashboard, Sparkles } from 'lucide-react';
 import { ScrollHeadlineReveal } from './ScrollTextReveal';
+import { MotionSectionHeader } from './MotionSectionHeader';
 
 export const Capabilities: React.FC = () => {
   const { capabilities } = PORTFOLIO_DATA;
@@ -16,21 +17,13 @@ export const Capabilities: React.FC = () => {
   return (
     <section id="capabilities" className="py-24 sm:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Section Header */}
-        <div className="max-w-3xl mb-16">
-          <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold mb-2 block">
-            03. Engineering Disciplines
-          </span>
-          <ScrollHeadlineReveal
-            as="h2"
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] mb-4 [text-wrap:balance]"
-          >
-            Capabilities & Core Offerings
-          </ScrollHeadlineReveal>
-          <p className="text-sm sm:text-base text-[var(--text-secondary)]">
-            Architectural craftsmanship applied across production web applications, bespoke digital storefronts, and operational enterprise platforms.
-          </p>
-        </div>
+        {/* Section Header with Staggered Framer Motion Entrance */}
+        <MotionSectionHeader
+          kicker="03. Engineering Disciplines"
+          title="Capabilities & Core Offerings"
+          description="Architectural craftsmanship applied across production web applications, bespoke digital storefronts, and operational enterprise platforms."
+          layout="stacked"
+        />
 
         {/* 4-Item Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

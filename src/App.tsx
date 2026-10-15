@@ -12,51 +12,22 @@ import { Footer } from './components/Footer';
 import { CaseStudyModal } from './components/CaseStudyModal';
 import { ResumeModal } from './components/ResumeModal';
 import { ScrollProgress } from './components/ScrollProgress';
+import { OpeningSequence } from './components/OpeningSequence';
 import { ProjectCaseStudy } from './data/portfolio-data';
 
 function PortfolioContent() {
   const { theme, toggleTheme } = useTheme();
   const [selectedProject, setSelectedProject] = useState<ProjectCaseStudy | null>(null);
   const [isResumeOpen, setIsResumeOpen] = useState(false);
-
-  // Global 'keydown' event listener in App.tsx:
-  // Toggles the theme between 'noir' and 'ivory' when the user presses the 't' key,
-  // persisting user preference in localStorage.
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Ignore if user is holding browser modifier keys (Ctrl+T, Cmd+T, Alt+T)
-      if (event.ctrlKey || event.metaKey || event.altKey) return;
-
-      // Trigger theme toggle on 't' or 'T' key press
-      if (event.key === 't' || event.key === 'T') {
-        const target = event.target as HTMLElement | null;
-        // Do not interrupt text typing inside form fields or editable areas
-        if (
-          target &&
-          (target.tagName === 'INPUT' ||
-            target.tagName === 'TEXTAREA' ||
-            target.tagName === 'SELECT' ||
-            target.isContentEditable)
-        ) {
-          return;
-        }
-
-        // Toggle theme and persist in localStorage
-        const nextTheme = theme === 'noir' ? 'ivory' : 'noir';
-        try {
-          localStorage.setItem('bora_theme_preference', nextTheme);
-        } catch (e) {
-          console.warn('Could not persist theme preference to localStorage', e);
-        }
-        toggleTheme();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [theme, toggleTheme]);
+  const [showOpeningSequence, setShowOpeningSequence] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    try {
+      return sessionStorage.getItem('bora_intro_shown') !== 'true';
+    } catch {
+      return true;
+    }
+  });
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -67,6 +38,11 @@ function PortfolioContent() {
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--selection-bg)] selection:text-[var(--selection-text)] transition-colors duration-300">
+      {/* Cinematic 4-Stage Opening Sequence */}
+      {showOpeningSequence && (
+        <OpeningSequence onComplete={() => setShowOpeningSequence(false)} />
+      )}
+
       {/* Viewport Scroll Depth Progress Bar */}
       <ScrollProgress />
 

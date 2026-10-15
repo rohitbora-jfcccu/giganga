@@ -248,6 +248,9 @@ app.post('/api/portrait/save', async (req: Request, res: Response) => {
 async function startServer() {
   const isProd = process.env.NODE_ENV === 'production';
 
+  // Explicit static file serving for public assets (images, SVGs)
+  app.use(express.static(path.resolve(__dirname, 'public')));
+
   if (!isProd) {
     const { createServer } = await import('vite');
     const vite = await createServer({

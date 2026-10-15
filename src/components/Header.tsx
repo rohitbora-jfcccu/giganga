@@ -22,10 +22,10 @@ export const Header: React.FC<HeaderProps> = ({ onContactClick, onResumeClick })
 
   const navLinks = [
     { label: 'Work', href: '#work' },
-    { label: 'Journey', href: '#journey' },
+    { label: 'About', href: '#journey' },
     { label: 'Capabilities', href: '#capabilities' },
     { label: 'Process', href: '#process' },
-    { label: 'Education', href: '#education' },
+    { label: 'Contact', href: '#contact' },
   ];
 
   return (

@@ -1,8 +1,9 @@
-import React from 'react';
-import { PortraitCanvas } from './PortraitCanvas';
-import { ArrowDown, ExternalLink, Code2, GraduationCap, Compass, Layers } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { ArrowUpRight, ArrowDown, GraduationCap, Layers, Code2, Compass } from 'lucide-react';
+import { useGSAP } from './useGSAP';
+import { gsap } from 'gsap';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
-import { ScrollHeadlineReveal } from './ScrollTextReveal';
+import { useTheme } from '../context/ThemeContext';
 
 interface HeroProps {
   onExploreWork: () => void;
@@ -15,82 +16,221 @@ export const Hero: React.FC<HeroProps> = ({
   onContactClick,
   onResumeClick,
 }) => {
+  const { theme } = useTheme();
+  const isIvory = theme === 'ivory';
+  const containerRef = useRef<HTMLElement | null>(null);
+  const leftColRef = useRef<HTMLDivElement | null>(null);
+  const centerColRef = useRef<HTMLDivElement | null>(null);
+  const rightColRef = useRef<HTMLDivElement | null>(null);
+  const footerStripRef = useRef<HTMLDivElement | null>(null);
+
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
   const { identity } = PORTFOLIO_DATA;
 
-  return (
-    <section className="relative min-h-screen pt-28 pb-16 flex flex-col justify-between overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
-      {/* Background ambient gradient glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--accent-champagne)]/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+  // Cinematic restrained entrance animations using GSAP
+  useGSAP(
+    () => {
+      // Respect prefers-reduced-motion
+      if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
 
-      {/* Main split-screen hero container */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full flex-1 flex flex-col justify-center">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Typographic Narrative */}
-          <div className="lg:col-span-7 flex flex-col justify-center space-y-8">
-            {/* Quiet unboxed kicker without pills */}
-            <div className="flex items-center gap-3 text-xs tracking-wider uppercase text-[var(--accent-champagne)] font-mono-code font-semibold">
-              <span>{identity.fullName}</span>
-              <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-              <span>{identity.role}</span>
-              <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-              <span>BCA 2026</span>
+      const tl = gsap.timeline({
+        defaults: { ease: 'power3.out', duration: 1.1 },
+      });
+
+      // 1. Center portrait gently fades in with subtle upward motion
+      if (centerColRef.current) {
+        tl.fromTo(
+          centerColRef.current,
+          { opacity: 0, y: 32, scale: 0.98 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.2 },
+          0.1
+        );
+      }
+
+      // 2. Right editorial headline appears smoothly
+      if (rightColRef.current) {
+        tl.fromTo(
+          rightColRef.current,
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 1.0 },
+          0.3
+        );
+      }
+
+      // 3. Left introduction, metadata, and CTAs reveal with staggered elegance
+      if (leftColRef.current) {
+        const leftElements = leftColRef.current.querySelectorAll('.hero-fade-item');
+        tl.fromTo(
+          leftElements,
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, stagger: 0.12, duration: 0.9 },
+          0.4
+        );
+      }
+
+      // 4. Subtle reveal for bottom foundation strip
+      if (footerStripRef.current) {
+        tl.fromTo(
+          footerStripRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.8 },
+          0.7
+        );
+      }
+    },
+    { scope: containerRef }
+  );
+
+  return (
+    <section
+      ref={containerRef}
+      className="relative min-h-[96vh] pt-28 pb-12 flex flex-col justify-between overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--selection-bg)] selection:text-[var(--selection-text)] transition-colors duration-300"
+    >
+      {/* Ambient lighting vignette that smoothly responds to theme */}
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
+          isIvory
+            ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#886C4B]/10 via-[var(--bg-primary)]/70 to-[var(--bg-primary)]'
+            : 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900/40 via-[#050505]/90 to-[#050505]'
+        } -z-10`}
+      />
+
+      {/* Main 3-Column Editorial Hero Grid */}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full flex-1 flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
+          
+          {/* ============================================================== */}
+          {/* LEFT COLUMN: Location, Bio Narrative, and Direct CTA Links    */}
+          {/* ============================================================== */}
+          <div
+            ref={leftColRef}
+            className="lg:col-span-4 flex flex-col justify-center order-2 lg:order-1 space-y-7 text-left"
+          >
+            {/* Location & Role kicker */}
+            <div className="hero-fade-item">
+              <span className="font-mono-code text-[11px] font-semibold tracking-[0.25em] uppercase text-[var(--accent-champagne)]">
+                INDIA · CREATIVE DEVELOPER
+              </span>
             </div>
 
-            {/* Editorial Main Headline with cinematic scroll reveal */}
-            <ScrollHeadlineReveal
-              as="h1"
-              isHero={true}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--text-primary)] leading-[1.08] [text-wrap:balance]"
-            >
-              Building digital experiences that matter.
-            </ScrollHeadlineReveal>
-
-            {/* Concise biographical lead */}
-            <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-xl font-normal">
-              I am a full-stack engineer and digital product builder based in Almora. 
-              A 2026 BCA graduate from Soban Singh Jeena University, I architect production web applications, 
-              enterprise supply-chain command centers, and bespoke luxury e-commerce platforms with mathematical precision and aesthetic discipline.
+            {/* Core introduction statement */}
+            <p className="hero-fade-item text-lg sm:text-xl font-normal text-[var(--text-primary)] leading-relaxed tracking-tight max-w-md font-sans">
+              I build modern websites and digital experiences with a focus on design, usability, and technology.
             </p>
 
-            {/* Primary & Secondary Actions */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                onClick={onExploreWork}
-                className="px-6 py-3 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] font-semibold text-xs tracking-wider uppercase hover:bg-[var(--accent-champagne)] hover:text-black transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2"
-              >
-                <span>Explore Featured Work</span>
-                <ArrowDown className="w-3.5 h-3.5" />
-              </button>
+            {/* Divider hairline */}
+            <div className="hero-fade-item w-full h-px bg-[var(--border-subtle)]" />
 
+            {/* Truthful background credentials */}
+            <p className="hero-fade-item text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed max-w-md">
+              Full-Stack Software Engineer &amp; 2026 BCA graduate from Soban Singh Jeena University, Almora. 
+              Engineering enterprise ERP architectures, interactive WebGL/canvas systems, and bespoke luxury e-commerce platforms.
+            </p>
+
+            {/* Direct CTA Links */}
+            <div className="hero-fade-item flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2">
               <button
                 onClick={onContactClick}
-                className="px-6 py-3 rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 hover:bg-[var(--bg-input)] font-semibold text-xs tracking-wider uppercase transition-all cursor-pointer"
+                className="group inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase text-[var(--text-primary)] hover:text-[var(--accent-champagne)] transition-colors py-2 cursor-pointer border-b border-[var(--text-primary)]/30 hover:border-[var(--accent-champagne)]"
               >
-                Initiate Conversation
+                <span>DISCUSS A PROJECT</span>
+                <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[var(--accent-champagne)]" />
               </button>
 
               <button
-                onClick={onResumeClick}
-                className="px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--accent-champagne)] text-xs font-medium tracking-wide transition-colors flex items-center gap-1.5 cursor-pointer"
+                onClick={onExploreWork}
+                className="group inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors py-2 cursor-pointer border-b border-transparent hover:border-[var(--text-secondary)]"
               >
-                <span>Curriculum Vitae</span>
-                <ExternalLink className="w-3 h-3" />
+                <span>SEE THE WORK</span>
+                <ArrowDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-y-0.5 text-[var(--text-secondary)]" />
               </button>
             </div>
           </div>
 
-          {/* Right Column: Signature Interactive Canvas Dotted Portrait */}
-          <div className="lg:col-span-5 flex justify-center items-center">
-            <div className="w-full relative">
-              <PortraitCanvas />
+          {/* ============================================================== */}
+          {/* CENTRAL COLUMN: Prominent Portrait of Rohit Singh Bora          */}
+          {/* ============================================================== */}
+          <div
+            ref={centerColRef}
+            className="lg:col-span-4 flex justify-center items-end order-1 lg:order-2 relative"
+          >
+            <div className="w-full max-w-[420px] lg:max-w-none flex justify-center items-center relative">
+              {/* Seamless blend glow */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-radial from-[var(--accent-champagne)]/15 via-transparent to-transparent blur-2xl pointer-events-none"
+              />
+
+              {/* Central Hero Portrait Image Container */}
+              <div className={`relative w-full flex justify-center items-center overflow-hidden transition-all duration-300 ${
+                isIvory ? 'bg-[#0E0E0E] p-2.5 rounded-2xl shadow-xl border border-[var(--border-subtle)]' : ''
+              }`}>
+                <img
+                  src={imageError ? '/assets/rohit_stipple_portrait.svg' : '/images/bora-portrait.png'}
+                  alt="Rohit Singh Bora — Creative Developer & Digital Experience Builder"
+                  className="w-full h-auto max-h-[62vh] sm:max-h-[68vh] lg:max-h-[74vh] object-contain object-bottom drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)] select-none transition-opacity duration-500"
+                  referrerPolicy="no-referrer"
+                  onLoad={() => setImageLoaded(true)}
+                  onError={() => {
+                    console.info('Custom bora-portrait.png fallback activated (awaiting file upload).');
+                    setImageError(true);
+                  }}
+                />
+
+                {/* Bottom soft gradient feather */}
+                <div
+                  aria-hidden="true"
+                  className={`absolute bottom-0 inset-x-0 h-16 pointer-events-none ${
+                    isIvory
+                      ? 'bg-gradient-to-t from-[#0E0E0E] via-[#0E0E0E]/70 to-transparent'
+                      : 'bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent'
+                  }`}
+                />
+              </div>
             </div>
           </div>
+
+          {/* ============================================================== */}
+          {/* RIGHT COLUMN: High-Contrast Editorial Serif Headline           */}
+          {/* ============================================================== */}
+          <div
+            ref={rightColRef}
+            className="lg:col-span-4 flex flex-col justify-center order-3 text-left lg:text-left space-y-6"
+          >
+            <h1 className="font-editorial text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-medium leading-[1.06] tracking-tight text-[var(--text-primary)] [text-wrap:balance]">
+              <span className="block">Creative</span>
+              <span className="block">Developer</span>
+              <span className="block italic text-[var(--accent-champagne)] font-normal">&amp; Digital</span>
+              <span className="block">Experience</span>
+              <span className="block">Builder</span>
+            </h1>
+
+            <div className="hidden lg:block pt-4">
+              <p className="text-xs font-mono-code uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                ALMORA, UTTARAKHAND
+              </p>
+              <p className="text-xs text-[var(--text-muted)] mt-1 font-mono-code">
+                PORTFOLIO 2.0 · SPECIALIZED IN BESPOKE WEB ARCHITECTURES
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {/* Full-width strip below the hero split: Verified Credentials & Technical Invariants */}
-      <div className="w-full border-t border-[var(--border-subtle)] mt-16 pt-8 bg-[var(--bg-primary)] transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-left">
+      {/* ================================================================ */}
+      {/* FOUNDATION STRIP: Academic Foundation & Verified Specializations */}
+      {/* ================================================================ */}
+      <div
+        ref={footerStripRef}
+        className="w-full border-t border-[var(--border-subtle)] mt-12 pt-6 bg-[var(--bg-primary)] transition-colors duration-300"
+      >
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-left">
           <div>
             <div className="flex items-center gap-2 text-[var(--accent-champagne)] text-xs font-mono-code mb-1 font-semibold">
               <GraduationCap className="w-3.5 h-3.5" />
@@ -105,8 +245,8 @@ export const Hero: React.FC<HeroProps> = ({
               <Layers className="w-3.5 h-3.5" />
               <span>CORE ARCHITECTURES</span>
             </div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">E-Commerce & ERP Systems</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">Atelier Noir & LogixCore</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">E-Commerce &amp; ERP Systems</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">Atelier Noir &amp; LogixCore</p>
           </div>
 
           <div>
@@ -114,17 +254,17 @@ export const Hero: React.FC<HeroProps> = ({
               <Code2 className="w-3.5 h-3.5" />
               <span>CODE DISCIPLINE</span>
             </div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">100% Strict TypeScript</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">Zero-bloat modern stack</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">Strict TypeScript &amp; React</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">High-performance zero-bloat</p>
           </div>
 
           <div>
             <div className="flex items-center gap-2 text-[var(--accent-champagne)] text-xs font-mono-code mb-1 font-semibold">
               <Compass className="w-3.5 h-3.5" />
-              <span>GEOGRAPHY & ENGAGEMENT</span>
+              <span>GEOGRAPHY &amp; AVAILABILITY</span>
             </div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">Almora, India</p>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5">Remote & Relocation Available</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">India (UTC+5:30)</p>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">Available for Worldwide Remote</p>
           </div>
         </div>
       </div>

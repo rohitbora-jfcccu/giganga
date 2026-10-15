@@ -46,7 +46,7 @@
     color: var(--text-primary);
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 250ms ease, color 250ms ease;
   }
 
   h1, h2, h3, .font-display {
@@ -87,3 +87,62 @@
   touch-action: pan-y;
   background-color: var(--canvas-bg);
 }
+
+/* Smooth, lightweight 250ms theme transition on structural surfaces only - zero lag, no WebGL disruption */
+header,
+footer,
+section,
+[class*="bg-[var(--bg-"],
+[class*="border-[var(--border-"] {
+  transition: background-color 250ms ease, border-color 250ms ease;
+}
+
+/* Opening Sequence CSS Fallback animations */
+@keyframes ambientFloat {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-16px) translateX(8px);
+    opacity: 0.75;
+  }
+}
+
+@keyframes lightSweepOnce {
+  0% {
+    transform: translateX(-150%) skewX(-15deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(250%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
+.animate-ambient-float {
+  animation: ambientFloat 6s ease-in-out infinite;
+}
+
+.animate-light-sweep {
+  animation: lightSweepOnce 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  header,
+  footer,
+  section,
+  [class*="bg-[var(--bg-"],
+  [class*="border-[var(--border-"],
+  .animate-ambient-float,
+  .animate-light-sweep {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
 import { ScrollHeadlineReveal } from './ScrollTextReveal';
+import { MotionSectionHeader } from './MotionSectionHeader';
 
 export const WorkingProcess: React.FC = () => {
   const { process } = PORTFOLIO_DATA;
@@ -8,21 +9,13 @@ export const WorkingProcess: React.FC = () => {
   return (
     <section id="process" className="py-24 sm:py-32 bg-[var(--bg-secondary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Section Header */}
-        <div className="max-w-3xl mb-16">
-          <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold mb-2 block">
-            04. Delivery Lifecycle
-          </span>
-          <ScrollHeadlineReveal
-            as="h2"
-            className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] mb-4 [text-wrap:balance]"
-          >
-            Engineering Methodology
-          </ScrollHeadlineReveal>
-          <p className="text-sm sm:text-base text-[var(--text-secondary)]">
-            A structured six-stage development pipeline that turns ambiguous project requirements into robust, tested, and visually distinguished digital systems.
-          </p>
-        </div>
+        {/* Section Header with Staggered Framer Motion Entrance */}
+        <MotionSectionHeader
+          kicker="04. Delivery Lifecycle"
+          title="Engineering Methodology"
+          description="A structured six-stage development pipeline that turns ambiguous project requirements into robust, tested, and visually distinguished digital systems."
+          layout="stacked"
+        />
 
         {/* 6-Stage Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

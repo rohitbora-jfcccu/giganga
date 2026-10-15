@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 
 export type ThemeMode = 'noir' | 'ivory';
 
@@ -25,11 +25,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const [shortcutToast, setShortcutToast] = useState<string | null>(null);
+  const isInitialMount = useRef(true);
 
   const applyThemeToDOM = (newTheme: ThemeMode) => {
     const root = document.documentElement;
     if (newTheme === 'ivory') {
-      root.classList.remove('dark');
+      root.classList.remove('dark', 'theme-noir');
       root.classList.add('light', 'theme-ivory');
       root.setAttribute('data-theme', 'ivory');
       root.style.colorScheme = 'light';
@@ -43,9 +44,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     applyThemeToDOM(theme);
-  }, [theme]);
+  }, []);
 
   const setTheme = useCallback((mode: ThemeMode, source: 'manual' | 'shortcut' = 'manual') => {
+    applyThemeToDOM(mode);
     setThemeState(mode);
     try {
       localStorage.setItem(STORAGE_KEY, mode);
@@ -59,8 +61,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const toggleTheme = useCallback((source: 'manual' | 'shortcut' = 'manual') => {
-    setTheme(theme === 'noir' ? 'ivory' : 'noir', source);
-  }, [theme, setTheme]);
+    setThemeState((current) => {
+      const next = current === 'noir' ? 'ivory' : 'noir';
+      applyThemeToDOM(next);
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch (e) {
+        console.warn('Unable to persist theme to localStorage', e);
+      }
+      if (source === 'shortcut') {
+        setShortcutToast(next === 'ivory' ? 'Ivory Mode Enabled · Press [T] to switch' : 'Noir Mode Enabled · Press [T] to switch');
+      }
+      return next;
+    });
+  }, []);
 
   // Toast self-dismiss timer
   useEffect(() => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowUpRight, Github } from 'lucide-react';
 import { PORTFOLIO_DATA, ProjectCaseStudy } from '../data/portfolio-data';
 import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
+import { MotionSectionHeader } from './MotionSectionHeader';
 
 interface FeaturedWorkProps {
   onSelectProject: (project: ProjectCaseStudy) => void;
@@ -13,24 +14,13 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
   return (
     <section id="work" className="py-24 sm:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] border-t border-[var(--border-subtle)] transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b border-[var(--border-subtle)] gap-6">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold mb-2 block">
-              01. Selected Works
-            </span>
-            <ScrollHeadlineReveal
-              as="h2"
-              className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)] [text-wrap:balance]"
-            >
-              Architectural Case Studies
-            </ScrollHeadlineReveal>
-          </div>
-          <p className="text-sm text-[var(--text-secondary)] max-w-md">
-            Individually art-directed digital products demonstrating full-stack engineering, 
-            high-density operational UIs, and luxury commerce systems.
-          </p>
-        </div>
+        {/* Section Header with Staggered Framer Motion Entrance */}
+        <MotionSectionHeader
+          kicker="01. Selected Works"
+          title="Architectural Case Studies"
+          description="Individually art-directed digital products demonstrating full-stack engineering, high-density operational UIs, and luxury commerce systems."
+          borderBottom={true}
+        />
 
         {/* Project 1: Atelier Noir — High-Fashion Asymmetric Lookbook Layout */}
         <div className="mb-24 group">
