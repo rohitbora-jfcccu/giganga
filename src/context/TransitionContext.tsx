@@ -7,6 +7,7 @@ export interface TransitionTargetOptions {
   onBeforeScroll?: () => void;
   onAfterReveal?: () => void;
   customAction?: () => void;
+  isBrowserNav?: boolean;
 }
 
 interface TransitionContextType {
@@ -32,6 +33,8 @@ const SCENE_DIRECTORY: Record<string, { number: string; title: string }> = {
   '#resume': { number: '08', title: 'VERIFIED CURRICULUM VITAE' },
   '#project-atelier-noir': { number: '01A', title: 'CASE STUDY // ATELIER NOIR' },
   '#project-logixcore-erp': { number: '01B', title: 'CASE STUDY // LOGIXCORE ERP' },
+  '#project-custom-os': { number: '01C', title: 'CASE STUDY // BORA OS KERNEL' },
+  '#project-my-own-jarvis': { number: '01D', title: 'CASE STUDY // JARVIS AI CORE' },
   '#top': { number: '00', title: 'INDEX // ROHIT SINGH BORA' },
 };
 
@@ -48,8 +51,17 @@ export const TransitionProvider: React.FC<{
   const [sceneTitle, setSceneTitle] = useState<string | null>(null);
   const [sceneNumber, setSceneNumber] = useState<string | null>(null);
 
+  // Keep callback references stable to prevent dependency cascade and unneeded re-subscriptions
+  const onSelectProjectRef = useRef(onSelectProject);
+  onSelectProjectRef.current = onSelectProject;
+  const onOpenResumeRef = useRef(onOpenResume);
+  onOpenResumeRef.current = onOpenResume;
+  const onCloseResumeRef = useRef(onCloseResume);
+  onCloseResumeRef.current = onCloseResume;
+
   const timeoutIds = useRef<number[]>([]);
   const isReducedMotion = useRef(false);
+  const activeTargetRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -68,58 +80,77 @@ export const TransitionProvider: React.FC<{
     timeoutIds.current = [];
   };
 
+  // Safe destination dispatcher: updates URL history, triggers modal or section scroll
   const executeDestination = useCallback(
     (target: string, options?: TransitionTargetOptions) => {
-      if (options?.customAction) {
-        options.customAction();
-        return;
-      }
+      try {
+        const normalized = !target || target === '#' ? '#top' : target.startsWith('#') ? target : `#${target}`;
 
-      const normalized = target.startsWith('#') ? target : `#${target}`;
+        // 1. Update browser history URL cleanly without page reloads (skip if popstate triggered)
+        if (!options?.isBrowserNav && typeof window !== 'undefined' && window.location.hash !== normalized) {
+          window.history.pushState(null, '', normalized);
+        }
 
-      // Update browser history URL cleanly without full page reloads
-      if (window.location.hash !== normalized) {
-        window.history.pushState(null, '', normalized);
-      }
+        // 2. Custom action hook (if provided by caller, e.g. opening specific project instance)
+        if (options?.customAction) {
+          options.customAction();
+          return;
+        }
 
-      // Check modal triggers
-      if (normalized === '#resume') {
-        if (onOpenResume) onOpenResume();
-        return;
-      }
+        // 3. Curriculum Vitae modal trigger
+        if (normalized === '#resume') {
+          if (onSelectProjectRef.current) onSelectProjectRef.current(null);
+          if (onOpenResumeRef.current) onOpenResumeRef.current();
+          return;
+        }
 
-      if (normalized.startsWith('#project-')) {
-        const pId = normalized.replace('#project-', '');
-        if (onSelectProject) onSelectProject(pId);
-        return;
-      }
+        // 4. Project deep-dive case study modal trigger
+        if (normalized.startsWith('#project-')) {
+          const pId = normalized.replace('#project-', '');
+          if (onCloseResumeRef.current) onCloseResumeRef.current();
+          if (onSelectProjectRef.current) onSelectProjectRef.current(pId);
+          return;
+        }
 
-      // Otherwise, scroll to the corresponding section element with header offset
-      if (normalized === '#top' || normalized === '#') {
-        window.scrollTo({ top: 0, behavior: isReducedMotion.current ? 'auto' : 'smooth' });
-        return;
-      }
+        // 5. Standard non-modal destination: dismiss any open modals and scroll to section
+        if (onSelectProjectRef.current) onSelectProjectRef.current(null);
+        if (onCloseResumeRef.current) onCloseResumeRef.current();
 
-      const el = document.querySelector(normalized) as HTMLElement | null;
-      if (el) {
-        const headerOffset = 76;
-        const elementPosition = el.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        if (normalized === '#top') {
+          window.scrollTo({ top: 0, behavior: isReducedMotion.current ? 'auto' : 'smooth' });
+          return;
+        }
 
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: isReducedMotion.current ? 'auto' : 'smooth',
-        });
+        const el = document.querySelector(normalized) as HTMLElement | null;
+        if (el) {
+          const headerOffset = 76;
+          const elementPosition = el.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: isReducedMotion.current ? 'auto' : 'smooth',
+          });
+        }
+      } catch (err) {
+        console.error('[Transition] Destination execution error:', err);
       }
     },
-    [onOpenResume, onSelectProject]
+    []
   );
 
   const transitionTo = useCallback(
     (target: string, options?: TransitionTargetOptions) => {
-      clearPendingTimeouts();
+      const normalized = !target || target === '#' ? '#top' : target.startsWith('#') ? target : `#${target}`;
 
-      const normalized = target.startsWith('#') ? target : `#${target}`;
+      // Prevent redundant transition if user rapidly clicks the identical destination while it is already active
+      if (activeTargetRef.current === normalized) {
+        return;
+      }
+
+      clearPendingTimeouts();
+      activeTargetRef.current = normalized;
+
       const directoryInfo = SCENE_DIRECTORY[normalized] || {
         number: options?.sceneNumber || 'SCN',
         title: options?.sceneTitle || 'SCENE TRANSITION',
@@ -134,31 +165,46 @@ export const TransitionProvider: React.FC<{
       setPhase('covering');
 
       // Trigger delicate film shutter acoustic sweep
-      playFilmShutter();
+      try {
+        playFilmShutter();
+      } catch {
+        // Audio error must never block navigation
+      }
 
       if (options?.onBeforeScroll) {
-        options.onBeforeScroll();
+        try {
+          options.onBeforeScroll();
+        } catch (e) {
+          console.warn('[Transition] onBeforeScroll error:', e);
+        }
       }
 
       const coverDuration = isReducedMotion.current ? 80 : 260;
       const coveredPause = isReducedMotion.current ? 40 : 60;
       const revealDuration = isReducedMotion.current ? 100 : 260;
 
-      // Stage 1: Curtain covers viewport
+      // Stage 1: Dual shutter blades meet in center
       const t1 = window.setTimeout(() => {
         setPhase('covered');
+
+        // Apply route or modal changes while screen is completely covered
         executeDestination(target, options);
 
         // Stage 2: Curtain parts, revealing destination
         const t2 = window.setTimeout(() => {
           setPhase('revealing');
 
-          // Stage 3: Curtain completely cleared
+          // Stage 3: Curtain completely cleared; reset to idle
           const t3 = window.setTimeout(() => {
             setPhase('idle');
             setIsTransitioning(false);
+            activeTargetRef.current = null;
             if (options?.onAfterReveal) {
-              options.onAfterReveal();
+              try {
+                options.onAfterReveal();
+              } catch (e) {
+                console.warn('[Transition] onAfterReveal error:', e);
+              }
             }
           }, revealDuration);
           timeoutIds.current.push(t3);
@@ -167,11 +213,13 @@ export const TransitionProvider: React.FC<{
       }, coverDuration);
       timeoutIds.current.push(t1);
 
-      // Failsafe circuit breaker: Ensure transition never gets stuck even on interruption
+      // Failsafe watchdog timer: Guaranteed recovery so transition NEVER remains stuck
+      const totalBudget = coverDuration + coveredPause + revealDuration + 120;
       const safetyTimeout = window.setTimeout(() => {
         setIsTransitioning(false);
         setPhase('idle');
-      }, 700);
+        activeTargetRef.current = null;
+      }, totalBudget);
       timeoutIds.current.push(safetyTimeout);
     },
     [executeDestination, playFilmShutter]
@@ -181,13 +229,12 @@ export const TransitionProvider: React.FC<{
   useEffect(() => {
     const handlePopState = () => {
       const currentHash = window.location.hash || '#top';
-      transitionTo(currentHash);
+      transitionTo(currentHash, { isBrowserNav: true });
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      clearPendingTimeouts();
     };
   }, [transitionTo]);
 
@@ -201,18 +248,27 @@ export const TransitionProvider: React.FC<{
       if (!anchor) return;
 
       const href = anchor.getAttribute('href');
-      if (!href || href === '#' || href.startsWith('#!')) return;
+      if (!href || href.startsWith('#!')) return;
 
       // Allow default if user is holding Command/Ctrl (open in new tab)
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
       e.preventDefault();
-      transitionTo(href);
+      transitionTo(href === '#' ? '#top' : href);
     };
 
     document.addEventListener('click', handleAnchorClick);
-    return () => document.removeEventListener('click', handleAnchorClick);
+    return () => {
+      document.removeEventListener('click', handleAnchorClick);
+    };
   }, [transitionTo]);
+
+  // Cleanup on unmount of provider
+  useEffect(() => {
+    return () => {
+      clearPendingTimeouts();
+    };
+  }, []);
 
   return (
     <TransitionContext.Provider

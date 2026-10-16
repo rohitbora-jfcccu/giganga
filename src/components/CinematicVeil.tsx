@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTransition } from '../context/TransitionContext';
 import { useTheme } from '../context/ThemeContext';
-import { Film, Clapperboard, Sparkles } from 'lucide-react';
+import { Film } from 'lucide-react';
 
 export const CinematicVeil: React.FC = () => {
   const { isTransitioning, phase, sceneTitle, sceneNumber } = useTransition();
   const { theme } = useTheme();
 
   const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const [forceHidden, setForceHidden] = useState(false);
+  const watchdogRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -19,24 +21,43 @@ export const CinematicVeil: React.FC = () => {
     }
   }, []);
 
-  if (!isTransitioning && phase === 'idle') {
+  // Self-healing watchdog: Guarantee veil never stays stuck on screen even in abnormal lifecycle cases
+  useEffect(() => {
+    if (isTransitioning || phase !== 'idle') {
+      setForceHidden(false);
+      if (watchdogRef.current) clearTimeout(watchdogRef.current);
+      watchdogRef.current = window.setTimeout(() => {
+        setForceHidden(true);
+      }, 750);
+    } else {
+      setForceHidden(false);
+      if (watchdogRef.current) {
+        clearTimeout(watchdogRef.current);
+        watchdogRef.current = null;
+      }
+    }
+
+    return () => {
+      if (watchdogRef.current) {
+        clearTimeout(watchdogRef.current);
+        watchdogRef.current = null;
+      }
+    };
+  }, [isTransitioning, phase]);
+
+  if (forceHidden || (!isTransitioning && phase === 'idle')) {
     return null;
   }
 
   const isNoir = theme === 'noir';
-
-  // Translate percentages for the dual shutter blades
-  // Phase 'covering': Top blade moves down from -100% to 0%, bottom blade moves up from 100% to 0%
-  // Phase 'covered': Covers entire screen (0%)
-  // Phase 'revealing': Top blade exits upward (-100%), bottom blade exits downward (100%)
   const isCoveredOrCovering = phase === 'covering' || phase === 'covered';
 
   if (isReducedMotion) {
-    // Elegant quick crossfade for reduced motion mode
+    // Quick, accessible crossfade for reduced motion mode
     return (
       <div
         className={`fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-150 ${
-          isCoveredOrCovering ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          isCoveredOrCovering ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         } ${isNoir ? 'bg-[#000000]' : 'bg-[#F4F0E8]'}`}
         role="status"
         aria-live="polite"
@@ -56,7 +77,9 @@ export const CinematicVeil: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] pointer-events-none overflow-hidden select-none"
+      className={`fixed inset-0 z-[100] overflow-hidden select-none transition-all ${
+        isCoveredOrCovering ? 'pointer-events-auto' : 'pointer-events-none'
+      }`}
       role="status"
       aria-live="polite"
       aria-label={`Navigating to ${sceneTitle || 'next section'}`}
@@ -93,7 +116,7 @@ export const CinematicVeil: React.FC = () => {
 
       {/* Center Cinematic Film Slate HUD */}
       <div
-        className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
+        className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-200 ${
           phase === 'covered' ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
         }`}
       >

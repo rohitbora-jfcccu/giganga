@@ -34,10 +34,11 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
   // Preview mode toggle for projects with interactive 3D companions ('preview' | '3d')
   const [previewMode, setPreviewMode] = useState<'preview' | '3d'>('preview');
 
-  // Pointer-based 3D tilt and light sweep state
+  // Pointer-based 3D tilt and light sweep state (pure DOM-driven for 120fps zero-react-render performance)
   const articleRef = useRef<HTMLElement | null>(null);
   const cardPreviewRef = useRef<HTMLDivElement | null>(null);
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50, isHovered: false });
+  const parallaxImgRef = useRef<HTMLDivElement | null>(null);
+  const glareRef = useRef<HTMLDivElement | null>(null);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const rafId = useRef<number | null>(null);
 
@@ -104,7 +105,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
     { scope: articleRef, dependencies: [isReducedMotion] }
   );
 
-  // Pointer move handler with restrained 3D tilt and light sweep calculations
+  // Pointer move handler with restrained 3D tilt and light sweep calculations (0 React re-renders)
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (isReducedMotion || !cardPreviewRef.current) return;
 
@@ -127,17 +128,45 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
 
     if (rafId.current) cancelAnimationFrame(rafId.current);
     rafId.current = requestAnimationFrame(() => {
-      setTilt({ rotateX, rotateY, glareX, glareY, isHovered: true });
+      if (cardPreviewRef.current) {
+        cardPreviewRef.current.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(16px) translateY(-5px) scale3d(1.02, 1.02, 1.02)`;
+        cardPreviewRef.current.style.boxShadow = isNoir
+          ? '0 30px 65px -15px rgba(0, 0, 0, 0.9), 0 0 35px -5px rgba(201, 183, 156, 0.22)'
+          : '0 30px 60px -15px rgba(0, 0, 0, 0.18), 0 0 35px -5px rgba(136, 108, 75, 0.18)';
+      }
+      if (parallaxImgRef.current) {
+        parallaxImgRef.current.style.transform = `translate3d(${-rotateY * 2.2}px, ${rotateX * 2.2}px, -6px) scale(1.06)`;
+      }
+      if (glareRef.current) {
+        glareRef.current.style.opacity = '1';
+        glareRef.current.style.background = isNoir
+          ? `radial-gradient(circle 420px at ${glareX}% ${glareY}%, rgba(197, 168, 121, 0.22), transparent 70%)`
+          : `radial-gradient(circle 420px at ${glareX}% ${glareY}%, rgba(116, 84, 61, 0.16), transparent 70%)`;
+      }
     });
-  }, [isReducedMotion]);
+  }, [isReducedMotion, isNoir]);
 
   const handlePointerLeave = useCallback(() => {
     if (rafId.current) cancelAnimationFrame(rafId.current);
-    setTilt((prev) => ({ ...prev, rotateX: 0, rotateY: 0, isHovered: false }));
-  }, []);
+    if (cardPreviewRef.current) {
+      cardPreviewRef.current.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateZ(0px) translateY(0px) scale3d(1, 1, 1)';
+      cardPreviewRef.current.style.boxShadow = isNoir
+        ? '0 12px 30px -10px rgba(0, 0, 0, 0.5)'
+        : '0 10px 25px -10px rgba(0, 0, 0, 0.08)';
+    }
+    if (parallaxImgRef.current) {
+      parallaxImgRef.current.style.transform = 'translate3d(0px, 0px, 0px) scale(1.0)';
+    }
+    if (glareRef.current) {
+      glareRef.current.style.opacity = '0';
+    }
+  }, [isNoir]);
 
   const handlePointerEnter = useCallback(() => {
     playCardHover();
+    if (glareRef.current) {
+      glareRef.current.style.opacity = '1';
+    }
   }, [playCardHover]);
 
   const projectNumber = String(index + 1).padStart(2, '0');
@@ -162,15 +191,18 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
       {/* ================================================================= */}
       <div
         aria-hidden="true"
-        className="pointer-events-none select-none absolute top-0 left-0 sm:left-1 z-0 leading-none select-none"
+        className="pointer-events-none select-none absolute top-0 left-0 sm:left-1 z-0 leading-none"
       >
         <span
-          className="font-editorial text-[6.5rem] sm:text-[9rem] lg:text-[13.5rem] font-bold tracking-tighter select-none block leading-[0.82] transition-opacity duration-300 opacity-[0.14] dark:opacity-[0.15]"
+          className={`font-editorial text-[6.5rem] sm:text-[9rem] lg:text-[13.5rem] font-bold tracking-tighter select-none block leading-[0.82] transition-opacity duration-300 text-transparent bg-clip-text ${
+            isNoir ? 'opacity-[0.18]' : 'opacity-[0.30]'
+          }`}
           style={{
             background: isNoir
-              ? 'linear-gradient(135deg, rgba(201, 192, 180, 0.95) 0%, rgba(197, 168, 121, 0.8) 55%, rgba(116, 84, 61, 0.45) 100%)'
-              : 'linear-gradient(135deg, rgba(38, 30, 24, 0.9) 0%, rgba(148, 114, 72, 0.8) 55%, rgba(116, 84, 61, 0.5) 100%)',
+              ? 'linear-gradient(135deg, rgba(201, 192, 180, 0.95) 0%, rgba(197, 168, 121, 0.85) 55%, rgba(116, 84, 61, 0.5) 100%)'
+              : 'linear-gradient(135deg, rgba(116, 84, 61, 0.95) 0%, rgba(148, 114, 72, 0.85) 50%, rgba(181, 158, 132, 0.75) 100%)',
             WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}
         >
@@ -285,24 +317,11 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
               onClick={() => onSelectProject(project)}
               style={{
                 perspective: '1200px',
-                transform: isReducedMotion
-                  ? 'none'
-                  : `perspective(1200px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) ${
-                      tilt.isHovered
-                        ? 'translateZ(16px) translateY(-5px) scale3d(1.02, 1.02, 1.02)'
-                        : 'translateZ(0px) translateY(0px) scale3d(1, 1, 1)'
-                    }`,
                 transformStyle: 'preserve-3d',
-                boxShadow: tilt.isHovered
-                  ? isNoir
-                    ? '0 30px 65px -15px rgba(0, 0, 0, 0.9), 0 0 35px -5px rgba(201, 183, 156, 0.22)'
-                    : '0 30px 60px -15px rgba(0, 0, 0, 0.18), 0 0 35px -5px rgba(136, 108, 75, 0.18)'
-                  : isNoir
+                boxShadow: isNoir
                   ? '0 12px 30px -10px rgba(0, 0, 0, 0.5)'
                   : '0 10px 25px -10px rgba(0, 0, 0, 0.08)',
-                transition: tilt.isHovered
-                  ? 'transform 120ms ease-out, border-color 300ms ease, box-shadow 300ms ease'
-                  : 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 300ms ease',
+                transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 300ms ease',
               }}
               className="relative aspect-video sm:aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--border-card)] group-hover/card:border-[var(--accent-champagne)]/60 bg-[var(--bg-card)] shadow-lg hover:shadow-2xl cursor-pointer select-none will-change-transform"
               data-cursor="view"
@@ -318,14 +337,10 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
             >
               {/* Parallax Image Layer */}
               <div
-                className="absolute inset-0 overflow-hidden"
+                ref={parallaxImgRef}
+                className="absolute inset-0 overflow-hidden will-change-transform"
                 style={{
-                  transform: isReducedMotion
-                    ? 'none'
-                    : `translate3d(${-tilt.rotateY * 2.2}px, ${tilt.rotateX * 2.2}px, -6px) scale(1.06)`,
-                  transition: tilt.isHovered
-                    ? 'transform 120ms ease-out'
-                    : 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1)',
+                  transition: 'transform 200ms cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               >
                 <img
@@ -348,14 +363,10 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
               </div>
 
               {/* Dynamic Champagne Glare & Light Sweep on Pointer Move */}
-              {!isReducedMotion && tilt.isHovered && (
+              {!isReducedMotion && (
                 <div
-                  className="absolute inset-0 pointer-events-none transition-opacity duration-200"
-                  style={{
-                    background: isNoir
-                      ? `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(197, 168, 121, 0.22), transparent 70%)`
-                      : `radial-gradient(circle 420px at ${tilt.glareX}% ${tilt.glareY}%, rgba(116, 84, 61, 0.16), transparent 70%)`,
-                  }}
+                  ref={glareRef}
+                  className="absolute inset-0 pointer-events-none transition-opacity duration-200 opacity-0"
                 />
               )}
 

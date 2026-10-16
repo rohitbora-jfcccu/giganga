@@ -9,13 +9,13 @@ export const CustomCursor: React.FC = () => {
 
   const [isSupported, setIsSupported] = useState(false);
 
-  // Direct DOM references for 60-120fps non-re-rendering physics
+  // Direct DOM references for 120fps hardware-accelerated physics
   const dotRef = useRef<HTMLDivElement | null>(null);
   const ringRef = useRef<HTMLDivElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const viewBadgeRef = useRef<HTMLDivElement | null>(null);
 
-  // Position and target tracking
+  // Mutable tracking ref (no React state updates during pointer moves)
   const posRef = useRef({
     mouseX: -100,
     mouseY: -100,
@@ -28,7 +28,7 @@ export const CustomCursor: React.FC = () => {
     isHoveringWindow: false,
     isMouseDown: false,
     mode: 'default' as CursorMode,
-    magneticTarget: null as HTMLElement | null,
+    isTouchDevice: false,
   });
 
   useEffect(() => {
@@ -52,146 +52,153 @@ export const CustomCursor: React.FC = () => {
     reducedMotionQuery.addEventListener('change', handleMotionChange);
 
     const pos = posRef.current;
-    let rafId: number;
+    let rafId: number | null = null;
+    let isRunning = false;
 
-    // Animation frame loop for silky smooth lerp trailing & magnetic snapping
-    const loop = () => {
-      const { mouseX, mouseY, targetX, targetY, mode } = pos;
-
-      if (pos.isHoveringWindow) {
-        // Immediate tracking for inner dot (0 lag precision)
-        if (dotRef.current) {
-          dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-        }
-
-        // Smooth exponential trailing lerp for outer ring
-        const lerpFactor = isReducedMotion ? 1 : 0.22;
-        pos.ringX += (targetX - pos.ringX) * lerpFactor;
-        pos.ringY += (targetY - pos.ringY) * lerpFactor;
-
-        if (ringRef.current) {
-          ringRef.current.style.transform = `translate3d(${pos.ringX}px, ${pos.ringY}px, 0)`;
-        }
-
-        // Ambient lighting glow tracks with subtle damping
-        const glowFactor = isReducedMotion ? 1 : 0.16;
-        pos.glowX += (mouseX - pos.glowX) * glowFactor;
-        pos.glowY += (mouseY - pos.glowY) * glowFactor;
-
-        if (glowRef.current) {
-          glowRef.current.style.transform = `translate3d(${pos.glowX}px, ${pos.glowY}px, 0)`;
-        }
+    // Outer ring & ambient glow trailing animation loop
+    const animateRing = () => {
+      if (!pos.isHoveringWindow || pos.isTouchDevice) {
+        isRunning = false;
+        return;
       }
 
-      rafId = requestAnimationFrame(loop);
+      const lerpFactor = isReducedMotion ? 1 : 0.28;
+      const glowFactor = isReducedMotion ? 1 : 0.18;
+
+      pos.ringX += (pos.targetX - pos.ringX) * lerpFactor;
+      pos.ringY += (pos.targetY - pos.ringY) * lerpFactor;
+
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate3d(${pos.ringX}px, ${pos.ringY}px, 0)`;
+      }
+
+      pos.glowX += (pos.mouseX - pos.glowX) * glowFactor;
+      pos.glowY += (pos.mouseY - pos.glowY) * glowFactor;
+
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate3d(${pos.glowX}px, ${pos.glowY}px, 0)`;
+      }
+
+      // Check if settled (within 0.05px) to pause RAF when cursor is stationary
+      const distRing = Math.abs(pos.targetX - pos.ringX) + Math.abs(pos.targetY - pos.ringY);
+      const distGlow = Math.abs(pos.mouseX - pos.glowX) + Math.abs(pos.mouseY - pos.glowY);
+
+      if (distRing > 0.05 || distGlow > 0.05) {
+        rafId = requestAnimationFrame(animateRing);
+      } else {
+        isRunning = false;
+      }
     };
 
-    rafId = requestAnimationFrame(loop);
+    const requestLoop = () => {
+      if (!isRunning && pos.isHoveringWindow && !pos.isTouchDevice) {
+        isRunning = true;
+        rafId = requestAnimationFrame(animateRing);
+      }
+    };
 
-    // Mouse move tracking with magnetic bias calculation
+    // Immediate 0-latency hardware pointer tracking for the center dot
     const handlePointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') {
+        pos.isTouchDevice = true;
+        hideCursor();
+        return;
+      }
+
       pos.isHoveringWindow = true;
       pos.mouseX = e.clientX;
       pos.mouseY = e.clientY;
+      pos.targetX = e.clientX;
+      pos.targetY = e.clientY;
 
-      // Handle magnetic attraction if currently over a magnetic element
-      if (pos.magneticTarget) {
-        const rect = pos.magneticTarget.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        // Restrained 28% magnetic pull towards center of element
-        pos.targetX = e.clientX + (centerX - e.clientX) * 0.28;
-        pos.targetY = e.clientY + (centerY - e.clientY) * 0.28;
-      } else {
-        pos.targetX = e.clientX;
-        pos.targetY = e.clientY;
+      // Immediate 1:1 hardware tracking for inner dot (0ms frame latency)
+      if (dotRef.current && pos.mode !== 'hidden') {
+        dotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        dotRef.current.style.opacity = pos.mode === 'view' ? '0' : '1';
       }
 
-      updateCursorClasses();
+      requestLoop();
     };
 
-    // Mode determination via event delegation
-    const updateModeFromElement = (target: Element | null) => {
+    // Mode determination via event delegation (only runs when entering new elements)
+    const updateModeFromTarget = (target: Element | null) => {
       if (!target) {
-        pos.mode = 'default';
-        pos.magneticTarget = null;
-        updateCursorClasses();
+        if (pos.mode !== 'default') {
+          pos.mode = 'default';
+          applyModeStyles();
+        }
         return;
       }
+
+      let newMode: CursorMode = 'default';
 
       // 1. Native form inputs / editable text: hide custom cursor to preserve native text selection
       if (
         target.closest('input, textarea, select, [contenteditable="true"]') ||
         target.classList?.contains('cursor-text')
       ) {
-        pos.mode = 'hidden';
-        pos.magneticTarget = null;
-        updateCursorClasses();
-        return;
+        newMode = 'hidden';
       }
-
       // 2. Project card / preview lookbook: view mode with miniature badge
-      if (
+      else if (
         target.closest('[data-cursor="view"]') ||
         target.closest('[role="button"][aria-label*="case study"]') ||
         target.closest('.group\\/card [data-sound-card]')
       ) {
-        pos.mode = 'view';
-        pos.magneticTarget = null;
-        updateCursorClasses();
-        return;
+        newMode = 'view';
       }
-
       // 3. Interactive clickable elements (buttons, links, tab items)
-      const clickable = target.closest(
-        'button, a, [role="button"], [role="tab"], [data-cursor="magnetic"], summary, kbd'
-      ) as HTMLElement | null;
-
-      if (clickable) {
-        pos.mode = 'clickable';
-        // Enable magnetic pull on dedicated magnetic elements or primary buttons
-        const isMagnetic =
-          clickable.getAttribute('data-cursor') === 'magnetic' ||
-          clickable.tagName === 'BUTTON' ||
-          clickable.classList.contains('group');
-
-        pos.magneticTarget = isMagnetic ? clickable : null;
-        updateCursorClasses();
-        return;
+      else if (
+        target.closest('button, a, [role="button"], [role="tab"], [data-cursor="magnetic"], summary, kbd')
+      ) {
+        newMode = 'clickable';
       }
 
-      pos.mode = 'default';
-      pos.magneticTarget = null;
-      updateCursorClasses();
+      if (pos.mode !== newMode) {
+        pos.mode = newMode;
+        applyModeStyles();
+      }
     };
 
     const handlePointerOver = (e: PointerEvent) => {
-      updateModeFromElement(e.target as Element);
+      if (e.pointerType === 'touch') {
+        pos.isTouchDevice = true;
+        hideCursor();
+        return;
+      }
+      updateModeFromTarget(e.target as Element);
     };
 
-    const handlePointerDown = () => {
+    const handlePointerDown = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
       pos.isMouseDown = true;
-      updateCursorClasses();
+      applyModeStyles();
     };
 
     const handlePointerUp = () => {
       pos.isMouseDown = false;
-      updateCursorClasses();
+      applyModeStyles();
     };
 
-    const handleMouseLeave = () => {
+    const hideCursor = () => {
       pos.isHoveringWindow = false;
       if (dotRef.current) dotRef.current.style.opacity = '0';
       if (ringRef.current) ringRef.current.style.opacity = '0';
       if (glowRef.current) glowRef.current.style.opacity = '0';
     };
 
-    const handleMouseEnter = () => {
-      pos.isHoveringWindow = true;
-      updateCursorClasses();
+    const handleMouseLeave = () => {
+      hideCursor();
     };
 
-    function updateCursorClasses() {
+    const handleMouseEnter = () => {
+      pos.isHoveringWindow = true;
+      applyModeStyles();
+      requestLoop();
+    };
+
+    // Update visual styles ONLY when mode or mouse state changes (never on raw pointermove)
+    function applyModeStyles() {
       if (!pos.isHoveringWindow || pos.mode === 'hidden') {
         if (dotRef.current) dotRef.current.style.opacity = '0';
         if (ringRef.current) ringRef.current.style.opacity = '0';
@@ -199,14 +206,12 @@ export const CustomCursor: React.FC = () => {
         return;
       }
 
-      // Visibility restore
       if (glowRef.current) glowRef.current.style.opacity = '1';
 
       if (pos.mode === 'view') {
         // View Badge Mode: Ring expands to 76px with 'VIEW' badge; inner dot hides
         if (dotRef.current) {
           dotRef.current.style.opacity = '0';
-          dotRef.current.style.transform += ' scale(0)';
         }
         if (ringRef.current) {
           ringRef.current.style.opacity = '1';
@@ -284,7 +289,7 @@ export const CustomCursor: React.FC = () => {
     document.addEventListener('mouseenter', handleMouseEnter);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
       document.documentElement.classList.remove('has-custom-cursor');
       reducedMotionQuery.removeEventListener('change', handleMotionChange);
       window.removeEventListener('pointermove', handlePointerMove);
@@ -305,7 +310,7 @@ export const CustomCursor: React.FC = () => {
       aria-hidden="true"
       className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden select-none"
     >
-      {/* 1. Subtle Pointer-Responsive Lighting Aura (160px diameter soft ambient falloff) */}
+      {/* 1. Subtle Pointer-Responsive Lighting Aura (Soft ambient falloff) */}
       <div
         ref={glowRef}
         className="absolute top-0 left-0 w-44 h-44 -ml-22 -mt-22 rounded-full pointer-events-none transition-opacity duration-300 opacity-0 will-change-transform"
@@ -341,7 +346,7 @@ export const CustomCursor: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. High-Precision Center Dot (Ivory in Noir mode, Espresso in Ivory mode) */}
+      {/* 3. High-Precision Center Dot with 0-Latency Hardware Pointer Tracking */}
       <div
         ref={dotRef}
         className="absolute top-0 left-0 rounded-full pointer-events-none will-change-transform opacity-0"

@@ -5,6 +5,7 @@ import { CustomOSVisualization } from './CustomOSVisualization';
 import { JarvisAICoreVisualization } from './JarvisAICoreVisualization';
 import { Ecommerce3DShowroom } from './Ecommerce3DShowroom';
 import { ERPSupplyChain3D } from './ERPSupplyChain3D';
+import { ImpactMetricsChart } from './ImpactMetricsChart';
 
 interface CaseStudyModalProps {
   project: ProjectCaseStudy | null;
@@ -219,7 +220,15 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
             </div>
           </div>
 
-          {/* 5. Verified Outcomes & Solutions */}
+          {/* 5. Project Scale & Impact Metrics Bar Chart */}
+          {project.impact_metrics && project.impact_metrics.length > 0 && (
+            <ImpactMetricsChart
+              metrics={project.impact_metrics}
+              projectTitle={project.title}
+            />
+          )}
+
+          {/* 6. Verified Outcomes & Solutions */}
           <div className="pt-4 border-t border-[var(--border-subtle)]">
             <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
               Verified Outcomes & Engineering Solutions

@@ -67,7 +67,7 @@ function PortfolioContent({
     }
   }, [setIsResumeOpen, setSelectedProject]);
 
-  const handleOpenProject = (p: ProjectCaseStudy) => {
+  const handleOpenProject = React.useCallback((p: ProjectCaseStudy) => {
     transitionTo(`#project-${p.id}`, {
       sceneTitle: `CASE STUDY // ${p.title.toUpperCase()}`,
       sceneNumber:
@@ -83,9 +83,9 @@ function PortfolioContent({
         setSelectedProject(p);
       },
     });
-  };
+  }, [transitionTo, playModalTransition, setSelectedProject]);
 
-  const handleCloseProject = () => {
+  const handleCloseProject = React.useCallback(() => {
     transitionTo('#work', {
       sceneTitle: 'SELECTED WORKS & ARCHITECTURE',
       sceneNumber: '01',
@@ -94,20 +94,20 @@ function PortfolioContent({
         setSelectedProject(null);
       },
     });
-  };
+  }, [transitionTo, playModalTransition, setSelectedProject]);
 
-  const handleOpenResume = () => {
+  const handleOpenResume = React.useCallback(() => {
     transitionTo('#resume', {
       sceneTitle: 'VERIFIED CURRICULUM VITAE',
-      sceneNumber: '06',
+      sceneNumber: '08',
       customAction: () => {
         playModalTransition(true);
         setIsResumeOpen(true);
       },
     });
-  };
+  }, [transitionTo, playModalTransition, setIsResumeOpen]);
 
-  const handleCloseResume = () => {
+  const handleCloseResume = React.useCallback(() => {
     transitionTo('#top', {
       sceneTitle: 'INDEX // ROHIT SINGH BORA',
       sceneNumber: '00',
@@ -116,7 +116,8 @@ function PortfolioContent({
         setIsResumeOpen(false);
       },
     });
-  };
+  }, [transitionTo, playModalTransition, setIsResumeOpen]);
+
 
   // Global Keyboard Navigation Shortcuts (ESC, ?, R, W, A, C, H, J, K)
   useEffect(() => {
@@ -365,14 +366,17 @@ export default function App() {
     }, 150);
   };
 
-  const handleSelectProjectId = (id: string | null) => {
+  const handleSelectProjectId = React.useCallback((id: string | null) => {
     if (!id) {
       setSelectedProject(null);
       return;
     }
     const found = PORTFOLIO_DATA.projects.find((p) => p.id === id);
     setSelectedProject(found || null);
-  };
+  }, []);
+
+  const handleOpenResumeFromProvider = React.useCallback(() => setIsResumeOpen(true), []);
+  const handleCloseResumeFromProvider = React.useCallback(() => setIsResumeOpen(false), []);
 
   return (
     <ThemeProvider>
@@ -386,8 +390,8 @@ export default function App() {
         ) : (
           <TransitionProvider
             onSelectProject={handleSelectProjectId}
-            onOpenResume={() => setIsResumeOpen(true)}
-            onCloseResume={() => setIsResumeOpen(false)}
+            onOpenResume={handleOpenResumeFromProvider}
+            onCloseResume={handleCloseResumeFromProvider}
           >
             <PortfolioContent
               selectedProject={selectedProject}
