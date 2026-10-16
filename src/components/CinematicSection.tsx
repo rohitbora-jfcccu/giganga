@@ -75,6 +75,27 @@ export const CinematicSection: React.FC<CinematicSectionProps> = ({
       // 2. Section-Specific 3D Depth, Parallax & Vertical Entrance Physics
       const el = contentRef.current;
 
+      const isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        // Mobile: Subtle upward fade-in once upon entering viewport, NO scrub-linked fade
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 16 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 92%',
+              once: true,
+            },
+          }
+        );
+        return;
+      }
+
       switch (type) {
         case 'projects': {
           // Architectural scale bloom, subtle 3D tilt and gentle vertical lift

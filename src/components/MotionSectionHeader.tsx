@@ -53,9 +53,9 @@ export const MotionSectionHeader: React.FC<MotionSectionHeaderProps> = ({
   };
 
   const viewportConfig = {
-    once: false,
-    amount: 0.15,
-    margin: '-40px 0px -40px 0px',
+    once: true,
+    amount: 0.1,
+    margin: '0px 0px -20px 0px',
   };
 
   if (layout === 'stacked') {

@@ -19,9 +19,10 @@ export const Hero: React.FC<HeroProps> = ({
   const portraitRef = useRef<HTMLDivElement | null>(null);
   const leftColRef = useRef<HTMLDivElement | null>(null);
   const rightColRef = useRef<HTMLDivElement | null>(null);
+  const mobileCtaRef = useRef<HTMLDivElement | null>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement | null>(null);
 
-  // Lightweight, compositor-only scroll-linked opacity & transform
+  // Desktop-only scroll-linked opacity & transform; clean mobile persistence
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -30,11 +31,46 @@ export const Hero: React.FC<HeroProps> = ({
 
     let ticking = false;
 
+    const resetMobileStyles = () => {
+      if (portraitRef.current) {
+        portraitRef.current.style.opacity = '1';
+        portraitRef.current.style.transform = 'none';
+      }
+      if (leftColRef.current) {
+        leftColRef.current.style.opacity = '1';
+        leftColRef.current.style.transform = 'none';
+      }
+      if (rightColRef.current) {
+        rightColRef.current.style.opacity = '1';
+        rightColRef.current.style.transform = 'none';
+      }
+      if (mobileCtaRef.current) {
+        mobileCtaRef.current.style.opacity = '1';
+        mobileCtaRef.current.style.transform = 'none';
+      }
+      if (scrollIndicatorRef.current) {
+        scrollIndicatorRef.current.style.opacity = '1';
+      }
+    };
+
     const onScroll = () => {
+      // Mobile and tablet viewports (< 1024px):
+      // Content MUST NEVER fade out or translate away while scrolling!
+      if (window.innerWidth < 1024) {
+        resetMobileStyles();
+        return;
+      }
+
       if (!ticking) {
         window.requestAnimationFrame(() => {
+          if (window.innerWidth < 1024) {
+            resetMobileStyles();
+            ticking = false;
+            return;
+          }
+
           const scrollY = window.scrollY;
-          // Smooth fade across natural page scroll
+          // Smooth fade across natural page scroll (desktop only)
           const progress = Math.min(1, Math.max(0, scrollY / 380));
 
           // 1. Portrait fades out smoothly while floating slightly upward
@@ -73,12 +109,27 @@ export const Hero: React.FC<HeroProps> = ({
       }
     };
 
+    const onResize = () => {
+      if (window.innerWidth < 1024) {
+        resetMobileStyles();
+      } else {
+        onScroll();
+      }
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
-    // Initialize initial frame
-    onScroll();
+    window.addEventListener('resize', onResize, { passive: true });
+
+    // Initial pass
+    if (window.innerWidth < 1024) {
+      resetMobileStyles();
+    } else {
+      onScroll();
+    }
 
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
@@ -101,22 +152,24 @@ export const Hero: React.FC<HeroProps> = ({
       />
 
       {/* ============================================================== */}
-      {/* THREE-COLUMN BALANCED COMPOSITION                              */}
-      {/* Left: Introduction & CTAs | Center: Portrait | Right: Headline */}
+      {/* BALANCED COMPOSITION:                                          */}
+      {/* Desktop (lg+): Col 1 (Intro/CTAs) | Col 2 (Portrait) | Col 3 (Headline) */}
+      {/* Mobile (<lg): 1. Name/Role/Intro -> 2. Portrait -> 3. Headline -> 4. CTAs */}
       {/* ============================================================== */}
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full my-auto py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full my-auto py-6 sm:py-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-8 items-center">
 
           {/* ------------------------------------------------------------ */}
-          {/* LEFT: Identity, Introduction & Two Direct CTAs               */}
+          {/* STEP 1 (Mobile order-1, Desktop lg:order-1):                */}
+          {/* Identity, Role & Essential Introduction                      */}
           {/* ------------------------------------------------------------ */}
           <div
             ref={leftColRef}
-            className="lg:col-span-4 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1 will-change-transform"
+            className="order-1 lg:order-1 lg:col-span-4 flex flex-col justify-center space-y-5 sm:space-y-6 text-left hero-mobile-entrance-1 will-change-transform"
             style={{ willChange: 'transform, opacity' }}
           >
-            <div className="space-y-2">
-              <span className="font-mono-code text-[11px] font-semibold tracking-[0.26em] uppercase text-[var(--accent-champagne)] block">
+            <div className="space-y-1.5 sm:space-y-2">
+              <span className="font-mono-code text-[11px] sm:text-xs font-semibold tracking-[0.26em] uppercase text-[var(--accent-champagne)] block">
                 Rohit Singh Bora
               </span>
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-heading)] tracking-tight">
@@ -128,14 +181,11 @@ export const Hero: React.FC<HeroProps> = ({
               Building modern web applications and digital experiences with an emphasis on architectural clarity, mathematical precision, and spatial depth.
             </p>
 
-            <p className="text-xs sm:text-[13px] text-[var(--text-secondary)] leading-relaxed">
-              BCA Graduate from Soban Singh Jeena University (2026). Specializing in luxury commerce, operational ERP systems, and high-performance interactive interfaces.
-            </p>
-
-            {/* Exactly Two Clean CTA Links */}
-            <div className="flex flex-wrap items-center gap-6 pt-1">
+            {/* Desktop CTAs (Preserved inside Left Column on lg+ screens) */}
+            <div className="hidden lg:flex flex-wrap items-center gap-6 pt-1">
               <button
                 onClick={onExploreWork}
+                data-cursor="magnetic"
                 className="group inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase text-[var(--text-primary)] hover:text-[var(--accent-champagne)] transition-colors py-2 cursor-pointer border-b border-[var(--text-primary)]/40 hover:border-[var(--accent-champagne)]"
                 aria-label="See featured architectural work"
               >
@@ -145,6 +195,7 @@ export const Hero: React.FC<HeroProps> = ({
 
               <button
                 onClick={onContactClick}
+                data-cursor="magnetic"
                 className="group inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors py-2 cursor-pointer border-b border-transparent hover:border-[var(--text-secondary)]"
                 aria-label="Discuss a project with Rohit Bora"
               >
@@ -155,14 +206,15 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* ------------------------------------------------------------ */}
-          {/* CENTER: The Portrait (Cleanly framed, no overlapping text)   */}
+          {/* STEP 2 (Mobile order-2, Desktop lg:order-2):                */}
+          {/* The Portrait (Cleanly framed, responsive, no oversized crop) */}
           {/* ------------------------------------------------------------ */}
           <div
             ref={portraitRef}
-            className="lg:col-span-4 flex justify-center items-center order-1 lg:order-2 will-change-transform"
+            className="order-2 lg:order-2 lg:col-span-4 flex justify-center items-center hero-mobile-entrance-2 will-change-transform my-2 sm:my-0"
             style={{ willChange: 'transform, opacity' }}
           >
-            <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[340px] aspect-[2/3] rounded-2xl overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-2xl transition-all duration-300">
+            <div className="relative w-full max-w-[220px] sm:max-w-[260px] lg:max-w-[340px] aspect-[3/4] sm:aspect-[2/3] rounded-2xl overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-2xl transition-all duration-300 mx-auto">
               {/* Subtle Champagne Ambient Radial Glow */}
               <div
                 aria-hidden="true"
@@ -174,7 +226,7 @@ export const Hero: React.FC<HeroProps> = ({
                 }}
               />
 
-              {/* Portrait Image */}
+              {/* Portrait Image (Responsive, recognizable framing) */}
               <img
                 src="/images/bora-portrait.png"
                 alt="Rohit Singh Bora — Software Engineer"
@@ -192,7 +244,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Soft Bottom Fade Scrim */}
               <div
                 aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-16 pointer-events-none z-20"
+                className="absolute inset-x-0 bottom-0 h-12 sm:h-16 pointer-events-none z-20"
                 style={{
                   background: isIvory
                     ? 'linear-gradient(to top, rgba(245,239,235,0.7) 0%, transparent 100%)'
@@ -203,18 +255,19 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* ------------------------------------------------------------ */}
-          {/* RIGHT: Clear Editorial Headline & Context                    */}
+          {/* STEP 3 (Mobile order-3, Desktop lg:order-3):                */}
+          {/* Editorial Headline & Academic Context                        */}
           {/* ------------------------------------------------------------ */}
           <div
             ref={rightColRef}
-            className="lg:col-span-4 flex flex-col justify-center space-y-5 text-left lg:text-right order-3 will-change-transform"
+            className="order-3 lg:order-3 lg:col-span-4 flex flex-col justify-center space-y-4 sm:space-y-5 text-left lg:text-right hero-mobile-entrance-3 will-change-transform"
             style={{ willChange: 'transform, opacity' }}
           >
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[2.65rem] font-medium leading-[1.14] tracking-tight text-[var(--text-heading)] [text-wrap:balance]">
+            <h2 className="font-editorial text-2xl sm:text-4xl lg:text-[2.65rem] font-medium leading-[1.18] sm:leading-[1.14] tracking-tight text-[var(--text-heading)] [text-wrap:balance]">
               Creative Developer <span className="italic text-[var(--accent-champagne)]">&amp; Digital Product</span> Builder
             </h2>
 
-            <div className="pt-2 space-y-1.5">
+            <div className="pt-1 sm:pt-2 space-y-1 sm:space-y-1.5">
               <p className="font-mono-code text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
                 Soban Singh Jeena University · BCA 2026
               </p>
@@ -222,6 +275,33 @@ export const Hero: React.FC<HeroProps> = ({
                 Available Worldwide · Remote &amp; Relocation
               </p>
             </div>
+          </div>
+
+          {/* ------------------------------------------------------------ */}
+          {/* STEP 4 (Mobile order-4, Desktop lg:hidden):                 */}
+          {/* Mobile CTA Links (Positioned naturally following headline)   */}
+          {/* ------------------------------------------------------------ */}
+          <div
+            ref={mobileCtaRef}
+            className="order-4 lg:hidden col-span-1 flex flex-wrap items-center gap-4 sm:gap-6 pt-1 hero-mobile-entrance-4"
+          >
+            <button
+              onClick={onExploreWork}
+              className="group inline-flex items-center gap-2 min-h-[44px] text-xs font-semibold tracking-[0.18em] uppercase text-[var(--text-primary)] hover:text-[var(--accent-champagne)] transition-colors py-2.5 px-1 cursor-pointer border-b border-[var(--text-primary)]/40 hover:border-[var(--accent-champagne)]"
+              aria-label="See featured architectural work"
+            >
+              <span>See The Work</span>
+              <ArrowDown className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-y-0.5 text-[var(--accent-champagne)]" />
+            </button>
+
+            <button
+              onClick={onContactClick}
+              className="group inline-flex items-center gap-2 min-h-[44px] text-xs font-semibold tracking-[0.18em] uppercase text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors py-2.5 px-1 cursor-pointer border-b border-transparent hover:border-[var(--text-secondary)]"
+              aria-label="Discuss a project with Rohit Bora"
+            >
+              <span>Discuss A Project</span>
+              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-[var(--accent-champagne)]" />
+            </button>
           </div>
 
         </div>
@@ -232,12 +312,12 @@ export const Hero: React.FC<HeroProps> = ({
       {/* ============================================================== */}
       <div
         ref={scrollIndicatorRef}
-        className="w-full flex items-center justify-center pt-2 text-[var(--text-muted)] select-none will-change-opacity"
+        className="w-full flex items-center justify-center pt-2 pb-1 text-[var(--text-muted)] select-none will-change-opacity"
         style={{ willChange: 'opacity' }}
       >
         <button
           onClick={onExploreWork}
-          className="group inline-flex items-center gap-2 font-mono-code text-[10px] tracking-[0.28em] uppercase text-[var(--text-muted)] hover:text-[var(--accent-champagne)] transition-colors cursor-pointer"
+          className="group inline-flex items-center gap-2 font-mono-code text-[10px] tracking-[0.28em] uppercase text-[var(--text-muted)] hover:text-[var(--accent-champagne)] transition-colors cursor-pointer py-2 px-3"
           aria-label="Scroll down to explore selected works"
         >
           <span>Scroll to explore</span>
@@ -247,3 +327,4 @@ export const Hero: React.FC<HeroProps> = ({
     </section>
   );
 };
+

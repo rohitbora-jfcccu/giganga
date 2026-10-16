@@ -51,11 +51,36 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
     }
   }, []);
 
-  // Smooth scroll-triggered fade reveal that naturally reverses when scrolling upward
+  // Smooth scroll-triggered fade reveal: simplified on mobile, scrubbed on desktop
   useGSAP(
     () => {
       if (isReducedMotion || !articleRef.current) return;
 
+      const isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        // Mobile: Subtle upward fade-in once, NO scroll-linked scrub fade
+        gsap.fromTo(
+          articleRef.current,
+          {
+            opacity: 0,
+            y: 20,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: articleRef.current,
+              start: 'top 92%',
+              once: true,
+            },
+          }
+        );
+        return;
+      }
+
+      // Desktop: preserve scrubbed reveal
       gsap.fromTo(
         articleRef.current,
         {
@@ -129,10 +154,32 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
     <article
       ref={articleRef}
       data-sound-card="true"
-      className="relative mb-28 sm:mb-36 lg:mb-44 last:mb-12 group/card"
+      className="relative pt-10 sm:pt-14 lg:pt-18 mb-24 sm:mb-32 lg:mb-40 last:mb-12 group/card"
     >
+      {/* ================================================================= */}
+      {/* OVERSIZED ARCHITECTURAL BACKGROUND WATERMARK NUMERAL (01-04)      */}
+      {/* Prominently positioned near project start with greige/champagne  */}
+      {/* ================================================================= */}
       <div
-        className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center ${
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute top-0 left-0 sm:left-1 z-0 leading-none select-none"
+      >
+        <span
+          className="font-editorial text-[6.5rem] sm:text-[9rem] lg:text-[13.5rem] font-bold tracking-tighter select-none block leading-[0.82] transition-opacity duration-300 opacity-[0.14] dark:opacity-[0.15]"
+          style={{
+            background: isNoir
+              ? 'linear-gradient(135deg, rgba(201, 192, 180, 0.95) 0%, rgba(197, 168, 121, 0.8) 55%, rgba(116, 84, 61, 0.45) 100%)'
+              : 'linear-gradient(135deg, rgba(38, 30, 24, 0.9) 0%, rgba(148, 114, 72, 0.8) 55%, rgba(116, 84, 61, 0.5) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          {projectNumber}
+        </span>
+      </div>
+
+      <div
+        className={`relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center ${
           inverted ? 'lg:flex-row-reverse' : ''
         }`}
       >
@@ -258,6 +305,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                   : 'transform 600ms cubic-bezier(0.16, 1, 0.3, 1), border-color 300ms ease, box-shadow 300ms ease',
               }}
               className="relative aspect-video sm:aspect-[16/10] rounded-2xl overflow-hidden border border-[var(--border-card)] group-hover/card:border-[var(--accent-champagne)]/60 bg-[var(--bg-card)] shadow-lg hover:shadow-2xl cursor-pointer select-none will-change-transform"
+              data-cursor="view"
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -453,6 +501,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 playClick();
                 onSelectProject(project);
               }}
+              data-cursor="magnetic"
               className="px-6 py-3 rounded-xl bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-semibold uppercase tracking-wider hover:bg-[var(--accent-champagne)] hover:text-black transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-md hover:shadow-lg active:scale-[0.98]"
             >
               <span>{isUnderDev ? 'Explore Development Blueprint' : 'Inspect Full Case Study'}</span>
@@ -467,6 +516,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 rel="noopener noreferrer"
                 onPointerEnter={() => playHover()}
                 onClick={() => playClick()}
+                data-cursor="magnetic"
                 className="px-4 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-elevated)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 text-xs font-mono-code text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all flex items-center gap-2 cursor-pointer"
                 aria-label={`View ${project.title} repository on GitHub`}
               >

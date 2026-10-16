@@ -39,7 +39,6 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
         <MotionSectionHeader
           kicker="01. Selected Works"
           title="Architectural Case Studies"
-          description="Full-stack architectures, high-density interfaces, and digital products engineered with mathematical rigor."
           borderBottom={true}
           champagneSweep={true}
           rightContent={

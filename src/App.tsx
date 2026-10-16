@@ -3,6 +3,7 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { SoundProvider, useSound } from './context/SoundContext';
 import { TransitionProvider, useTransition } from './context/TransitionContext';
 import { CinematicVeil } from './components/CinematicVeil';
+import { CustomCursor } from './components/CustomCursor';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { FeaturedWork } from './components/FeaturedWork';
@@ -375,6 +376,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
+      <CustomCursor />
       <SoundProvider>
         {isNotFound ? (
           <NotFoundPage

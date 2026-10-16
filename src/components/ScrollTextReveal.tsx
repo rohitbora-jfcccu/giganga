@@ -59,6 +59,31 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
       const wordElements = containerRef.current.querySelectorAll('.bora-reveal-word');
       if (!wordElements.length) return;
 
+      const isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        // Mobile: Subtle upward entrance once, never faded out by scroll scrub
+        gsap.fromTo(
+          wordElements,
+          {
+            y: 12,
+            opacity: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            stagger: 0.02,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: 'top 92%',
+              once: true,
+            },
+          }
+        );
+        return;
+      }
+
       if (isHero) {
         // Hero Headline (first viewport):
         // 100% visible immediately so first impression is never blank.
@@ -84,10 +109,8 @@ export const ScrollHeadlineReveal: React.FC<ScrollHeadlineRevealProps> = ({
           }
         );
       } else {
-        // Section headlines:
+        // Section headlines (desktop):
         // Controlled upward travel (24px) from muted opacity (0.28) to full luminous contrast.
-        // Scrolling downward advances the reveal word-by-word;
-        // scrolling upward smoothly reverses it without jumps.
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
@@ -214,7 +237,14 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
       const wordElements = containerRef.current.querySelectorAll('.bora-scrub-word');
       if (!wordElements.length) return;
 
-      // Two-way scroll-linked scrub timeline
+      const isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        // Mobile: Text is 100% visible and unmuted - no scroll-linked scrub fade
+        gsap.set(wordElements, { opacity: 1, color: 'var(--text-primary)' });
+        return;
+      }
+
+      // Two-way scroll-linked scrub timeline for desktop
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -225,7 +255,7 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
         },
       });
 
-      // Word-by-word progression from muted state to crisp primary text
+      // Word-by-word progression from muted state to crisp primary text (desktop only)
       tl.fromTo(
         wordElements,
         {
@@ -271,8 +301,8 @@ export const ScrollScrubText: React.FC<ScrollScrubTextProps> = ({
             <span
               className="bora-scrub-word inline-block will-change-[opacity,color] transition-colors duration-150"
               style={{
-                opacity: 0.25, // Reliable baseline fallback ensures text is legible before scrolling
-                color: 'var(--text-muted)',
+                opacity: 1, // Full opacity baseline ensures text is immediately legible on mobile
+                color: 'var(--text-primary)',
               }}
             >
               {word}

@@ -180,6 +180,42 @@ section,
   animation: soundbar 0.95s ease-in-out infinite alternate 0.35s;
 }
 
+/* Mobile-only subtle entrance animations */
+@keyframes mobileFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .hero-mobile-entrance-1 {
+    animation: mobileFadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-mobile-entrance-2 {
+    animation: mobileFadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+  }
+  .hero-mobile-entrance-3 {
+    animation: mobileFadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both;
+  }
+  .hero-mobile-entrance-4 {
+    animation: mobileFadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+  }
+}
+
+/* Horizontal scrollbar concealment for pill/tab ribbons */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   body,
   header,
@@ -191,9 +227,43 @@ section,
   .animate-light-sweep,
   .animate-soundbar-1,
   .animate-soundbar-2,
-  .animate-soundbar-3 {
+  .animate-soundbar-3,
+  .hero-mobile-entrance-1,
+  .hero-mobile-entrance-2,
+  .hero-mobile-entrance-3,
+  .hero-mobile-entrance-4 {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* Custom Cursor Rules: Strictly fine-pointer desktop devices only */
+@media (pointer: fine) and (hover: hover) {
+  html.has-custom-cursor,
+  html.has-custom-cursor body,
+  html.has-custom-cursor a,
+  html.has-custom-cursor button,
+  html.has-custom-cursor [role="button"],
+  html.has-custom-cursor [role="tab"],
+  html.has-custom-cursor [data-sound-card] {
+    cursor: none !important;
+  }
+
+  /* Always preserve standard native cursor for interactive form fields */
+  html.has-custom-cursor input,
+  html.has-custom-cursor textarea,
+  html.has-custom-cursor select,
+  html.has-custom-cursor [contenteditable="true"] {
+    cursor: auto !important;
+  }
+
+  /* Preserve grab controls for interactive 3D canvases */
+  html.has-custom-cursor .cursor-grab {
+    cursor: grab !important;
+  }
+
+  html.has-custom-cursor .cursor-grabbing {
+    cursor: grabbing !important;
   }
 }
 
