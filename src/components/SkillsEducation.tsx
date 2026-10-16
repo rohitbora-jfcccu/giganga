@@ -17,7 +17,7 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
     { id: 'languages', label: 'Languages' },
     { id: 'frontend', label: 'Frontend & 3D' },
     { id: 'backend', label: 'Backend & APIs' },
-    { id: 'tooling', label: 'Tooling & Rigor' },
+    { id: 'tooling', label: 'Tooling & Workflow' },
   ];
 
   const filteredSkillCategories = selectedCategory === 'all'
@@ -29,23 +29,23 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
         <MotionSectionHeader
-          kicker="06. Technical Stacks & Academic Credentials"
-          title="Verified Skills & Formal Education"
-          description="Technologies and foundational computer science principles applied across production web applications and enterprise platforms."
+          kicker="06. Skills & Education"
+          title="Technical Skills & Education"
+          description="Core computing technologies, modern full-stack frameworks, and formal computer science education."
           borderBottom={true}
           rightContent={
             <button
               onClick={onResumeClick}
-              className="px-5 py-2.5 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer self-start md:self-auto shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 text-xs font-semibold text-[var(--text-primary)] transition-colors cursor-pointer self-start md:self-auto shadow-sm flex items-center gap-1.5"
             >
               <GraduationCap className="w-3.5 h-3.5 text-[var(--accent-champagne)]" />
-              <span>Open Verified Curriculum Vitae</span>
+              <span>Verified Resume</span>
             </button>
           }
         />
 
         {/* Category Filter Tabs */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 border-b border-[var(--border-subtle)]" role="tablist">
+        <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 border-b border-[var(--border-subtle)] no-scrollbar" role="tablist">
           {categories.map((cat) => {
             const isActive = selectedCategory === cat.id;
             return (
@@ -54,7 +54,7 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-colors border-b-2 cursor-pointer whitespace-nowrap ${
+                className={`px-3 py-1.5 text-xs font-semibold tracking-wider uppercase transition-colors border-b-2 cursor-pointer whitespace-nowrap ${
                   isActive
                     ? 'border-[var(--accent-champagne)] text-[var(--text-primary)] font-bold'
                     : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
@@ -66,52 +66,47 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
           })}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Academic Degree & Formal Coursework */}
           <div className="lg:col-span-5 space-y-6">
-            {/* Formal Academic Degree Card */}
             <div
               data-sound-card="true"
-              className="p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] space-y-6 shadow-sm group/card cursor-default transition-colors"
+              className="p-7 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] space-y-5 shadow-sm group/card cursor-default transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-card)] text-[var(--accent-champagne)]">
-                  <GraduationCap className="w-6 h-6" />
+                <div className="p-3 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-card)] text-[var(--accent-champagne)]">
+                  <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider">
+                  <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider block">
                     Conferred Degree
                   </span>
-                  <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                  <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
                     {education.degree}
                   </h3>
                 </div>
               </div>
 
-              <div className="space-y-2 text-sm text-[var(--text-secondary)] border-t border-[var(--border-subtle)] pt-4">
+              <div className="space-y-2 text-xs font-mono-code text-[var(--text-secondary)] border-t border-[var(--border-subtle)] pt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[var(--text-muted)]">Institution:</span>
-                  <span className="font-medium text-[var(--text-primary)]">{education.institution}</span>
+                  <span className="font-sans font-medium text-[var(--text-primary)]">{education.institution}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[var(--text-muted)]">Graduation Status:</span>
-                  <span className="font-mono-code text-[var(--accent-champagne)] font-semibold">{education.status}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[var(--text-muted)]">Academic Tenure:</span>
-                  <span className="font-mono-code">{education.period}</span>
+                  <span className="text-[var(--text-muted)]">Graduation:</span>
+                  <span className="text-[var(--accent-champagne)] font-semibold">{education.status}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[var(--text-muted)]">Location:</span>
-                  <span>{education.location}</span>
+                  <span className="text-[var(--text-primary)]">{education.location}</span>
                 </div>
               </div>
 
               <div className="border-t border-[var(--border-subtle)] pt-4">
-                <h4 className="text-xs font-mono-code uppercase tracking-wider text-[var(--accent-champagne)] font-semibold mb-3">
+                <h4 className="text-[11px] font-mono-code uppercase tracking-wider text-[var(--accent-champagne)] font-semibold mb-3">
                   Core Computer Science Coursework
                 </h4>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-1.5">
                   {education.coursework.map((course, idx) => (
                     <div key={idx} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                       <span className="text-[var(--accent-champagne)] font-mono-code">·</span>
@@ -123,32 +118,27 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
             </div>
           </div>
 
-          {/* Right Column: Technical Domains & Context */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Right Column: Compact Technical Domains with Technology Badges */}
+          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
             {filteredSkillCategories.map((domain, idx) => (
               <div
                 key={idx}
-                className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] hover:border-[var(--border-hover)] shadow-sm transition-all flex flex-col justify-between"
               >
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--text-primary)] mb-4 pb-2 border-b border-[var(--border-subtle)] font-mono-code flex items-center justify-between">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] mb-4 pb-2 border-b border-[var(--border-subtle)] font-mono-code flex items-center justify-between">
                     <span>{domain.title}</span>
-                    <span className="text-[var(--text-muted)] text-xs">0{idx + 1}</span>
+                    <span className="text-[var(--text-muted)] text-[10px]">0{idx + 1}</span>
                   </h3>
 
-                  <div className="space-y-3">
-                    {domain.skills.map((s, i) => (
-                      <div
+                  <div className="flex flex-wrap gap-2">
+                    {domain.technologies.map((tech, i) => (
+                      <span
                         key={i}
-                        className="p-2.5 rounded-xl bg-[var(--bg-elevated)]/40 border border-[var(--border-subtle)] hover:border-[var(--accent-champagne)]/40 transition-colors"
+                        className="px-2.5 py-1.5 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:border-[var(--accent-champagne)]/40 text-xs font-mono-code text-[var(--text-primary)] transition-colors"
                       >
-                        <span className="font-bold text-xs sm:text-sm text-[var(--text-primary)] block mb-0.5">
-                          {s.name}
-                        </span>
-                        <p className="text-[11px] text-[var(--text-secondary)] leading-normal">
-                          {s.context}
-                        </p>
-                      </div>
+                        {tech}
+                      </span>
                     ))}
                   </div>
                 </div>

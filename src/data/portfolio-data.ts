@@ -4,17 +4,11 @@ export interface ProjectCaseStudy {
   tagline: string;
   category: string;
   timeline: string;
-  readingTime?: string;
   status: 'Production Core' | 'Operational' | 'Active Development' | 'UNDER DEVELOPMENT';
   isUnderDevelopment?: boolean;
   heroImage: string;
   liveDemoUrl?: string;
   repositoryUrl?: string;
-  stats?: {
-    devTime: string;
-    collaborators: string;
-    scale: string;
-  };
   summary: string;
   overview: string;
   problem: string;
@@ -53,7 +47,8 @@ export interface ProcessStage {
 
 export interface SkillCategory {
   title: string;
-  skills: { name: string; context: string }[];
+  category: string;
+  technologies: string[];
 }
 
 export const PORTFOLIO_DATA = {
@@ -119,15 +114,9 @@ export const PORTFOLIO_DATA = {
       tagline: 'High-End Architectural Fashion E-Commerce Platform',
       category: 'E-Commerce Architecture',
       timeline: '2025 – 2026',
-      readingTime: '5 min read',
       status: 'Operational' as const,
       heroImage: '/images/fashion_ecommerce_showcase_1792009263343.jpg',
       repositoryUrl: 'https://github.com/rohitbora/atelier-noir',
-      stats: {
-        devTime: '4 Months',
-        collaborators: 'Solo Engineer',
-        scale: '120+ SKU Lookbook',
-      },
       summary: 'A bespoke fashion commerce platform engineered for luxury aesthetic restraint, sub-second product transitions, and robust cart state synchronization.',
       overview: 'Atelier Noir was conceived to address the clunky, plugin-heavy nature of standard e-commerce templates. It combines a brutalist, editorial aesthetic with modern SPA performance, featuring custom catalog filtering, optimistic cart management, and seamless micro-interactions.',
       problem: 'Conventional fashion platforms suffer from heavy JavaScript bundles, disjointed checkout states, and generic card templates that dilute brand identity. The goal was to build a zero-bloat, deeply art-directed e-commerce experience that delivers high visual fidelity without sacrificing performance.',
@@ -196,15 +185,9 @@ export const PORTFOLIO_DATA = {
       tagline: 'Enterprise Supply Chain & Inventory Operations System',
       category: 'Enterprise Systems',
       timeline: '2025 – 2026',
-      readingTime: '6 min read',
       status: 'Production Core' as const,
       heroImage: '/images/erp_supply_chain_showcase_1792009263752.jpg',
       repositoryUrl: 'https://github.com/rohitbora/logixcore-erp',
-      stats: {
-        devTime: '5 Months',
-        collaborators: 'Lead Architect',
-        scale: '14,000+ Units / 6 Hubs',
-      },
       summary: 'An operational command center engineered for multi-warehouse freight routing, SKU batch normalization, and supplier dispatch tracking.',
       overview: 'LogixCore was engineered to replace outdated, fragmented enterprise supply chain software. It delivers real-time operational visibility into cross-dock logistics, inventory reorder thresholds, and warehouse dispatch metrics with tabular precision.',
       problem: 'Enterprise warehouse managers frequently struggle with bloated ERP software that has slow table interactions, confusing workflows, and poor data density. LogixCore solves this through high-density tabular layouts, rapid keyboard shortcuts, and strict data validation.',
@@ -273,15 +256,9 @@ export const PORTFOLIO_DATA = {
       tagline: 'System Architecture & Kernel Core Exploration',
       category: 'Operating Systems & Architecture',
       timeline: '2026 · Active Research',
-      readingTime: '4 min read',
       status: 'UNDER DEVELOPMENT' as const,
       isUnderDevelopment: true,
       heroImage: '/images/custom_os_interface_1792062303242.jpg',
-      stats: {
-        devTime: 'In Progress (Active R&D)',
-        collaborators: 'Solo Research',
-        scale: 'x86_64 Kernel & MMU Spec',
-      },
       summary: 'Building my own custom operating system, exploring system architecture, core functionality, and a personalized computing experience.',
       overview: 'Building my own custom operating system, exploring system architecture, core functionality, and a personalized computing experience. This architectural research initiative investigates low-level machine bootstrapping, memory management, kernel task scheduling, and minimal POSIX-compliant terminal environments.',
       problem: 'Modern commercial operating systems are monolithic, heavily layered, and hide critical hardware scheduling abstractions. The initiative aims to explore low-level machine execution from first principles, studying how a minimal, personalized computing environment can be constructed from scratch.',
@@ -334,15 +311,9 @@ export const PORTFOLIO_DATA = {
       tagline: 'AI-Powered Personal Assistant & Interactive System',
       category: 'Artificial Intelligence & Systems',
       timeline: '2026 · Active Research',
-      readingTime: '4 min read',
       status: 'UNDER DEVELOPMENT' as const,
       isUnderDevelopment: true,
       heroImage: '/images/jarvis_ai_interface_1792062302735.jpg',
-      stats: {
-        devTime: 'In Progress (Active R&D)',
-        collaborators: 'Solo Architect',
-        scale: 'Multimodal Intent Engine',
-      },
       summary: 'Developing my own AI-powered personal assistant inspired by JARVIS, with the goal of creating a more intelligent and interactive digital experience.',
       overview: 'Developing my own AI-powered personal assistant inspired by JARVIS, with the goal of creating a more intelligent and interactive digital experience. The system explores contextual intent parsing, real-time audio waveform feedback, autonomous task delegation, and a futuristic holographic interface.',
       problem: 'Conventional voice assistants are rigid, fragmented, and disconnected from developer workflows. The goal is to design a cohesive, highly personalized digital companion that can comprehend nuanced technical prompts, orchestrate local developer tasks, and deliver a fluid conversational presence.',
@@ -524,118 +495,24 @@ export const PORTFOLIO_DATA = {
 
   skills: [
     {
-      title: 'Languages & Core Fundamentals',
+      title: 'Languages & Core Computing',
       category: 'languages',
-      skills: [
-        {
-          name: 'TypeScript',
-          context: 'Strict typing, generics, utility types, and API contracts',
-          application: 'Used in Atelier Noir & LogixCore for 100% type-safe component props, cart reducers, and server payload verification.',
-        },
-        {
-          name: 'JavaScript (ES2024)',
-          context: 'Asynchronous concurrency, closures, and modern DOM APIs',
-          application: 'Applied in custom animation loops, Web Audio synthesizer nodes, and client-side event throttling.',
-        },
-        {
-          name: 'HTML5 & Semantic Web',
-          context: 'Accessible structures, ARIA standards, and SEO markup',
-          application: 'Engineered accessible landmarks, screen-reader focus traps, and Schema.org JSON-LD structured data.',
-        },
-        {
-          name: 'CSS3 & Modern Layouts',
-          context: 'Flexbox, CSS Grid, custom properties, and animations',
-          application: 'Architected the Noir/Ivory CSS variable token system with 250ms smooth transition curves and compositor containment.',
-        },
-        {
-          name: 'SQL & Relational DBs',
-          context: 'Relational querying, schema normalization, and constraints',
-          application: 'Mastered 3rd Normal Form (3NF) relational schemas for multi-warehouse freight dispatch and order line items.',
-        },
-      ],
+      technologies: ['TypeScript (Strict)', 'JavaScript (ES6+)', 'C / C++', 'Python', 'SQL (PostgreSQL)', 'HTML5 & CSS3'],
     },
     {
-      title: 'Frontend Frameworks & Spatial Graphics',
+      title: 'Frontend & 3D Graphics',
       category: 'frontend',
-      skills: [
-        {
-          name: 'React 19',
-          context: 'Modern hooks, functional architecture, and concurrent rendering',
-          application: 'Architected modular SPA layouts with custom state providers, transition overlays, and optimistic cart updates.',
-        },
-        {
-          name: 'Three.js & WebGL',
-          context: 'Studio PBR lighting, RoomEnvironment reflections, and procedural geometry',
-          application: 'Built the procedural 3D Process Apparatus and Opening Cinematic scene with zero external asset dependencies.',
-        },
-        {
-          name: 'Canvas 2D API',
-          context: 'Vector physics, pixel manipulation, and particle simulation',
-          application: 'Engineered the signature BORA portrait particle engine with spring physics and adaptive FPS scaling.',
-        },
-        {
-          name: 'Tailwind CSS',
-          context: 'Design token systems, responsive layout, and dark themes',
-          application: 'Created a unified typography and spatial scale spanning 360px mobile to 1440px desktop screens.',
-        },
-        {
-          name: 'Motion & GSAP',
-          context: 'Compositor-only transitions, scroll scrubbing, and page veils',
-          application: 'Implemented scroll-linked word-by-word headline reveals and cinematic shutter transitions.',
-        },
-      ],
+      technologies: ['React 19', 'Three.js & WebGL', 'Canvas 2D API', 'Tailwind CSS', 'Motion / GSAP', 'Responsive Design'],
     },
     {
-      title: 'Backend Systems & API Architecture',
+      title: 'Backend & Systems',
       category: 'backend',
-      skills: [
-        {
-          name: 'Node.js',
-          context: 'Server runtime, file streaming, and script automation',
-          application: 'Implemented fullstack Express server supporting development Vite middleware and production distribution.',
-        },
-        {
-          name: 'Express',
-          context: 'RESTful API routing, middleware chains, and security headers',
-          application: 'Created contact dispatch endpoints with IP rate-limiting, CORS handling, and structured JSON responses.',
-        },
-        {
-          name: 'Input Validation & Sanitization',
-          context: 'Server-side sanitization, regex checks, and payload limits',
-          application: 'Built defensive validation ensuring zero client price manipulation in checkout transactions.',
-        },
-        {
-          name: 'Rate Limiting & Anti-Spam',
-          context: 'IP throttling, token buckets, and honeypot traps',
-          application: 'Implemented sliding-window in-memory IP rate limiting and invisible honeypots to reject bot spam silently.',
-        },
-      ],
+      technologies: ['Node.js', 'Express', 'RESTful API Architecture', 'Server Validation', 'Rate Limiting', 'HTTP / WebSockets'],
     },
     {
-      title: 'Engineering Practices & Tooling',
+      title: 'Tooling & Engineering',
       category: 'tooling',
-      skills: [
-        {
-          name: 'Git & Version Control',
-          context: 'Atomic commits, branching, and repository hygiene',
-          application: 'Maintained atomic, semantic commit history with clear technical rationale for every architectural change.',
-        },
-        {
-          name: 'Vite & Bundling',
-          context: 'Fast module replacement, asset bundling, and dev tooling',
-          application: 'Configured Vite 8 with Tailwind v4 for sub-second builds and optimized production asset chunks.',
-        },
-        {
-          name: 'Responsive Ergonomics',
-          context: 'Seamless adaptation from 360px phones to 1440px+ displays',
-          application: 'Tested and verified all UI components across physical mobile phones, tablets, and wide monitors.',
-        },
-        {
-          name: 'Accessibility (WCAG AA)',
-          context: 'Contrast ratios, keyboard navigation, and reduced-motion modes',
-          application: 'Enforced 4.5:1 text contrast, visible focus rings, and prefers-reduced-motion media query hooks.',
-        },
-      ],
+      technologies: ['Git & GitHub', 'Vite', 'TypeScript Compiler', 'Linux Environment', 'WCAG AA Accessibility', 'Performance Auditing'],
     },
   ],
 

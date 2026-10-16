@@ -44,9 +44,9 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
           champagneSweep={true}
           rightContent={
             <div
-              className="flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] self-start md:self-auto shrink-0"
+              className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shrink-0 overflow-x-auto no-scrollbar max-w-full"
               role="group"
-              aria-label="Filter case studies by architectural discipline"
+              aria-label="Filter projects"
             >
               <button
                 onClick={() => {
@@ -54,13 +54,13 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
                   setActiveCategory('all');
                 }}
                 onPointerEnter={() => playHover()}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer whitespace-nowrap ${
                   activeCategory === 'all'
                     ? 'bg-[var(--bg-elevated)] text-[var(--text-heading)] shadow-xs font-semibold'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                All Projects ({allProjects.length})
+                All
               </button>
               <button
                 onClick={() => {
@@ -68,7 +68,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
                   setActiveCategory('ecommerce');
                 }}
                 onPointerEnter={() => playHover()}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer whitespace-nowrap ${
                   activeCategory === 'ecommerce'
                     ? 'bg-[var(--bg-elevated)] text-[var(--text-heading)] shadow-xs font-semibold'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
@@ -82,13 +82,13 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
                   setActiveCategory('enterprise');
                 }}
                 onPointerEnter={() => playHover()}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer whitespace-nowrap ${
                   activeCategory === 'enterprise'
                     ? 'bg-[var(--bg-elevated)] text-[var(--text-heading)] shadow-xs font-semibold'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                Enterprise ERP
+                Enterprise
               </button>
               <button
                 onClick={() => {
@@ -96,13 +96,13 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({ onSelectProject }) =
                   setActiveCategory('under-development');
                 }}
                 onPointerEnter={() => playHover()}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-mono-code transition-all duration-200 cursor-pointer whitespace-nowrap ${
                   activeCategory === 'under-development'
                     ? 'bg-[var(--bg-elevated)] text-[var(--accent-champagne)] shadow-xs font-bold'
                     : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
-                Under Development (2)
+                In Progress
               </button>
             </div>
           }

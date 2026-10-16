@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { PORTFOLIO_DATA } from '../data/portfolio-data';
-import { BookOpen, GraduationCap, CheckCircle2, ChevronRight, Layers, Code2 } from 'lucide-react';
-import { ScrollHeadlineReveal, ScrollScrubText } from './ScrollTextReveal';
+import { ScrollScrubText } from './ScrollTextReveal';
 import { MotionSectionHeader } from './MotionSectionHeader';
 import { CinematicSection } from './CinematicSection';
 
@@ -16,17 +15,17 @@ export const PersonalJourney: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
         <MotionSectionHeader
-          kicker="03. Educational & Technical Journey"
-          title={journey.subtitle}
-          description="A verifiable multi-year progression from algorithmic foundations at Soban Singh Jeena University to production full-stack systems."
+          kicker="03. Technical Journey"
+          title="Progression & Milestones"
+          description="Progression from computer science fundamentals at Soban Singh Jeena University to production-grade full-stack architectures."
           borderBottom={true}
         />
 
         {/* Narrative & Timeline Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-          {/* Left Column: Reflective Narrative & Active Milestone Spotlight */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          {/* Left Column: Narrative Statement & Milestone Focus */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-3 text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
+            <div className="space-y-3">
               <ScrollScrubText
                 as="p"
                 className="font-editorial text-xl sm:text-2xl text-[var(--text-primary)] leading-snug"
@@ -36,23 +35,20 @@ export const PersonalJourney: React.FC = () => {
                 From algorithmic first principles to production-grade web systems.
               </ScrollScrubText>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                My work balances foundational computer science principles from Soban Singh Jeena University with high-craft digital products that execute with mathematical precision.
+                My work balances foundational computer science principles from Soban Singh Jeena University with high-craft digital products built for scale and precision.
               </p>
             </div>
 
-            {/* Active Milestone Deep Inspection Spotlight */}
-            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-md space-y-4 transition-all">
+            {/* Active Milestone Card */}
+            <div className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-bold tracking-widest uppercase">
-                  MILESTONE SPOTLIGHT // {activeItem.year}
-                </span>
-                <span className="text-xs font-mono-code text-[var(--text-muted)]">
-                  {activeItem.period}
+                <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-bold tracking-wider">
+                  {activeItem.year} · {activeItem.period}
                 </span>
               </div>
 
               <div>
-                <h4 className="text-lg font-bold text-[var(--text-primary)] mb-1">
+                <h4 className="text-base sm:text-lg font-bold text-[var(--text-primary)] mb-1">
                   {activeItem.milestone}
                 </h4>
                 {activeItem.keyFocus && (
@@ -62,30 +58,19 @@ export const PersonalJourney: React.FC = () => {
                 )}
               </div>
 
-              {activeItem.tangibleOutcome && (
-                <div className="p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)]">
-                  <span className="text-[10px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-semibold block mb-0.5">
-                    Verified Outcome
-                  </span>
-                  <p className="text-xs text-[var(--text-primary)] leading-relaxed font-medium">
-                    {activeItem.tangibleOutcome}
-                  </p>
-                </div>
-              )}
-
               {activeItem.technologies && (
-                <div className="pt-2 border-t border-[var(--border-subtle)]">
-                  <span className="text-[10px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-1.5">
-                    Mastered Competencies
+                <div className="pt-3 border-t border-[var(--border-subtle)]">
+                  <span className="text-[10px] font-mono-code text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                    Core Technologies
                   </span>
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--text-secondary)]">
+                  <div className="flex flex-wrap gap-1.5">
                     {activeItem.technologies.map((tech, idx) => (
-                      <React.Fragment key={idx}>
-                        <span className="text-[var(--text-primary)] font-medium">{tech}</span>
-                        {idx < activeItem.technologies.length - 1 && (
-                          <span className="text-[var(--accent-champagne)] font-mono-code">·</span>
-                        )}
-                      </React.Fragment>
+                      <span
+                        key={idx}
+                        className="px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[11px] font-mono-code text-[var(--text-primary)]"
+                      >
+                        {tech}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -93,70 +78,45 @@ export const PersonalJourney: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Refined Interactive Timeline */}
-          <div className="lg:col-span-7 space-y-6 relative before:absolute before:inset-0 before:left-3.5 before:w-px before:bg-[var(--border-subtle)]">
+          {/* Right Column: Clean Interactive Timeline */}
+          <div className="lg:col-span-7 space-y-4 relative before:absolute before:inset-0 before:left-3.5 before:w-px before:bg-[var(--border-subtle)]">
             {journey.timeline.map((item, idx) => {
               const isSelected = idx === selectedMilestone;
               return (
-                <div key={idx} className="relative pl-10 group">
-                  {/* Timeline Node Pin */}
+                <div key={idx} className="relative pl-9 group">
+                  {/* Timeline Pin */}
                   <div
-                    className={`absolute left-2.5 top-5 w-3.5 h-3.5 rounded-full border-2 -translate-x-1/2 transition-all duration-300 ${
+                    className={`absolute left-2.5 top-6 w-3 h-3 rounded-full border-2 -translate-x-1/2 transition-all duration-200 ${
                       isSelected
-                        ? 'bg-[var(--accent-champagne)] border-[var(--text-primary)] scale-125 shadow-sm'
-                        : 'bg-[var(--bg-primary)] border-[var(--accent-champagne)]/70 group-hover:scale-110'
+                        ? 'bg-[var(--accent-champagne)] border-[var(--text-primary)] scale-125'
+                        : 'bg-[var(--bg-primary)] border-[var(--accent-champagne)]/60 group-hover:scale-110'
                     }`}
                   />
 
-                  {/* Interactive Card */}
+                  {/* Card */}
                   <div
                     onClick={() => setSelectedMilestone(idx)}
-                    className={`p-6 sm:p-7 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                    className={`p-5 sm:p-6 rounded-2xl border transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)] shadow-md ring-1 ring-[var(--accent-champagne)]/20'
-                        : 'bg-[var(--bg-card)] border-[var(--border-card)] hover:border-[var(--border-hover)] hover:shadow-sm'
+                        ? 'bg-[var(--bg-card)] border-[var(--accent-champagne)] shadow-sm'
+                        : 'bg-[var(--bg-card)]/70 border-[var(--border-card)] hover:border-[var(--border-hover)]'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-4 mb-2">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-mono-code font-bold text-[var(--accent-champagne)]">
-                          {item.year}
-                        </span>
-                        <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-                        <span className="text-xs font-mono-code text-[var(--text-muted)]">
-                          {item.period}
-                        </span>
+                    <div className="flex items-center justify-between gap-4 mb-1.5">
+                      <div className="flex items-center gap-2 text-xs font-mono-code">
+                        <span className="font-bold text-[var(--accent-champagne)]">{item.year}</span>
+                        <span className="text-[var(--text-muted)]">·</span>
+                        <span className="text-[var(--text-muted)]">{item.period}</span>
                       </div>
-                      <span className="text-[11px] font-mono-code text-[var(--text-muted)]">
-                        CHAPTER 0{idx + 1}
-                      </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-[var(--text-primary)] mb-2">
+                    <h3 className="text-base font-bold text-[var(--text-primary)] mb-1.5">
                       {item.milestone}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+                    <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
                       {item.description}
                     </p>
-
-                    {/* Unboxed Metadata Strip (Zero Pill Rule) */}
-                    {item.technologies && (
-                      <div className="pt-3 border-t border-[var(--border-subtle)] flex items-center justify-between text-xs">
-                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--text-muted)]">
-                          {item.technologies.slice(0, 3).map((t, ti) => (
-                            <React.Fragment key={ti}>
-                              <span>{t}</span>
-                              {ti < Math.min(item.technologies.length, 3) - 1 && <span>·</span>}
-                            </React.Fragment>
-                          ))}
-                        </div>
-                        <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold flex items-center gap-0.5">
-                          <span>{isSelected ? 'Inspecting' : 'Inspect Details'}</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               );

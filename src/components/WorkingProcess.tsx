@@ -25,9 +25,9 @@ export const WorkingProcess: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
         <MotionSectionHeader
-          kicker="05. Delivery Lifecycle"
-          title="The Engineering Methodology"
-          description="A disciplined six-stage pipeline transitioning from domain requirements to typed architectural models, bespoke visual design, and resilient production deployment."
+          kicker="05. Engineering Process"
+          title="Development Process"
+          description="A structured lifecycle from requirement analysis and architectural design to production engineering."
           borderBottom={true}
         />
 
@@ -78,7 +78,7 @@ export const WorkingProcess: React.FC = () => {
               <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
                 <div>
                   <span className="text-xs font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-widest block">
-                    CURRENT PHASE // 0{activeStage + 1} OF 06
+                    STAGE 0{activeStage + 1} OF 06
                   </span>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] mt-1">
                     {currentStage.title}
@@ -113,11 +113,11 @@ export const WorkingProcess: React.FC = () => {
                 {currentStage.detail}
               </p>
 
-              {/* Verified Phase Deliverables */}
+              {/* Key Deliverables */}
               {currentStage.deliverables && (
-                <div className="pt-4 border-t border-[var(--border-subtle)] space-y-3">
+                <div className="pt-4 border-t border-[var(--border-subtle)] space-y-2.5">
                   <span className="text-xs font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-semibold block">
-                    Tangible Verified Deliverables
+                    Key Deliverables
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[var(--text-secondary)]">
                     {currentStage.deliverables.map((item, idx) => (
@@ -126,21 +126,6 @@ export const WorkingProcess: React.FC = () => {
                         <span className="text-[var(--text-primary)]">{item}</span>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Architectural Invariant */}
-              {currentStage.invariant && (
-                <div className="p-4 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] flex items-start gap-3">
-                  <ShieldCheck className="w-4 h-4 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase block">
-                      Architectural Invariant
-                    </span>
-                    <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-                      {currentStage.invariant}
-                    </p>
                   </div>
                 </div>
               )}

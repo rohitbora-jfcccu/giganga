@@ -20,9 +20,9 @@ export const Capabilities: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header with Staggered Framer Motion Entrance */}
         <MotionSectionHeader
-          kicker="04. Engineering Disciplines"
-          title="Capabilities & Core Offerings"
-          description="Architectural craftsmanship applied across production web applications, bespoke digital storefronts, and operational enterprise platforms."
+          kicker="04. Capabilities"
+          title="Technical Capabilities"
+          description="Full-stack web engineering, custom e-commerce architectures, and enterprise operations systems."
           layout="stacked"
         />
 
@@ -56,7 +56,7 @@ export const Capabilities: React.FC = () => {
               {/* Unboxed Highlights List */}
               <div className="pt-6 border-t border-[var(--border-subtle)] space-y-2">
                 <p className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider mb-2">
-                  Key Technical Vectors
+                  Key Focus
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[var(--text-secondary)]">
                   {cap.highlights.map((h, i) => (

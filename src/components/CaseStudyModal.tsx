@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Github, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { X, Github, CheckCircle2, AlertCircle } from 'lucide-react';
 import { ProjectCaseStudy } from '../data/portfolio-data';
 import { CustomOSVisualization } from './CustomOSVisualization';
 import { JarvisAICoreVisualization } from './JarvisAICoreVisualization';
@@ -26,30 +26,6 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
     };
   }, [project, onClose]);
 
-  const readingEstimate = React.useMemo(() => {
-    if (!project) return { minutes: 4, wordCount: 850 };
-    const textCorpus = [
-      project.title,
-      project.tagline,
-      project.summary,
-      project.overview,
-      project.problem,
-      project.actualRole,
-      ...project.scope,
-      ...project.designDecisions,
-      ...project.engineeringApproach,
-      ...project.implementedFeatures.map((f) => `${f.title} ${f.description}`),
-      ...project.technologiesUsed.flatMap((t) => t.items),
-      ...project.challengesAndSolutions.map((c) => `${c.challenge} ${c.solution}`),
-      ...project.verifiedOutcomes,
-    ].join(' ');
-
-    const words = textCorpus.trim().split(/\s+/).filter(Boolean).length;
-    // Standard reading speed for technical architectural case studies: ~200 WPM
-    const minutes = Math.max(1, Math.ceil(words / 200));
-    return { minutes, wordCount: words };
-  }, [project]);
-
   if (!project) return null;
 
   return (
@@ -66,7 +42,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
       >
         {/* Modal Top Bar */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[var(--bg-primary)]/95 backdrop-blur-md border-b border-[var(--border-subtle)]">
-          <div className="flex items-center gap-3 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold">
+          <div className="flex items-center gap-2.5 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold">
             <span>{project.category}</span>
             <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
             <span>{project.timeline}</span>
@@ -94,28 +70,20 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
         </div>
 
         {/* Modal Content Scrollable Area */}
-        <div className="p-6 sm:p-10 overflow-y-auto space-y-12 text-[var(--text-primary)]">
+        <div className="p-6 sm:p-10 overflow-y-auto space-y-10 text-[var(--text-primary)]">
           {/* Header & Hero Image */}
           <div className="space-y-4">
-            <h2 id="case-study-title" className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
-              {project.title}
-            </h2>
-
-            {/* Reading Time Estimator below the project title using 'font-mono-code' style */}
-            <div className="flex flex-wrap items-center gap-2 text-xs font-mono-code text-[var(--text-muted)] pt-0.5">
-              <span className="flex items-center gap-1.5 text-[var(--accent-champagne)] font-semibold">
-                <Clock className="w-3.5 h-3.5" />
-                <span>~{readingEstimate.minutes} MIN READ</span>
+            <div>
+              <span className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code block mb-1">
+                {project.category}
               </span>
-              <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-              <span>{readingEstimate.wordCount.toLocaleString()} WORDS</span>
-              <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-              <span className="text-[var(--text-secondary)] uppercase tracking-wider">Comprehensive Architecture</span>
+              <h2 id="case-study-title" className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)]">
+                {project.title}
+              </h2>
+              <p className="text-base sm:text-lg text-[var(--accent-champagne)] font-medium pt-1.5">
+                {project.tagline}
+              </p>
             </div>
-
-            <p className="text-lg text-[var(--accent-champagne)] font-medium pt-1">
-              {project.tagline}
-            </p>
 
             {/* Interactive 3D Workstation Experience for Architectural Projects */}
             {project.id === 'atelier-noir' ? (
@@ -150,21 +118,21 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
                 <span className="w-2 h-2 rounded-full bg-[var(--accent-champagne)] animate-pulse shrink-0 mt-1" />
                 <div>
                   <span className="font-bold text-[var(--accent-champagne)] font-mono-code uppercase tracking-wider block">
-                    Active Architectural Research &amp; Engineering
+                    Active Development & Architectural Research
                   </span>
                   <p className="text-[var(--text-secondary)] mt-0.5 leading-relaxed">
-                    This project is currently under active development. Core architectural blueprints, interface prototypes, and research specifications are in progress.
+                    This project is under active engineering. Core architectural specifications, prototypes, and low-level interfaces are in continuous development.
                   </p>
                 </div>
               </div>
             )}
           </div>
 
-          {/* 1. Overview & 2. Problem */}
+          {/* 1. Overview & Problem */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-[var(--border-subtle)]">
             <div>
-              <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3 flex items-center gap-2">
-                <span>01. Overview</span>
+              <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
+                Overview
               </h3>
               <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
                 {project.overview}
@@ -172,8 +140,8 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
             </div>
 
             <div>
-              <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3 flex items-center gap-2">
-                <span>02. The Problem</span>
+              <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
+                The Engineering Problem
               </h3>
               <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
                 {project.problem}
@@ -181,11 +149,11 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
             </div>
           </div>
 
-          {/* 3. Project Scope & 4. Actual Role */}
+          {/* 2. Architectural Scope & Approach */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-[var(--border-subtle)]">
             <div>
               <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
-                03. Project Scope
+                Architectural Scope
               </h3>
               <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
                 {project.scope.map((item, i) => (
@@ -199,33 +167,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
 
             <div>
               <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
-                04. My Actual Role
-              </h3>
-              <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-                {project.actualRole}
-              </p>
-            </div>
-          </div>
-
-          {/* 5. Design Decisions & 6. Engineering Approach */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-[var(--border-subtle)]">
-            <div>
-              <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
-                05. Design Decisions
-              </h3>
-              <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-                {project.designDecisions.map((decision, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-[var(--accent-champagne)] font-mono-code text-xs mt-0.5">·</span>
-                    <span>{decision}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
-                06. Engineering Approach
+                Engineering Approach
               </h3>
               <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
                 {project.engineeringApproach.map((approach, i) => (
@@ -238,34 +180,37 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
             </div>
           </div>
 
-          {/* 7. Implemented Features */}
+          {/* 3. Implemented Features */}
           <div className="pt-4 border-t border-[var(--border-subtle)]">
-            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-6">
-              07. Implemented Features
+            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-4">
+              Core Capabilities
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {project.implementedFeatures.map((feat, i) => (
-                <div key={i} className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
-                  <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1.5">{feat.title}</h4>
+                <div key={i} className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-xs">
+                  <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-1">{feat.title}</h4>
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{feat.description}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 8. Technologies Used */}
+          {/* 4. Technologies Used */}
           <div className="pt-4 border-t border-[var(--border-subtle)]">
-            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-4">
-              08. Technologies Used
+            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
+              Technologies & Stacks
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {project.technologiesUsed.map((techGroup, i) => (
                 <div key={i}>
                   <p className="text-xs font-semibold text-[var(--text-primary)] mb-2">{techGroup.category}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-[var(--text-secondary)]">
+                  <div className="flex flex-wrap gap-1.5 text-xs text-[var(--text-secondary)]">
                     {techGroup.items.map((item, j) => (
-                      <span key={j} className="text-xs text-[var(--text-secondary)]">
-                        {item}{j < techGroup.items.length - 1 ? ' ·' : ''}
+                      <span
+                        key={j}
+                        className="px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] font-mono-code text-[11px] text-[var(--text-primary)]"
+                      >
+                        {item}
                       </span>
                     ))}
                   </div>
@@ -274,51 +219,49 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
             </div>
           </div>
 
-          {/* 9. Challenges & Solutions */}
+          {/* 5. Verified Outcomes & Solutions */}
           <div className="pt-4 border-t border-[var(--border-subtle)]">
-            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-4">
-              09. Challenges & Solutions
+            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
+              Verified Outcomes & Engineering Solutions
             </h3>
-            <div className="space-y-4">
-              {project.challengesAndSolutions.map((item, i) => (
-                <div key={i} className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm space-y-2">
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
-                    <p className="text-xs font-semibold text-[var(--text-primary)]">Challenge: {item.challenge}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-2">
+                <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider block">
+                  Engineering Solutions
+                </span>
+                {project.challengesAndSolutions.map((item, i) => (
+                  <div key={i} className="text-xs space-y-1 pt-1 first:pt-0">
+                    <p className="font-semibold text-[var(--text-primary)]">{item.challenge}</p>
+                    <p className="text-[var(--text-secondary)]">{item.solution}</p>
                   </div>
-                  <div className="flex items-start gap-2 pl-6">
-                    <CheckCircle2 className="w-4 h-4 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
-                    <p className="text-xs text-[var(--text-secondary)]">Solution: {item.solution}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <div className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-2">
+                <span className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider block">
+                  Measured Impact
+                </span>
+                <ul className="space-y-2 text-xs text-[var(--text-secondary)]">
+                  {project.verifiedOutcomes.map((outcome, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
+                      <span>{outcome}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* 10. Verified Outcomes */}
-          <div className="pt-4 border-t border-[var(--border-subtle)]">
-            <h3 className="text-xs uppercase tracking-wider text-[var(--accent-champagne)] font-semibold font-mono-code mb-4">
-              10. Verified Outcomes
-            </h3>
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              {project.verifiedOutcomes.map((outcome, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-[var(--accent-champagne)] shrink-0 mt-0.5" />
-                  <span>{outcome}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* 11. Links & Artifacts */}
+          {/* Bottom Actions */}
           <div className="pt-6 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+            <div>
               {project.repositoryUrl && (
                 <a
                   href={project.repositoryUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] text-xs font-semibold text-[var(--text-primary)] border border-[var(--border-card)] transition-colors flex items-center gap-2 shadow-sm"
+                  className="px-4 py-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-input)] text-xs font-semibold text-[var(--text-primary)] border border-[var(--border-card)] hover:border-[var(--accent-champagne)]/60 transition-colors flex items-center gap-2 shadow-xs"
                 >
                   <Github className="w-3.5 h-3.5" />
                   <span>Inspect Source Code</span>
@@ -328,7 +271,7 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ project, onClose
 
             <button
               onClick={onClose}
-              className="px-6 py-2 rounded-lg bg-[var(--text-primary)] hover:bg-[var(--accent-champagne)] text-[var(--bg-primary)] hover:text-black text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
+              className="px-6 py-2.5 rounded-lg bg-[var(--text-primary)] hover:bg-[var(--accent-champagne)] text-[var(--bg-primary)] hover:text-black text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
             >
               Close Case Study
             </button>

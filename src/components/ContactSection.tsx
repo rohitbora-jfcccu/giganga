@@ -98,7 +98,7 @@ export const ContactSection: React.FC = () => {
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-4">
               <span className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-mono-code font-semibold block">
-                07. Direct Engagement
+                07. Contact
               </span>
               <ScrollHeadlineReveal
                 as="h2"
@@ -106,7 +106,7 @@ export const ContactSection: React.FC = () => {
                 startOffset="top 92%"
                 endOffset="top 55%"
               >
-                Let us build something of consequence.
+                Let's discuss your next project.
               </ScrollHeadlineReveal>
               <ScrollScrubText
                 as="p"
@@ -114,14 +114,14 @@ export const ContactSection: React.FC = () => {
                 startOffset="top 90%"
                 endOffset="top 52%"
               >
-                Available for full-time software engineering roles, enterprise contract architecture, and legitimate freelance digital product builds.
+                Available for full-time software engineering roles, distributed team contracts, and digital product architecture.
               </ScrollScrubText>
             </div>
 
             <div className="pt-6 space-y-4">
               <div className="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
                 <p className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider mb-2">
-                  Direct Inquiries & Response SLA
+                  Direct Inquiries
                 </p>
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <a
@@ -141,7 +141,7 @@ export const ContactSection: React.FC = () => {
                   </button>
                 </div>
                 <p className="text-[11px] text-[var(--text-muted)] mt-2 font-mono-code">
-                  Expected reply time: &lt; 24 business hours
+                  Expected reply time: &lt; 24 hours
                 </p>
               </div>
 
@@ -155,14 +155,14 @@ export const ContactSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Server-Validated Contact Form */}
+          {/* Right Column: Contact Form */}
           <div className="lg:col-span-7">
             <div className="p-8 sm:p-10 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
               <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">
                 Initiate Project Discussion
               </h3>
-              <p className="text-xs text-[var(--text-muted)] mb-8 font-mono-code">
-                Server-validated submission with instant mailto alternative
+              <p className="text-xs text-[var(--text-muted)] mb-8">
+                Send a message or reach out directly via email.
               </p>
 
               {feedback && (
@@ -237,7 +237,7 @@ export const ContactSection: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-mono-code text-[var(--accent-champagne)] font-semibold mb-2 uppercase tracking-wider">
-                    Inquiry Vector
+                    Project Type
                   </label>
                   <select
                     value={projectType}

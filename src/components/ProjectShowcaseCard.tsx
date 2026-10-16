@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUpRight, Github, ShieldCheck, Cpu, Clock, Eye, Box, AlertCircle } from 'lucide-react';
+import { ArrowUpRight, Github, ShieldCheck, Eye, Box, AlertCircle } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ProjectCaseStudy } from '../data/portfolio-data';
@@ -192,12 +192,7 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
               </div>
 
               <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--text-muted)]">
-                <span className="inline-flex items-center gap-1 text-[var(--accent-champagne)]">
-                  <Clock className="w-3 h-3" />
-                  <span>{project.readingTime || '5 min read'}</span>
-                </span>
-                <span aria-hidden="true">·</span>
-                <span className="uppercase text-[11px] font-semibold text-[var(--text-secondary)]">
+                <span className="uppercase text-[11px] font-semibold text-[var(--accent-champagne)]">
                   {project.status}
                 </span>
               </div>
@@ -213,14 +208,9 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 ) : (
                   <span className="text-[var(--accent-champagne)] font-semibold">{project.status}</span>
                 )}
-                <span aria-hidden="true" className="text-[var(--text-muted)]">·</span>
-                <span className="text-[var(--text-muted)]">{project.timeline}</span>
               </div>
 
-              <div className="flex items-center gap-1 text-xs font-mono-code text-[var(--text-muted)]">
-                <Clock className="w-3 h-3 text-[var(--accent-champagne)]" />
-                <span>{project.readingTime || '4 min read'}</span>
-              </div>
+              <span className="text-xs font-mono-code text-[var(--text-muted)]">{project.timeline}</span>
             </div>
           )}
 
@@ -347,27 +337,6 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
                 )}
               </div>
 
-              {/* Under-Development Honest Architectural Badge */}
-              {isUnderDev && (
-                <div
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none text-center px-4"
-                  style={{
-                    transform: isReducedMotion ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) translateZ(34px)',
-                  }}
-                >
-                  <div className="px-4 py-2.5 rounded-xl bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border-card)] shadow-2xl max-w-sm mx-auto">
-                    <p className="text-[11px] font-mono-code text-[var(--accent-champagne)] uppercase tracking-wider font-bold">
-                      {isCustomOS ? 'Kernel & Architecture Research' : 'Multimodal Agent Exploration'}
-                    </p>
-                    <p className="text-[11px] text-[var(--text-secondary)] mt-1 font-sans">
-                      {isCustomOS
-                        ? 'Low-level x86 bootstrapping, memory paging & POSIX terminal primitives.'
-                        : 'Intent recognition, Web Audio frequency reactivity & developer automation.'}
-                    </p>
-                  </div>
-                </div>
-              )}
-
               {/* Floating Bottom Card Strip */}
               <div
                 className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-20 pointer-events-none"
@@ -461,56 +430,6 @@ export const ProjectShowcaseCard: React.FC<ProjectShowcaseCardProps> = ({
           >
             {project.summary}
           </ScrollScrubText>
-
-          {/* Project Statistics Bar (Clean Monospace Figures with Tabular Numerals) */}
-          {project.stats && (
-            <div className="py-2.5 px-3.5 sm:px-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] grid grid-cols-3 gap-2 sm:gap-4 divide-x divide-[var(--border-subtle)] font-mono-code shadow-xs">
-              <div className="pr-1 sm:pr-2">
-                <span className="text-[9px] sm:text-[10px] text-[var(--text-muted)] uppercase tracking-wider block font-semibold mb-0.5">
-                  Dev Time
-                </span>
-                <span
-                  className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tabular-nums truncate block"
-                  title={project.stats.devTime}
-                >
-                  {project.stats.devTime}
-                </span>
-              </div>
-              <div className="px-2 sm:px-3">
-                <span className="text-[9px] sm:text-[10px] text-[var(--text-muted)] uppercase tracking-wider block font-semibold mb-0.5">
-                  Collaborators
-                </span>
-                <span
-                  className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tabular-nums truncate block"
-                  title={project.stats.collaborators}
-                >
-                  {project.stats.collaborators}
-                </span>
-              </div>
-              <div className="pl-2 sm:pl-3">
-                <span className="text-[9px] sm:text-[10px] text-[var(--accent-champagne)] uppercase tracking-wider block font-semibold mb-0.5">
-                  Scale
-                </span>
-                <span
-                  className="text-xs sm:text-[13px] font-bold text-[var(--text-primary)] tabular-nums truncate block"
-                  title={project.stats.scale}
-                >
-                  {project.stats.scale}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Engineering Responsibility & Core Architecture */}
-          <div className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold">
-              <Cpu className="w-3.5 h-3.5" />
-              <span>{isUnderDev ? 'RESEARCH SCOPE' : 'CORE ARCHITECTURE'}</span>
-            </div>
-            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-              {project.actualRole}
-            </p>
-          </div>
 
           {/* Unboxed Technologies List with Zero-Pill Typographic Separators */}
           <div className="pt-2 border-t border-[var(--border-subtle)]">

@@ -48,7 +48,7 @@ Coursework:
 ${education.coursework.map(c => `- ${c}`).join('\n')}
 
 TECHNICAL CAPABILITIES:
-${skills.map(s => `\n[${s.title}]\n` + s.skills.map(item => `  * ${item.name}: ${item.context}`).join('\n')).join('\n')}
+${skills.map(s => `\n[${s.title}]\n` + s.technologies.map(item => `  * ${item}`).join('\n')).join('\n')}
 
 CORE ARCHITECTURAL PROJECTS:
 1. ${projects[0].title} — ${projects[0].tagline}
@@ -170,7 +170,7 @@ CORE ARCHITECTURAL PROJECTS:
           {/* Projects */}
           <div>
             <h3 className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
-              Production Architectures
+              Selected Projects
             </h3>
             <div className="space-y-4">
               {projects.map((proj) => (
@@ -192,14 +192,14 @@ CORE ARCHITECTURAL PROJECTS:
           {/* Skills Summary */}
           <div>
             <h3 className="text-xs uppercase tracking-widest text-[var(--accent-champagne)] font-semibold font-mono-code mb-3">
-              Technical Proficiencies
+              Technical Skills
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               {skills.map((cat, i) => (
                 <div key={i} className="p-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
                   <p className="font-semibold text-[var(--text-primary)] mb-1">{cat.title}</p>
                   <p className="text-[var(--text-secondary)]">
-                    {cat.skills.map(s => s.name).join(', ')}
+                    {cat.technologies.join(', ')}
                   </p>
                 </div>
               ))}
