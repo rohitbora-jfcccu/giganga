@@ -68,9 +68,9 @@ const FALLBACK_LOGISTICS: LogisticsData = {
   },
   hubs: [
     {
-      id: 'almora-hq',
-      name: 'Almora Strategic Hub (HQ)',
-      code: 'ALM-01',
+      id: 'central-hq',
+      name: 'Central Strategic Hub (HQ)',
+      code: 'HQ-01',
       lat: 29.5892,
       lon: 79.6467,
       status: 'OPTIMAL',
@@ -153,7 +153,7 @@ const FALLBACK_LOGISTICS: LogisticsData = {
     },
   ],
   activeRoutes: [
-    { id: 'r1', from: 'almora-hq', to: 'delhi-gateway', mode: 'express-road', activeCargo: 'Raw Material & Apparel Batch #410', transitHours: 6.5 },
+    { id: 'r1', from: 'central-hq', to: 'delhi-gateway', mode: 'express-road', activeCargo: 'Raw Material & Apparel Batch #410', transitHours: 6.5 },
     { id: 'r2', from: 'delhi-gateway', to: 'mumbai-maritime', mode: 'freight-rail', activeCargo: 'Container Manifest #1042-W', transitHours: 18.0 },
     { id: 'r3', from: 'mumbai-maritime', to: 'singapore-crossdock', mode: 'ocean-vessel', activeCargo: 'Consolidated Bulk Freight #88', transitHours: 96.0 },
     { id: 'r4', from: 'delhi-gateway', to: 'frankfurt-air', mode: 'air-cargo', activeCargo: 'High-Value Priority SKUs #12-F', transitHours: 8.5 },
@@ -389,8 +389,8 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
       // Base Pin Column
       const pinGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.12, 12);
       const pinMat = new THREE.MeshStandardMaterial({
-        color: hub.id === 'almora-hq' ? 0xffdf80 : 0xc9b79c,
-        emissive: hub.id === 'almora-hq' ? 0xc9b79c : 0x7a6b52,
+        color: hub.id === 'central-hq' ? 0xffdf80 : 0xc9b79c,
+        emissive: hub.id === 'central-hq' ? 0xc9b79c : 0x7a6b52,
         emissiveIntensity: 0.6,
         metalness: 0.9,
         roughness: 0.1,
@@ -405,7 +405,7 @@ export const ERPSupplyChain3D: React.FC<ERPSupplyChain3DProps> = ({
       // Pulsating Concentric Radar Ring on Ground
       const ringGeo = new THREE.RingGeometry(0.025, 0.045, 24);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: hub.id === 'almora-hq' ? 0xffe28a : 0xc9b79c,
+        color: hub.id === 'central-hq' ? 0xffe28a : 0xc9b79c,
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.75,

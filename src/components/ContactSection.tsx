@@ -147,10 +147,10 @@ export const ContactSection: React.FC = () => {
 
               <div className="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] shadow-sm">
                 <p className="text-[11px] font-mono-code text-[var(--accent-champagne)] font-semibold uppercase tracking-wider mb-1">
-                  Availability & Location
+                  Availability & Work Preference
                 </p>
-                <p className="text-sm text-[var(--text-primary)] font-medium">Almora, Uttarakhand · Remote Global</p>
-                <p className="text-xs text-[var(--text-secondary)] mt-1">Open to relocation for qualified software engineering teams.</p>
+                <p className="text-sm text-[var(--text-primary)] font-medium">Worldwide Remote & Relocation</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">Available for full-time engineering roles and high-impact contracts.</p>
               </div>
             </div>
           </div>

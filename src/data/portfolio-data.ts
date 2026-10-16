@@ -63,11 +63,11 @@ export const PORTFOLIO_DATA = {
     shortName: 'Bora',
     role: 'Full-Stack Software Engineer',
     headline: 'Building digital experiences that matter.',
-    bio: 'Software engineer and 2026 BCA graduate from Soban Singh Jeena University, Almora. Specializing in high-performance web applications, architectural rigor, and visually refined digital interfaces.',
+    bio: 'Software engineer and 2026 BCA graduate from Soban Singh Jeena University. Specializing in high-performance web applications, architectural rigor, and visually refined digital interfaces.',
     email: 'rohitbora535@gmail.com',
-    location: 'Almora, Uttarakhand · Available for Remote & Relocation',
+    location: 'Uttarakhand, India · Available for Remote & Relocation',
     degree: 'Bachelor of Computer Applications (BCA)',
-    institution: 'Soban Singh Jeena University, Almora',
+    institution: 'Soban Singh Jeena University',
     graduationYear: '2026',
     github: 'https://github.com/rohitbora',
     linkedin: 'https://linkedin.com/in/rohit-singh-bora',
@@ -76,7 +76,7 @@ export const PORTFOLIO_DATA = {
   about: {
     kicker: '02. Personal Profile & Philosophy',
     title: 'Architecting software with mathematical discipline and aesthetic restraint.',
-    statement: 'I am a software engineer and 2026 BCA graduate from Soban Singh Jeena University, Almora. I bridge algorithmic computer science foundations with high-craft digital product development.',
+    statement: 'I am a software engineer and 2026 BCA graduate from Soban Singh Jeena University. I bridge algorithmic computer science foundations with high-craft digital product development.',
     coreBelief: 'Code is not merely instructions for a machine; it is the structural architecture of human experience. Exceptional software balances mathematical rigor under the hood with visual dignity on the surface.',
     pillars: [
       {
@@ -105,10 +105,10 @@ export const PORTFOLIO_DATA = {
       },
     ],
     invariants: [
-      { label: 'Academic Credential', value: 'BCA (SSJ University, Almora · 2026)' },
+      { label: 'Academic Credential', value: 'BCA (SSJ University · 2026)' },
       { label: 'Engineering Focus', value: 'Full-Stack Web Architectures & Interactive Systems' },
       { label: 'Verified Systems', value: 'Atelier Noir E-Commerce & LogixCore ERP' },
-      { label: 'Base Location', value: 'Almora, Uttarakhand · Worldwide Remote Available' },
+      { label: 'Availability', value: 'Worldwide Remote & Relocation' },
     ],
   },
 
@@ -394,16 +394,16 @@ export const PORTFOLIO_DATA = {
     title: 'The Journey',
     subtitle: 'From Fundamental Principles to Production Systems',
     paragraphs: [
-      'My journey into software engineering began with a genuine curiosity for how complex systems are architected and how code translates into tangible user experiences. Enrolling in the Bachelor of Computer Applications (BCA) program at Soban Singh Jeena University, Almora, provided the theoretical foundation in data structures, algorithms, relational databases, and software design principles.',
-      'Throughout my academic tenure leading up to my graduation in 2026, I committed to building real-world applications that bridged theoretical computer science with commercial engineering standards. Rather than settling for boilerplate tutorials, I focused on high-craft projects: engineering a luxury e-commerce platform with optimistic state synchronization and developing an enterprise supply chain operations system.',
+      'My journey into software engineering began with a genuine curiosity for how complex systems are architected and how code translates into tangible user experiences. Enrolling in the Bachelor of Computer Applications (BCA) program at Soban Singh Jeena University provided the theoretical foundation in data structures, algorithms, relational databases, and software design principles.',
+      'Throughout my academic tenure leading up to graduation in 2026, I committed to building real-world applications that bridged theoretical computer science with commercial engineering standards. Rather than settling for boilerplate tutorials, I focused on high-craft projects: engineering a luxury e-commerce platform with optimistic state synchronization and developing an enterprise supply chain operations system.',
       'Today, as a full-stack engineer, I combine mathematical rigor, clean architectural patterns, and aesthetic restraint. I approach every project with the mindset that software should not only execute flawlessly under the hood, but also present an intuitive, memorable, and dignified visual experience.',
     ],
     timeline: [
       {
         year: '2023',
         milestone: 'Algorithmic Foundations & Core Computing',
-        period: 'SSJ University · Almora',
-        description: 'Commenced BCA degree at Soban Singh Jeena University, Almora. Mastered object-oriented programming, data structures in C/C++, and foundational JavaScript standards.',
+        period: 'SSJ University',
+        description: 'Commenced BCA degree at Soban Singh Jeena University. Mastered object-oriented programming, data structures in C/C++, and foundational JavaScript standards.',
         keyFocus: 'Data structures, algorithm complexity analysis (Big-O), pointers, memory allocation, and discrete mathematics.',
         technologies: ['C / C++', 'Data Structures', 'OOP Principles', 'SQL Basics', 'Vanilla JavaScript (ES6)'],
         tangibleOutcome: 'Implemented custom binary trees, linked lists, and sorting algorithms from first principles with verified space-time benchmarks.',
@@ -430,7 +430,7 @@ export const PORTFOLIO_DATA = {
         year: '2026',
         milestone: 'BCA Graduation & Commercial Readiness',
         period: 'SSJ University Graduate · Class of 2026',
-        description: 'Completed Bachelor of Computer Applications degree at Soban Singh Jeena University, Almora. Formally launched BORA Portfolio 2.0 to offer full-stack software development and high-craft digital product engineering.',
+        description: 'Completed Bachelor of Computer Applications degree at Soban Singh Jeena University. Built production-grade full-stack systems and high-craft digital products.',
         keyFocus: 'Industrial web performance, studio Three.js PBR graphics, security hardening, and production deployment.',
         technologies: ['BCA Degree Conferred', 'Three.js / WebGL', 'Production Server Middleware', 'Full-Stack Architecture'],
         tangibleOutcome: 'Available for full-time software engineering roles and high-impact digital product engineering contracts.',
@@ -641,10 +641,10 @@ export const PORTFOLIO_DATA = {
 
   education: {
     degree: 'Bachelor of Computer Applications (BCA)',
-    institution: 'Soban Singh Jeena University, Almora',
+    institution: 'Soban Singh Jeena University',
     period: '2023 – 2026',
     status: 'Graduated / Class of 2026',
-    location: 'Almora, Uttarakhand, India',
+    location: 'Uttarakhand, India',
     coursework: [
       'Data Structures & Algorithms (C / C++)',
       'Object-Oriented Programming (C++ & Java)',

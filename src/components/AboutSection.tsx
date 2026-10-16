@@ -84,7 +84,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
           <MotionSectionHeader
             kicker={about.kicker}
             title={about.title}
-            description="A dedication to software engineering that balances rigorous computer science invariants with haute-couture editorial typography and sub-second performance."
+            description="A commitment to software engineering that pairs computer science fundamentals with refined typography, mathematical precision, and resilient performance."
             borderBottom={true}
             rightContent={
               <div className="flex items-center gap-3">
@@ -182,10 +182,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
               <div className="p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-card)] space-y-3">
                 <div className="flex items-center gap-2 text-xs font-mono-code text-[var(--accent-champagne)] font-semibold">
                   <Compass className="w-3.5 h-3.5" />
-                  <span>ALMORA TO THE GLOBAL ARENA</span>
+                  <span>GLOBAL AVAILABILITY</span>
                 </div>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Based in Almora, Uttarakhand, situated amidst the quiet Himalayan ridges, I bring an unhurried focus to engineering challenges. Available for high-caliber distributed software engineering teams worldwide and relocation.
+                  Available for full-stack software engineering roles with distributed teams worldwide, as well as relocation for onsite opportunities.
                 </p>
               </div>
             </div>

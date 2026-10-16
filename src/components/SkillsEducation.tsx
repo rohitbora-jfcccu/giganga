@@ -31,7 +31,7 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
         <MotionSectionHeader
           kicker="06. Technical Stacks & Academic Credentials"
           title="Verified Skills & Formal Education"
-          description="Every technology documented below is backed by tangible production code in Atelier Noir, LogixCore ERP, or university systems. No arbitrary percentage bars or invented metrics."
+          description="Technologies and foundational computer science principles applied across production web applications and enterprise platforms."
           borderBottom={true}
           rightContent={
             <button
@@ -102,7 +102,7 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
                   <span className="font-mono-code">{education.period}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[var(--text-muted)]">Campus:</span>
+                  <span className="text-[var(--text-muted)]">Location:</span>
                   <span>{education.location}</span>
                 </div>
               </div>
@@ -151,11 +151,6 @@ export const SkillsEducation: React.FC<SkillsEducationProps> = ({ onResumeClick 
                       </div>
                     ))}
                   </div>
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-[var(--border-subtle)] flex items-center justify-between text-[10px] font-mono-code text-[var(--text-muted)]">
-                  <span>Domain Category</span>
-                  <span className="text-[var(--text-secondary)] uppercase">{domain.category}</span>
                 </div>
               </div>
             ))}

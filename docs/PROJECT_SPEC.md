@@ -2,7 +2,7 @@
 
 ## 1. Executive Overview
 - **Owner**: Rohit Singh Bora ("Bora")
-- **Credentials**: BCA Graduate, Soban Singh Jeena University, Almora (2026)
+- **Credentials**: BCA Graduate, Soban Singh Jeena University (2026)
 - **Public Brand Name**: BORA
 - **Tagline**: "Building digital experiences that matter."
 - **Contact**: `rohitbora535@gmail.com`

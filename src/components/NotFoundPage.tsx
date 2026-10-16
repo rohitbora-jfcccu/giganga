@@ -175,7 +175,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
       <footer className="w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono-code text-[var(--text-muted)] z-20 border-t border-[var(--border-subtle)]/50 pt-6">
         <span>ROHIT SINGH BORA · PORTFOLIO</span>
         <span>SSJ UNIVERSITY · BCA 2026</span>
-        <span>ALMORA, INDIA</span>
+        <span>INDIA · WORLDWIDE</span>
       </footer>
 
     </div>

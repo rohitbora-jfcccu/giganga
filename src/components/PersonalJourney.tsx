@@ -33,10 +33,10 @@ export const PersonalJourney: React.FC = () => {
                 startOffset="top 88%"
                 endOffset="top 42%"
               >
-                From algorithmic first principles in the Himalayas to production-grade web systems.
+                From algorithmic first principles to production-grade web systems.
               </ScrollScrubText>
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                My work balances foundational computer science invariants from Soban Singh Jeena University, Almora, with high-craft digital products that execute with mathematical precision.
+                My work balances foundational computer science principles from Soban Singh Jeena University with high-craft digital products that execute with mathematical precision.
               </p>
             </div>
 

@@ -252,9 +252,9 @@ app.get('/api/erp/logistics', (_req, res) => {
       },
       hubs: [
         {
-          id: 'almora-hq',
-          name: 'Almora Strategic Hub (HQ)',
-          code: 'ALM-01',
+          id: 'central-hq',
+          name: 'Central Strategic Hub (HQ)',
+          code: 'HQ-01',
           lat: 29.5892,
           lon: 79.6467,
           status: 'OPTIMAL',
@@ -337,7 +337,7 @@ app.get('/api/erp/logistics', (_req, res) => {
         },
       ],
       activeRoutes: [
-        { id: 'r1', from: 'almora-hq', to: 'delhi-gateway', mode: 'express-road', activeCargo: 'Raw Material & Apparel Batch #410', transitHours: 6.5 },
+        { id: 'r1', from: 'central-hq', to: 'delhi-gateway', mode: 'express-road', activeCargo: 'Raw Material & Apparel Batch #410', transitHours: 6.5 },
         { id: 'r2', from: 'delhi-gateway', to: 'mumbai-maritime', mode: 'freight-rail', activeCargo: 'Container Manifest #1042-W', transitHours: 18.0 },
         { id: 'r3', from: 'mumbai-maritime', to: 'singapore-crossdock', mode: 'ocean-vessel', activeCargo: 'Consolidated Bulk Freight #88', transitHours: 96.0 },
         { id: 'r4', from: 'delhi-gateway', to: 'frankfurt-air', mode: 'air-cargo', activeCargo: 'High-Value Priority SKUs #12-F', transitHours: 8.5 },

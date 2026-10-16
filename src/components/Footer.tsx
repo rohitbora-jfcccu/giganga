@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({ onShortcutsClick }) => {
               {identity.brand}
             </span>
             <p className="text-xs text-[var(--text-secondary)] font-mono-code max-w-sm">
-              Architected by {identity.fullName} · Almora, Uttarakhand
+              Architected by {identity.fullName} · Full-Stack Software Engineer
             </p>
           </div>
 
@@ -90,7 +90,7 @@ export const Footer: React.FC<FooterProps> = ({ onShortcutsClick }) => {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[var(--text-muted)] font-mono-code gap-4">
           <p>© {new Date().getFullYear()} Rohit Singh Bora. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <span>BCA 2026 · SSJ University, Almora</span>
+            <span>BCA 2026 · SSJ University</span>
             <span>·</span>
             <span>Noir & Ivory High-Contrast Edition</span>
           </div>

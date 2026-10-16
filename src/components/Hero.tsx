@@ -16,7 +16,6 @@ export const Hero: React.FC<HeroProps> = ({
   const isIvory = theme === 'ivory';
 
   const sectionRef = useRef<HTMLElement | null>(null);
-  const titleRef = useRef<HTMLDivElement | null>(null);
   const portraitRef = useRef<HTMLDivElement | null>(null);
   const leftColRef = useRef<HTMLDivElement | null>(null);
   const rightColRef = useRef<HTMLDivElement | null>(null);
@@ -35,42 +34,34 @@ export const Hero: React.FC<HeroProps> = ({
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
-          // Smooth fade across the first 360px of natural page scroll
-          const progress = Math.min(1, Math.max(0, scrollY / 360));
+          // Smooth fade across natural page scroll
+          const progress = Math.min(1, Math.max(0, scrollY / 380));
 
-          // 1. Title fades out smoothly while floating slightly upward
-          if (titleRef.current) {
-            const titleOpacity = Math.max(0, 1 - progress * 1.3);
-            const titleY = -progress * 42;
-            titleRef.current.style.opacity = `${titleOpacity}`;
-            titleRef.current.style.transform = `translate3d(0, ${titleY}px, 0)`;
-          }
-
-          // 2. Portrait fades out smoothly while floating slightly upward
+          // 1. Portrait fades out smoothly while floating slightly upward
           if (portraitRef.current) {
             const portraitOpacity = Math.max(0, 1 - progress * 1.25);
-            const portraitY = -progress * 48;
+            const portraitY = -progress * 42;
             portraitRef.current.style.opacity = `${portraitOpacity}`;
             portraitRef.current.style.transform = `translate3d(0, ${portraitY}px, 0)`;
           }
 
-          // 3. Left introduction & CTAs smoothly fade
+          // 2. Left introduction & CTAs smoothly fade
           if (leftColRef.current) {
             const leftOpacity = Math.max(0, 1 - progress * 1.15);
-            const leftY = -progress * 30;
+            const leftY = -progress * 28;
             leftColRef.current.style.opacity = `${leftOpacity}`;
             leftColRef.current.style.transform = `translate3d(0, ${leftY}px, 0)`;
           }
 
-          // 4. Right headline smoothly fades
+          // 3. Right headline smoothly fades
           if (rightColRef.current) {
             const rightOpacity = Math.max(0, 1 - progress * 1.15);
-            const rightY = -progress * 30;
+            const rightY = -progress * 28;
             rightColRef.current.style.opacity = `${rightOpacity}`;
             rightColRef.current.style.transform = `translate3d(0, ${rightY}px, 0)`;
           }
 
-          // 5. Scroll prompt fades fast
+          // 4. Scroll prompt fades fast
           if (scrollIndicatorRef.current) {
             const indicatorOpacity = Math.max(0, 1 - progress * 2.2);
             scrollIndicatorRef.current.style.opacity = `${indicatorOpacity}`;
@@ -96,7 +87,7 @@ export const Hero: React.FC<HeroProps> = ({
       ref={sectionRef}
       id="hero"
       data-section="hero"
-      className="relative w-full min-h-[92vh] lg:min-h-screen flex flex-col justify-between pt-24 sm:pt-28 pb-10 sm:pb-12 bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300 overflow-hidden"
+      className="relative w-full min-h-[92vh] lg:min-h-[calc(100vh-4rem)] flex flex-col justify-between pt-24 sm:pt-28 pb-10 sm:pb-12 bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300 overflow-hidden"
     >
       {/* Subtle Ambient Radial Canvas Backdrop */}
       <div
@@ -104,70 +95,45 @@ export const Hero: React.FC<HeroProps> = ({
         className="absolute inset-0 pointer-events-none transition-opacity duration-700 -z-10"
         style={{
           background: isIvory
-            ? 'radial-gradient(circle at 50% 30%, rgba(116,84,61,0.08) 0%, rgba(245,239,235,0.92) 65%, #F5EFEB 100%)'
-            : 'radial-gradient(circle at 50% 30%, rgba(197,168,121,0.06) 0%, rgba(8,7,6,0.94) 65%, #080706 100%)',
+            ? 'radial-gradient(circle at 50% 38%, rgba(116,84,61,0.08) 0%, rgba(245,239,235,0.92) 65%, #F5EFEB 100%)'
+            : 'radial-gradient(circle at 50% 38%, rgba(197,168,121,0.06) 0%, rgba(8,7,6,0.94) 65%, #080706 100%)',
         }}
       />
 
       {/* ============================================================== */}
-      {/* 1. TOP BORA TITLE WORDMARK */}
-      {/* Centered, grand, non-overlapping architectural header */}
+      {/* THREE-COLUMN BALANCED COMPOSITION                              */}
+      {/* Left: Introduction & CTAs | Center: Portrait | Right: Headline */}
       {/* ============================================================== */}
-      <div
-        ref={titleRef}
-        className="w-full text-center px-4 pt-2 sm:pt-4 pb-4 sm:pb-6 will-change-transform"
-        style={{ willChange: 'transform, opacity' }}
-      >
-        <h1
-          className={`font-editorial text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] font-bold tracking-[0.14em] sm:tracking-[0.18em] uppercase leading-none select-none text-transparent bg-clip-text transition-colors duration-300 ${
-            isIvory
-              ? 'bg-gradient-to-b from-[#1C1612] via-[#261E18] to-[#74543D]'
-              : 'bg-gradient-to-b from-[#C9C0B4] via-[#E8E0D4] to-[#C5A879]'
-          }`}
-          style={{
-            textShadow: isIvory
-              ? '0 2px 24px rgba(116, 84, 61, 0.15)'
-              : '0 4px 32px rgba(197, 168, 121, 0.18)',
-          }}
-        >
-          BORA
-        </h1>
-      </div>
-
-      {/* ============================================================== */}
-      {/* 2. THREE-COLUMN BALANCED COMPOSITION */}
-      {/* Left: Introduction & 2 CTAs | Center: Portrait | Right: Headline */}
-      {/* ============================================================== */}
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full my-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 w-full my-auto py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
 
           {/* ------------------------------------------------------------ */}
-          {/* LEFT: Short Introduction & Two Direct CTA Links */}
+          {/* LEFT: Identity, Introduction & Two Direct CTAs               */}
           {/* ------------------------------------------------------------ */}
           <div
             ref={leftColRef}
-            className="lg:col-span-4 flex flex-col justify-center space-y-5 text-left order-2 lg:order-1 will-change-transform"
+            className="lg:col-span-4 flex flex-col justify-center space-y-6 text-left order-2 lg:order-1 will-change-transform"
             style={{ willChange: 'transform, opacity' }}
           >
-            <div className="space-y-1">
-              <span className="font-mono-code text-[11px] font-semibold tracking-[0.25em] uppercase text-[var(--accent-champagne)]">
+            <div className="space-y-2">
+              <span className="font-mono-code text-[11px] font-semibold tracking-[0.26em] uppercase text-[var(--accent-champagne)] block">
                 Rohit Singh Bora
               </span>
-              <p className="text-sm font-mono-code text-[var(--text-muted)] tracking-wider uppercase">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-heading)] tracking-tight">
                 Full-Stack Software Engineer
-              </p>
+              </h1>
             </div>
 
             <p className="text-base sm:text-lg font-normal text-[var(--text-primary)] leading-relaxed tracking-tight font-sans">
-              I build modern web systems and digital experiences with an obsessive focus on typography, mathematical rigor, and spatial depth.
+              Building modern web applications and digital experiences with an emphasis on architectural clarity, mathematical precision, and spatial depth.
             </p>
 
             <p className="text-xs sm:text-[13px] text-[var(--text-secondary)] leading-relaxed">
-              BCA Graduate from Soban Singh Jeena University, Almora (2026). Specializing in luxury commerce, operational ERP architectures, and high-performance interactive interfaces.
+              BCA Graduate from Soban Singh Jeena University (2026). Specializing in luxury commerce, operational ERP systems, and high-performance interactive interfaces.
             </p>
 
             {/* Exactly Two Clean CTA Links */}
-            <div className="flex flex-wrap items-center gap-6 pt-2">
+            <div className="flex flex-wrap items-center gap-6 pt-1">
               <button
                 onClick={onExploreWork}
                 className="group inline-flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase text-[var(--text-primary)] hover:text-[var(--accent-champagne)] transition-colors py-2 cursor-pointer border-b border-[var(--text-primary)]/40 hover:border-[var(--accent-champagne)]"
@@ -189,14 +155,14 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* ------------------------------------------------------------ */}
-          {/* CENTER: The Portrait (Cleanly framed, no overlapping text) */}
+          {/* CENTER: The Portrait (Cleanly framed, no overlapping text)   */}
           {/* ------------------------------------------------------------ */}
           <div
             ref={portraitRef}
             className="lg:col-span-4 flex justify-center items-center order-1 lg:order-2 will-change-transform"
             style={{ willChange: 'transform, opacity' }}
           >
-            <div className="relative w-full max-w-[270px] sm:max-w-[310px] lg:max-w-[330px] aspect-[2/3] rounded-2xl overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-2xl transition-all duration-300">
+            <div className="relative w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[340px] aspect-[2/3] rounded-2xl overflow-hidden border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-2xl transition-all duration-300">
               {/* Subtle Champagne Ambient Radial Glow */}
               <div
                 aria-hidden="true"
@@ -237,23 +203,23 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* ------------------------------------------------------------ */}
-          {/* RIGHT: One Clear Headline & Academic Context */}
+          {/* RIGHT: Clear Editorial Headline & Context                    */}
           {/* ------------------------------------------------------------ */}
           <div
             ref={rightColRef}
-            className="lg:col-span-4 flex flex-col justify-center space-y-4 text-left lg:text-right order-3 will-change-transform"
+            className="lg:col-span-4 flex flex-col justify-center space-y-5 text-left lg:text-right order-3 will-change-transform"
             style={{ willChange: 'transform, opacity' }}
           >
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[2.65rem] font-medium leading-[1.12] tracking-tight text-[var(--text-heading)] [text-wrap:balance]">
-              Creative Developer <span className="italic text-[var(--accent-champagne)]">&amp; Digital Experience</span> Builder
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-[2.65rem] font-medium leading-[1.14] tracking-tight text-[var(--text-heading)] [text-wrap:balance]">
+              Creative Developer <span className="italic text-[var(--accent-champagne)]">&amp; Digital Product</span> Builder
             </h2>
 
-            <div className="pt-2 space-y-1">
+            <div className="pt-2 space-y-1.5">
               <p className="font-mono-code text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
                 Soban Singh Jeena University · BCA 2026
               </p>
               <p className="font-mono-code text-xs text-[var(--text-muted)]">
-                Almora, India · Available Worldwide
+                Available Worldwide · Remote &amp; Relocation
               </p>
             </div>
           </div>
@@ -262,11 +228,11 @@ export const Hero: React.FC<HeroProps> = ({
       </div>
 
       {/* ============================================================== */}
-      {/* 3. SUBTLE BOTTOM SCROLL PROMPT */}
+      {/* BOTTOM SCROLL PROMPT                                           */}
       {/* ============================================================== */}
       <div
         ref={scrollIndicatorRef}
-        className="w-full flex items-center justify-center pt-4 text-[var(--text-muted)] select-none will-change-opacity"
+        className="w-full flex items-center justify-center pt-2 text-[var(--text-muted)] select-none will-change-opacity"
         style={{ willChange: 'opacity' }}
       >
         <button
